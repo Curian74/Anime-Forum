@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using WibuBlog.Data;
+
 namespace WibuBlog
 {
     public class Program
@@ -8,6 +11,11 @@ namespace WibuBlog
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddDbContext<ApplicationDbContext>(op =>
+            {
+                op.UseSqlServer(builder.Configuration.GetConnectionString("DB"));
+            });
 
             var app = builder.Build();
 
