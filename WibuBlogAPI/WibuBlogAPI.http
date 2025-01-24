@@ -1,6 +1,0 @@
-@WibuBlogAPI_HostAddress = http://localhost:5002
-
-GET {{WibuBlogAPI_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
