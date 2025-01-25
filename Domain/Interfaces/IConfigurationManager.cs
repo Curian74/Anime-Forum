@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Interfaces
+﻿namespace Domain.Interfaces
 {
-    internal class IConfigurationManager
+    public interface IConfigurationManager
     {
+        string GetValue(string key);
+        string GetConnectionString(string name);
+        T GetSection<T>(string sectionName) where T : class, new();
     }
 }
