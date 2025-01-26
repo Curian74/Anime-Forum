@@ -1,0 +1,24 @@
+{
+<<<<<<< HEAD
+    "Logging": {
+        "LogLevel": {
+            "Default": "Information",
+            "Microsoft.AspNetCore": "Warning"
+        }
+    },
+    "AllowedHosts": "*",
+    "ConnectionStrings": {
+        "Default": "Server=.;Database=WibuBlog;Trusted_Connection=True;TrustServerCertificate=True;"
+=======
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+>>>>>>> origin
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "Default": "Server=.;Database=WibuBlog;Trusted_Connection=True;TrustServerCertificate=True;"
+  }
+}
