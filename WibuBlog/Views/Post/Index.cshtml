@@ -1,0 +1,21 @@
+﻿@model List<Domain.Entities.Post>;
+
+<div class="container">
+    <h1 class="text-center">Post List</h1>
+
+    <table class="table table-striped mt-4">
+        <tr>
+            <th>Id</th>
+            <th>Title</th>
+            <th>Description</th>
+        </tr>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.Id</td>
+                <td>@p.Title</td>
+                <td>@p.Description</td>
+            </tr>
+        }
+    </table>
+</div>
