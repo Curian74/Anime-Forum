@@ -1,5 +1,7 @@
+using Domain.Interfaces;
+using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using WibuBlog.Data;
+using System.Text.Json;
 
 namespace WibuBlog
 {
@@ -12,9 +14,16 @@ namespace WibuBlog
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
-            builder.Services.AddDbContext<ApplicationDbContext>(op =>
+            //DbContext
+            builder.Services.AddDbContext<ApplicationDbContext>();
+            builder.Services.AddScoped<DbContext, ApplicationDbContext>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<Domain.Interfaces.IConfigurationManager, Infrastructure.Configurations.ConfigurationManager>();
+
+            //HttpClient
+            builder.Services.AddHttpClient("api", httpClient =>
             {
-                op.UseSqlServer(builder.Configuration.GetConnectionString("DB"));
+                httpClient.BaseAddress = new Uri("http://localhost:5002/api/");
             });
 
             var app = builder.Build();
