@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Domain.Interfaces;
 using Infrastructure.Persistence;
 using Domain.Entities;
+using Application.Common.Mappings;
+using Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,11 +15,26 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<ApplicationDbContext>();
+#region Dependency injections
 
+// Persistence classes
+builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddScoped<DbContext, ApplicationDbContext>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// Configuration manager
 builder.Services.AddScoped<Domain.Interfaces.IConfigurationManager, Infrastructure.Configurations.ConfigurationManager>();
+
+// Service classes
+builder.Services.AddScoped<PostServices, PostServices>();
+builder.Services.AddScoped<UserServices, UserServices>();
+
+// AutoMapper service
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+#endregion
+
+// EF Identity configurations
 builder.Services.AddScoped<UserManager<User>, UserManager<User>>();
 
 builder.Services.Configure<IdentityOptions>(options =>
