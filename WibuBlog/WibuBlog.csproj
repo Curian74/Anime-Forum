@@ -28,6 +28,9 @@
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+	  <ProjectReference Include="..\Application\Application.csproj" />
+	  <ProjectReference Include="..\Domain\Domain.csproj" />
+	  <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
