@@ -9,7 +9,7 @@ namespace Infrastructure.Persistence
         private readonly IConfigurationManager _configurationManager = configurationManager;
 
         public DbSet<User> Users { get; set; }
-        public DbSet<Post> Posts { get; set; }        
+        public DbSet<Post> Posts { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
