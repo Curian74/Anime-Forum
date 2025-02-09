@@ -1,11 +1,8 @@
 ﻿using Domain.Common.BaseEntities;
-using Domain.Common.Extensions;
 using Domain.Entities;
+using Infrastructure.Extensions;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Net.Http;
-using System.Text.Json;
 
 namespace WibuBlog.Controllers
 {
@@ -34,7 +31,7 @@ namespace WibuBlog.Controllers
             var jsonResponse = await response.Content.ReadAsStringAsync();
 
             //Goi extension custom
-            var wrapper = DeserializeExtensions.Deserialize<ApiResponse<Post>>(jsonResponse);
+            var wrapper = DeserializeExtensions.Deserialize<BaseApiResponse<Post>>(jsonResponse);
 
             return View("Index", wrapper!.Value);
         }

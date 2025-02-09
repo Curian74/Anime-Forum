@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace Domain.Common.Extensions
+namespace Infrastructure.Extensions
 {
     public static class DeserializeExtensions
     {
@@ -14,6 +14,5 @@ namespace Domain.Common.Extensions
         {
             return JsonSerializer.Deserialize<T>(json, defaultSettings)!; //Giong cai co san
         }
-
     }
 }
