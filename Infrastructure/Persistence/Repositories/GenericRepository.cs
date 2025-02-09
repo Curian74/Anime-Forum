@@ -24,6 +24,17 @@ namespace Infrastructure.Persistence.Repositories
             return await _dbSet.ToListAsync();
         }
 
+        public async Task<(IEnumerable<T> Items, int TotalCount)> GetPagedAsync(int page, int size)
+        {
+            var totalCount = await _context.Set<T>().CountAsync();
+            var items = await _context.Set<T>()
+                .Skip((page - 1) * size)
+                .Take(size)
+                .ToListAsync();
+
+            return (items, totalCount);
+        }
+
         public async Task AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);

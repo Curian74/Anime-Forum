@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.External
+﻿namespace Application.Exceptions
 {
     internal class placeholder
     {

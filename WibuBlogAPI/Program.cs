@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Domain.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
 using Infrastructure.Persistence;
+using Domain.Entities;
+using Application.Common.Mappings;
+using Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,11 +15,29 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<ApplicationDbContext>();
+#region Dependency injections
 
+// Persistence classes
+builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddScoped<DbContext, ApplicationDbContext>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// Configuration manager
 builder.Services.AddScoped<Domain.Interfaces.IConfigurationManager, Infrastructure.Configurations.ConfigurationManager>();
+
+// Service classes
+builder.Services.AddScoped<PostServices, PostServices>();
+builder.Services.AddScoped<UserServices, UserServices>();
+
+// AutoMapper service
+// Quet project, tim tat ca file MappingProfile roi gop lai thanh 1
+// Mapping profile co san trong /Application/Common/Mappings/
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+#endregion
+
+// EF Identity configurations
+builder.Services.AddScoped<UserManager<User>, UserManager<User>>();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -40,7 +60,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.User.RequireUniqueEmail = false;
 });
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 

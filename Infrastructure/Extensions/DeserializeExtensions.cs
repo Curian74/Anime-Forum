@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 
-namespace Domain.Common.Extensions
+namespace Infrastructure.Extensions
 {
     public static class DeserializeExtensions
     {
-        private static JsonSerializerOptions defaultSettings = new JsonSerializerOptions
+        private static readonly JsonSerializerOptions defaultSettings = new()
         {
             PropertyNameCaseInsensitive = true, //Case insensitive moi lay duoc dung properties trong json
         };
@@ -19,6 +14,5 @@ namespace Domain.Common.Extensions
         {
             return JsonSerializer.Deserialize<T>(json, defaultSettings)!; //Giong cai co san
         }
-
     }
 }

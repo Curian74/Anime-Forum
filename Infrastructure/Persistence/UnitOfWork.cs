@@ -4,18 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork(DbContext context) : IUnitOfWork
     {
-        private readonly DbContext _context;
+        private readonly DbContext _context = context;
         private bool _disposed;
 
-        private readonly Dictionary<Type, object> _repositories;
-
-        public UnitOfWork(DbContext context)
-        {
-            _context = context;
-            _repositories = new Dictionary<Type, object>();
-        }
+        private readonly Dictionary<Type, object> _repositories = [];
 
         public IGenericRepository<T> GetRepository<T>() where T : class
         {
