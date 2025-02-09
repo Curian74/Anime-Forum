@@ -2,6 +2,11 @@
 
 namespace Application.Common.Pagination
 {
+    // PagedResult de tra ve du lieu theo trang
+    // Ko can quan tam class nay
+    // Ae goi method lien quan trong cac service class la duoc
+    // Something something GetPaged(pageNumber, pageSize)
+
     public class PagedResult<T>(IEnumerable<T> items, int totalCount, int pageNumber, int pageSize) : IPagedResult<T>
     {
         public IEnumerable<T> Items { get; private set; } = items;

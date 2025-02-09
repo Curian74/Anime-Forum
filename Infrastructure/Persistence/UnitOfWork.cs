@@ -9,7 +9,7 @@ namespace Infrastructure.Persistence
         private readonly DbContext _context = context;
         private bool _disposed;
 
-        private readonly Dictionary<Type, object> _repositories = new Dictionary<Type, object>();
+        private readonly Dictionary<Type, object> _repositories = [];
 
         public IGenericRepository<T> GetRepository<T>() where T : class
         {

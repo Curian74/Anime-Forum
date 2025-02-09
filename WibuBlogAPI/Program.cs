@@ -30,6 +30,8 @@ builder.Services.AddScoped<PostServices, PostServices>();
 builder.Services.AddScoped<UserServices, UserServices>();
 
 // AutoMapper service
+// Quet project, tim tat ca file MappingProfile roi gop lai thanh 1
+// Mapping profile co san trong /Application/Common/Mappings/
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 #endregion

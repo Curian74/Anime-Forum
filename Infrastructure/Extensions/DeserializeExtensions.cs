@@ -4,7 +4,7 @@ namespace Infrastructure.Extensions
 {
     public static class DeserializeExtensions
     {
-        private static JsonSerializerOptions defaultSettings = new JsonSerializerOptions
+        private static readonly JsonSerializerOptions defaultSettings = new()
         {
             PropertyNameCaseInsensitive = true, //Case insensitive moi lay duoc dung properties trong json
         };
