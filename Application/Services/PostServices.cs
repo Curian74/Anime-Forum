@@ -24,7 +24,7 @@ namespace Application.Services
             return new PagedResult<Post>(items, totalCount, page, size);
         }
 
-        public async Task<Post> GetByIdAsync(int postId)
+        public async Task<Post?> GetByIdAsync(int postId)
         {
             return await _postRepository.GetByIdAsync(postId);
         }

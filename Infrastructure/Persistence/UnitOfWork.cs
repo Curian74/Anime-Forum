@@ -7,7 +7,8 @@ namespace Infrastructure.Persistence
     public class UnitOfWork(DbContext context) : IUnitOfWork
     {
         private readonly DbContext _context = context;
-        private bool _disposed;
+
+        private bool disposed = false;
 
         private readonly Dictionary<Type, object> _repositories = [];
 
@@ -28,13 +29,29 @@ namespace Infrastructure.Persistence
             return await _context.SaveChangesAsync();
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                }
+
+                _context.Dispose();  
+                _repositories.Clear();
+                disposed = true;
+            }
+        }
+
         public void Dispose()
         {
-            if (!_disposed)
-            {
-                _context.Dispose();
-                _disposed = true;
-            }
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~UnitOfWork()
+        {
+            Dispose(false);
         }
     }
 }

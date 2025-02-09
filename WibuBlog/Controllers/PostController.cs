@@ -2,16 +2,17 @@
 using Domain.Entities;
 using Infrastructure.Extensions;
 using Infrastructure.Persistence;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WibuBlog.Controllers
 {
     public class PostController : Controller
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IdentityDbContext _dbContext;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public PostController(ApplicationDbContext dbContext, IHttpClientFactory httpClientFactory)
+        public PostController(IdentityDbContext dbContext, IHttpClientFactory httpClientFactory)
         {
             _dbContext = dbContext;
             _httpClientFactory = httpClientFactory;
