@@ -1,8 +1,8 @@
-﻿using Domain.Common.BaseEntities;
+﻿using Application.Common.Pagination;
+using Domain.Common.BaseEntities;
 using Domain.Entities;
 using Infrastructure.Extensions;
 using Infrastructure.Persistence;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WibuBlog.Controllers
@@ -18,23 +18,24 @@ namespace WibuBlog.Controllers
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 5)
         {
             var client = _httpClientFactory.CreateClient("api"); //Lay client api tu program
 
-            var response = await client.GetAsync("Post/GetAll"); //endpoint build tu baseAddress
+            //Goi api(chi can truyen vao url sau api/)
+            var response = await client.GetAsync($"Post/GetPaged?page={page}&size={pageSize}");
 
             if(!response.IsSuccessStatusCode)
             {
-                return BadRequest("Ngu");
+                return BadRequest(response);
             }
 
             var jsonResponse = await response.Content.ReadAsStringAsync();
 
             //Goi extension custom
-            var wrapper = DeserializeExtensions.Deserialize<BaseApiResponse<Post>>(jsonResponse);
+            var data = DeserializeExtensions.Deserialize<BaseApiResponse<PagedResult<Post>>>(jsonResponse);
 
-            return View("Index", wrapper!.Value);
+            return View("Index", data.Value);
         }
     }
 }
