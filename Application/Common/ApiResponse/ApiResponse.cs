@@ -1,6 +1,6 @@
-﻿namespace Domain.Common.BaseEntities
+﻿namespace Application.Common.ApiResponse
 {
-    public class BaseApiResponse<T>
+    public class ApiResponse<T>
     {
         public T? Value { get; set; } //Mac dinh thuoc tinh value de lay data tu json
     }
