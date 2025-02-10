@@ -9,10 +9,10 @@ namespace WibuBlog.Controllers
 {
     public class PostController : Controller
     {
-        private readonly IdentityDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public PostController(IdentityDbContext dbContext, IHttpClientFactory httpClientFactory)
+        public PostController(ApplicationDbContext dbContext, IHttpClientFactory httpClientFactory)
         {
             _dbContext = dbContext;
             _httpClientFactory = httpClientFactory;
@@ -22,7 +22,7 @@ namespace WibuBlog.Controllers
         {
             var client = _httpClientFactory.CreateClient("api"); //Lay client api tu program
 
-            var response = await client.GetAsync("Post/Get"); //endpoint build tu baseAddress
+            var response = await client.GetAsync("Post/GetAll"); //endpoint build tu baseAddress
 
             if(!response.IsSuccessStatusCode)
             {
