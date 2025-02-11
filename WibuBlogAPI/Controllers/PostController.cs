@@ -30,7 +30,7 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpGet("{postId}")]
-        public async Task<IActionResult> Get(int postId)
+        public async Task<IActionResult> Get(Guid postId)
         {
             var result = await _postServices.GetByIdAsync(postId);
 
@@ -58,7 +58,7 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpPut("{postId}")]
-        public async Task<IActionResult> Update(int postId, [FromBody] PostDto dto)
+        public async Task<IActionResult> Update(Guid postId, [FromBody] PostDto dto)
         {
             try
             {
@@ -74,7 +74,7 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpDelete("{postId}")]
-        public async Task<IActionResult> Delete(int postId)
+        public async Task<IActionResult> Delete(Guid postId)
         {
             try
             {

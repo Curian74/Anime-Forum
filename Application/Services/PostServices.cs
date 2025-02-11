@@ -24,7 +24,7 @@ namespace Application.Services
             return new PagedResult<Post>(items, totalCount, page, size);
         }
 
-        public async Task<Post?> GetByIdAsync(int postId)
+        public async Task<Post?> GetByIdAsync(Guid postId)
         {
             return await _postRepository.GetByIdAsync(postId);
         }
@@ -38,7 +38,7 @@ namespace Application.Services
             return await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task<int> UpdatePostAsync(int postId, PostDto dto)
+        public async Task<int> UpdatePostAsync(Guid postId, PostDto dto)
         {
             var post = await _postRepository.GetByIdAsync(postId) ?? throw new KeyNotFoundException("Could not find requested post.");
 
@@ -47,7 +47,7 @@ namespace Application.Services
             return await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task<int> DeletePostAsync(int postId)
+        public async Task<int> DeletePostAsync(Guid postId)
         {
             _ = await _postRepository.GetByIdAsync(postId) ?? throw new KeyNotFoundException("Could not find requested post.");
 
