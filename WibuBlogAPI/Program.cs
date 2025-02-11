@@ -26,8 +26,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<Domain.Interfaces.IConfigurationManager, Infrastructure.Configurations.ConfigurationManager>();
 
 // Service classes
-builder.Services.AddScoped<PostServices, PostServices>();
-builder.Services.AddScoped<UserServices, UserServices>();
+builder.Services.AddScoped<PostServices>();
+builder.Services.AddScoped<UserServices>();
 
 // AutoMapper service
 // Quet project, tim tat ca file MappingProfile roi gop lai thanh 1
@@ -60,7 +60,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.User.RequireUniqueEmail = false;
 });
 
-builder.Services.AddIdentity<User, IdentityRole>()
+builder.Services.AddIdentity<User, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 

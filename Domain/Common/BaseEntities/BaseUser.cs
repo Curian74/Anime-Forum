@@ -2,7 +2,7 @@
 
 namespace Domain.Common.BaseEntities
 {
-    public class BaseUser : IdentityUser
+    public class BaseUser : IdentityUser<Guid>
     {
     }
 }

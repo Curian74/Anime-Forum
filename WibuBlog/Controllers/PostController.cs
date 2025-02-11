@@ -1,5 +1,5 @@
 ﻿using Application.Common.Pagination;
-using Domain.Common.BaseEntities;
+using Application.Common.ApiResponse;
 using Domain.Entities;
 using Infrastructure.Extensions;
 using Infrastructure.Persistence;
@@ -33,7 +33,7 @@ namespace WibuBlog.Controllers
             var jsonResponse = await response.Content.ReadAsStringAsync();
 
             //Goi extension custom
-            var data = DeserializeExtensions.Deserialize<BaseApiResponse<PagedResult<Post>>>(jsonResponse);
+            var data = DeserializeExtensions.Deserialize<ApiResponse<PagedResult<Post>>>(jsonResponse);
 
             return View("Index", data.Value);
         }

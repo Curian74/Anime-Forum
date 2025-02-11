@@ -54,7 +54,6 @@ namespace WibuBlogAPI.Controllers
         {
             var user = new User { UserName = username, Email = email };
             var result = await _userManager.CreateAsync(user, password);
-            await _userManager.AddToRoleAsync(user, "member");
 
             return new JsonResult(Ok(result));
         }
