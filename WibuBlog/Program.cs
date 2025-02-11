@@ -1,7 +1,6 @@
 using Domain.Interfaces;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
 
 namespace WibuBlog
 {

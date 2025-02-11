@@ -14,6 +14,7 @@ namespace Application.Common.Mappings
         public MappingProfile()
         {
             CreateMap<Post, PostDto>().ReverseMap();
+            CreateMap<User, UserProfileDto>().ReverseMap();
         }
     }
 }
