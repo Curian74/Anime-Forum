@@ -21,13 +21,14 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddScoped<DbContext, ApplicationDbContext>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 // Configuration manager
 builder.Services.AddScoped<Domain.Interfaces.IConfigurationManager, Infrastructure.Configurations.ConfigurationManager>();
 
 // Service classes
 builder.Services.AddScoped<PostServices, PostServices>();
 builder.Services.AddScoped<UserServices, UserServices>();
+builder.Services.AddScoped<AdminService>();
 
 // AutoMapper service
 // Quet project, tim tat ca file MappingProfile roi gop lai thanh 1
