@@ -2,6 +2,8 @@
 using Application.Services;
 using Application.DTO;
 using Infrastructure.Extensions;
+using Microsoft.Extensions.Options;
+using Infrastructure.Configurations;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -9,10 +11,11 @@ namespace WibuBlogAPI.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class UserController(UserServices userServices, JwtHelper jwtHelper) : ControllerBase
+    public class UserController(UserServices userServices, JwtHelper jwtHelper, IOptions<AuthTokenOptions> authTokenOptions) : ControllerBase
     {
         private readonly UserServices _userServices = userServices;
         private readonly JwtHelper _jwtHelper = jwtHelper;
+        private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
 
         private readonly string authTokenName = "AnimeForumAuthToken";
 
@@ -39,10 +42,10 @@ namespace WibuBlogAPI.Controllers
 
             var cookieOptions = new CookieOptions
             {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddHours(1)
+                Expires = DateTime.UtcNow.AddHours(_authTokenOptions.Expires),
+                Secure = _authTokenOptions.Secure,
+                HttpOnly = _authTokenOptions.HttpOnly,
+                SameSite = _authTokenOptions.SameSite,
             };
 
             Response.Cookies.Append(authTokenName, token, cookieOptions);

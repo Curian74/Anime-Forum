@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Infrastructure.Extensions;
+using Infrastructure.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -87,6 +88,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]))
         };
     });
+
+// Auth token configuration
+builder.Services.Configure<AuthTokenOptions>(
+    builder.Configuration.GetSection("AuthTokenOptions")
+);
 
 var app = builder.Build();
 

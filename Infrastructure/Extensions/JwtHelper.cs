@@ -5,12 +5,15 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Domain.Interfaces;
+using Microsoft.Extensions.Options;
+using Infrastructure.Configurations;
 
 namespace Infrastructure.Extensions
 {
-    public class JwtHelper(IConfigurationManager configurationManager, UserManager<User> userManager)
+    public class JwtHelper(IConfigurationManager configurationManager, UserManager<User> userManager, IOptions<AuthTokenOptions> authTokenOptions)
     {
         private readonly UserManager<User> _userManager = userManager;
+        private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
 
         private readonly string _secretKey = configurationManager.GetValue("Jwt:Secret");
         private readonly string _issuer = configurationManager.GetValue("Jwt:Issuer");
@@ -39,7 +42,7 @@ namespace Infrastructure.Extensions
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(authClaims),
-                Expires = DateTime.UtcNow.AddHours(1),
+                Expires = DateTime.UtcNow.AddHours(_authTokenOptions.Expires),
                 SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256),
                 Issuer = _issuer,
                 Audience = _audience
