@@ -5,6 +5,12 @@ using Infrastructure.Persistence;
 using Domain.Entities;
 using Application.Common.Mappings;
 using Application.Services;
+using Domain.Common.Roles;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
+using Infrastructure.Extensions;
+using Infrastructure.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,10 +40,14 @@ builder.Services.AddScoped<UserServices>();
 // Mapping profile co san trong /Application/Common/Mappings/
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
+// Helper services
+builder.Services.AddScoped<JwtHelper>();
+
 #endregion
 
 // EF Identity configurations
-builder.Services.AddScoped<UserManager<User>, UserManager<User>>();
+builder.Services.AddScoped<UserManager<User>>();
+builder.Services.AddScoped<RoleManager<IdentityRole<Guid>>>();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -64,8 +74,58 @@ builder.Services.AddIdentity<User, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]))
+        };
+    });
+
+// Auth token configuration
+builder.Services.Configure<AuthTokenOptions>(
+    builder.Configuration.GetSection("AuthTokenOptions")
+);
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    // Update database to use the lastest migrations, ignored if database is up to date
+    var db = services.GetRequiredService<ApplicationDbContext>();
+
+    var pendingMigrations = db.Database.GetPendingMigrations().ToList();
+    if (pendingMigrations.Count != 0)
+    {
+        db.Database.Migrate();
+    }
+
+    // Add the roles
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+    if (!await roleManager.RoleExistsAsync(UserRoles.Admin))
+    {
+        await roleManager.CreateAsync(new IdentityRole<Guid>(UserRoles.Admin));
+    }
+
+    if (!await roleManager.RoleExistsAsync(UserRoles.Moderator))
+    {
+        await roleManager.CreateAsync(new IdentityRole<Guid>(UserRoles.Moderator));
+    }
+
+    if (!await roleManager.RoleExistsAsync(UserRoles.Member))
+    {
+        await roleManager.CreateAsync(new IdentityRole<Guid>(UserRoles.Member));
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -77,6 +137,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseAuthentication();
 
 app.MapControllers();
 

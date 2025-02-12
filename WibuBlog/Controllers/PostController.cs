@@ -1,22 +1,14 @@
 ﻿using Application.Common.Pagination;
-using Application.Common.ApiResponse;
 using Domain.Entities;
 using Infrastructure.Extensions;
-using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
+using Infrastructure.Common.ApiResponse;
 
 namespace WibuBlog.Controllers
 {
-    public class PostController : Controller
+    public class PostController(IHttpClientFactory httpClientFactory) : Controller
     {
-        private readonly ApplicationDbContext _dbContext;
-        private readonly IHttpClientFactory _httpClientFactory;
-
-        public PostController(ApplicationDbContext dbContext, IHttpClientFactory httpClientFactory)
-        {
-            _dbContext = dbContext;
-            _httpClientFactory = httpClientFactory;
-        }
+        private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
 
         public async Task<IActionResult> Index(int page = 1, int pageSize = 5)
         {
