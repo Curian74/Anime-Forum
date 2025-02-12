@@ -1,33 +1,78 @@
-﻿using Application.Common.Pagination;
+﻿using Microsoft.AspNetCore.Mvc;
+using WibuBlog.Services;
+using WibuBlog.ViewModels.Post;
 using Domain.Entities;
-using Infrastructure.Extensions;
-using Microsoft.AspNetCore.Mvc;
-using Infrastructure.Common.ApiResponse;
 
 namespace WibuBlog.Controllers
 {
-    public class PostController(IHttpClientFactory httpClientFactory) : Controller
+    public class PostController(PostServices postService) : Controller
     {
-        private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
+        private readonly PostServices _postService = postService;
 
         public async Task<IActionResult> Index(int page = 1, int pageSize = 5)
         {
-            var client = _httpClientFactory.CreateClient("api"); //Lay client api tu program
+            var value = await _postService.GetPagedPostAsync(page, pageSize);
+            return View("Index", value);
+        }
 
-            //Goi api(chi can truyen vao url sau api/)
-            var response = await client.GetAsync($"Post/GetPaged?page={page}&size={pageSize}");
+        [HttpGet]
+        public IActionResult Add()
+        {
+            return View();
+        }
 
-            if(!response.IsSuccessStatusCode)
+        [HttpPost]
+        public async Task<IActionResult> AddNewPost(AddPostVM addPostVM)
+        {
+            if (!ModelState.IsValid)
             {
-                return BadRequest(response);
+                return View("Add");
             }
 
-            var jsonResponse = await response.Content.ReadAsStringAsync();
+            if (!await _postService.AddNewPostAsync(addPostVM))
+            {
+                return BadRequest("Failed to create post.");
+            }
 
-            //Goi extension custom
-            var data = DeserializeExtensions.Deserialize<ApiResponse<PagedResult<Post>>>(jsonResponse);
+            return RedirectToAction(nameof(Index));
+        }
 
-            return View("Index", data.Value);
+        [HttpGet]
+        public async Task<IActionResult> Update(Guid id)
+        {
+            var post = await _postService.GetPostByIdAsync(id);
+
+            if(post is null)
+            {
+                return NotFound();
+            }
+
+            return View(post);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdatePost(Guid id, Post post)
+        {
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction(nameof(Update), new { id });
+            }
+
+            var isSuccess = await _postService.UpdatePostAsync(id, post);
+
+            if (!isSuccess)
+            {
+                ModelState.AddModelError("", "Failed to update post.");
+                return View(post);
+            }
+            return RedirectToAction(nameof(Update), new { id });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeletePost(Guid id)
+        {
+            _ = await _postService.DeletePostAsync(id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }
