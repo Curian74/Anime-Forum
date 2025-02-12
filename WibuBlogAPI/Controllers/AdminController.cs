@@ -1,4 +1,6 @@
-﻿using Application.Services;
+﻿using Application.DTO;
+using Application.Services;
+using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -18,9 +20,9 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpGet("{userId}")]
-        public async Task<IActionResult> GetUserById(int userId)
+        public async Task<IActionResult> GetUserById(Guid userId)
         {
-            var user = await _adminServices.GetUserById(userId);
+            var user = await _adminServices.GetUserByIdAsync(userId);
             if (user == null)
             {
                 return new JsonResult(NotFound());
@@ -28,19 +30,39 @@ namespace WibuBlogAPI.Controllers
             return new JsonResult(Ok(user));
         }
 
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpPut("{userId}")]
+        public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] UserProfileDto dto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                await _adminServices.UpdateUserAsync(userId, dto);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new JsonResult(NotFound($"{ex.GetType().Name}: {ex.Message}"));
+            }
+
+            return new JsonResult(Accepted(dto));
         }
 
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
 
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("{userId}")]
+        public async Task<IActionResult> DeleteUser(Guid userId, [FromBody] UserProfileDto dto)
         {
+            try
+            {
+                await _adminServices.DeleteUserAsync(userId);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new JsonResult(NotFound($"{ex.GetType().Name}: {ex.Message}"));
+            }
+
+            return new JsonResult(NoContent());
         }
     }
 }
