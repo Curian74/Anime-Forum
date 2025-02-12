@@ -17,12 +17,10 @@ namespace WibuBlogAPI.Controllers
         private readonly JwtHelper _jwtHelper = jwtHelper;
         private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
 
-        private readonly string authTokenName = "AnimeForumAuthToken";
-
         [HttpPost]
         public async Task<IActionResult> Login(LoginDto dto)
         {
-            Request.Cookies.TryGetValue(authTokenName, out string? authToken);
+            Request.Cookies.TryGetValue(_authTokenOptions.Name, out string? authToken);
 
             if (authToken != null || _jwtHelper.IsValidToken(authToken))
             {
@@ -48,7 +46,7 @@ namespace WibuBlogAPI.Controllers
                 SameSite = _authTokenOptions.SameSite,
             };
 
-            Response.Cookies.Append(authTokenName, token, cookieOptions);
+            Response.Cookies.Append(_authTokenOptions.Name, token, cookieOptions);
 
             return new JsonResult(Ok("Login approved"));
         }
@@ -56,14 +54,14 @@ namespace WibuBlogAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            Request.Cookies.TryGetValue(authTokenName, out string? authToken);
+            Request.Cookies.TryGetValue(_authTokenOptions.Name, out string? authToken);
 
             if (authToken == null || !_jwtHelper.IsValidToken(authToken))
             {
                 return new JsonResult(BadRequest("User is not logged in"));
             }
 
-            Response.Cookies.Delete(authTokenName);
+            Response.Cookies.Delete(_authTokenOptions.Name);
 
             return new JsonResult(Ok("Logged out"));
         }
@@ -71,7 +69,7 @@ namespace WibuBlogAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-            Request.Cookies.TryGetValue(authTokenName, out string? authToken);
+            Request.Cookies.TryGetValue(_authTokenOptions.Name, out string? authToken);
 
             if (authToken != null || _jwtHelper.IsValidToken(authToken))
             {
@@ -86,7 +84,7 @@ namespace WibuBlogAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAccountDetails()
         {
-            Request.Cookies.TryGetValue(authTokenName, out string? authToken);
+            Request.Cookies.TryGetValue(_authTokenOptions.Name, out string? authToken);
 
             if (authToken == null || !_jwtHelper.IsValidToken(authToken))
             {

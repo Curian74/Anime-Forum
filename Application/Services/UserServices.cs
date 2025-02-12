@@ -1,6 +1,4 @@
-﻿using Application.Common.Pagination;
-using Application.DTO;
-using Application.Interfaces.Pagination;
+﻿using Application.DTO;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;

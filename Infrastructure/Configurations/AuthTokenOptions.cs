@@ -4,6 +4,7 @@ namespace Infrastructure.Configurations
 {
     public class AuthTokenOptions
     {
+        public string Name { get; set; }
         public int Expires { get; set; } // Expiration time in hours
         public bool Secure { get; set; }
         public bool HttpOnly { get; set; }
