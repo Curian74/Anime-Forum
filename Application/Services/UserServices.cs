@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Application.Services
 {
-    public class UserServices(IUnitOfWork unitOfWork, UserManager<User> userManager, IMapper mapper)
+    public class UserServices(UserManager<User> userManager, IMapper mapper)
     {
         private readonly UserManager<User> _userManager = userManager;
         private readonly IMapper _mapper = mapper;
