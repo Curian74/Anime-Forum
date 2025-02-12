@@ -2,10 +2,11 @@
 using Domain.Entities;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace Infrastructure.Persistence
 {
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfigurationManager configurationManager) : IdentityDbContext<User>(options)
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfigurationManager configurationManager) : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
     {
         private readonly IConfigurationManager _configurationManager = configurationManager;
 

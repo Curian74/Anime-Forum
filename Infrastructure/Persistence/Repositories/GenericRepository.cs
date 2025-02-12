@@ -8,7 +8,7 @@ namespace Infrastructure.Persistence.Repositories
         private readonly DbContext _context = context;
         private readonly DbSet<T> _dbSet = context.Set<T>();
 
-        public async Task<T?> GetByIdAsync(int id)
+        public async Task<T?> GetByIdAsync(Guid id)
         {
             return await _dbSet.FindAsync(id);
         }
@@ -40,7 +40,7 @@ namespace Infrastructure.Persistence.Repositories
             await Task.CompletedTask;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(Guid id)
         {
             var entity = await _dbSet.FindAsync(id);
             if (entity != null)
