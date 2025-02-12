@@ -1,7 +1,6 @@
 ﻿using Application.DTO;
 using AutoMapper;
 using Domain.Entities;
-using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
 namespace Application.Services
