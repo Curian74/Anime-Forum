@@ -1,0 +1,18 @@
+﻿@model WibuBlog.ViewModels.Post.AddPostVM;
+
+<div class="container">
+
+    <form asp-action="Add" asp-controller="Post" method="post">
+        <label asp-for="Title"></label>
+        <input asp-for="Title" /> <span class="text-danger" asp-validation-for="Title"></span>
+
+        <br /> <br />
+
+        <label asp-for="Content"></label>
+        <input asp-for="Content" /> <span class="text-danger" asp-validation-for="Content"></span>
+
+        <br /> <br />
+
+        <button class="btn btn-primary">Add</button>
+    </form>
+</div>
