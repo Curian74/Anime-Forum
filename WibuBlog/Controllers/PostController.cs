@@ -22,7 +22,7 @@ namespace WibuBlog.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNewPost(AddPostVM addPostVM)
+        public async Task<IActionResult> Add(AddPostVM addPostVM)
         {
             if (!ModelState.IsValid)
             {
@@ -51,11 +51,11 @@ namespace WibuBlog.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdatePost(Guid id, Post post)
+        public async Task<IActionResult> Update(Guid id, Post post)
         {
             if (!ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Update), new { id });
+                return View(post);
             }
 
             var isSuccess = await _postService.UpdatePostAsync(id, post);
@@ -65,11 +65,12 @@ namespace WibuBlog.Controllers
                 ModelState.AddModelError("", "Failed to update post.");
                 return View(post);
             }
+
             return RedirectToAction(nameof(Update), new { id });
         }
 
         [HttpGet]
-        public async Task<IActionResult> DeletePost(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             _ = await _postService.DeletePostAsync(id);
             return RedirectToAction(nameof(Index));
