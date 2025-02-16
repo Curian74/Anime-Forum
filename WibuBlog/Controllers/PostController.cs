@@ -9,7 +9,7 @@ namespace WibuBlog.Controllers
     {
         private readonly PostServices _postService = postService;
 
-        public async Task<IActionResult> Index(int page = 1, int pageSize = 5)
+        public async Task<IActionResult> Index(int? page = 1, int? pageSize = 5)
         {
             var value = await _postService.GetPagedPostAsync(page, pageSize);
             return View("Index", value);
@@ -26,15 +26,21 @@ namespace WibuBlog.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View("Add");
+                return View(addPostVM);
             }
 
-            if (!await _postService.AddNewPostAsync(addPostVM))
+            try
             {
-                return BadRequest("Failed to create post.");
+                await _postService.AddNewPostAsync(addPostVM);
+                return RedirectToAction(nameof(Index));
             }
 
-            return RedirectToAction(nameof(Index));
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "*De message loi vao day.*");
+                return View(addPostVM);
+            }
+
         }
 
         [HttpGet]
@@ -42,7 +48,7 @@ namespace WibuBlog.Controllers
         {
             var post = await _postService.GetPostByIdAsync(id);
 
-            if(post is null)
+            if (post is null)
             {
                 return NotFound();
             }
@@ -58,11 +64,20 @@ namespace WibuBlog.Controllers
                 return View(post);
             }
 
-            var isSuccess = await _postService.UpdatePostAsync(id, post);
-
-            if (!isSuccess)
+            try
             {
-                ModelState.AddModelError("", "Failed to update post.");
+                var isSuccess = await _postService.UpdatePostAsync(id, post);
+
+                if (!isSuccess)
+                {
+                    ModelState.AddModelError("", "Failed to update post.");
+                    return View(post);
+                }
+            }
+
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "*De message loi vao day.*");
                 return View(post);
             }
 

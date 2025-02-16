@@ -3,6 +3,7 @@
 <div class="container">
 
     <form asp-action="Add" asp-controller="Post" method="post">
+        <div asp-validation-summary="All" class="text-danger"></div>
         <label asp-for="Title"></label>
         <input asp-for="Title" /> <span class="text-danger" asp-validation-for="Title"></span>
 

@@ -11,31 +11,31 @@ namespace WibuBlog.Services.Api
         {
             return _httpClientFactory.CreateClient("api");
         }
-
+            
         public async Task<T> GetAsync<T>(string endpoint)
         {
-            using var client = CreateClient();
+            var client = CreateClient();
             var response = await client.GetAsync(endpoint);
             return await HandleResponse<T>(response);
         }
 
         public async Task<T> PostAsync<T>(string endpoint, object data)
         {
-            using var client = CreateClient();
+            var client = CreateClient();
             var response = await client.PostAsJsonAsync(endpoint, data);
             return await HandleResponse<T>(response);
         }
 
         public async Task<T> PutAsync<T>(string endpoint, object data)
         {
-            using var client = CreateClient();
+            var client = CreateClient();
             var response = await client.PutAsJsonAsync(endpoint, data);
             return await HandleResponse<T>(response);
         }
 
         public async Task<bool> DeleteAsync(string endpoint)
         {
-            using var client = CreateClient();
+            var client = CreateClient();
             var response = await client.DeleteAsync(endpoint);
             return response.IsSuccessStatusCode;
         }
