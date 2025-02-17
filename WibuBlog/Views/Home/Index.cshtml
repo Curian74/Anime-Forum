@@ -2,6 +2,411 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome to Anime-Forum</h1>
+<link rel="stylesheet" href="~/fontawesome/css/all.css" />
+<link rel="stylesheet" href="~/css/home.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+
+<div class="d-flex gap-5 align-items-start">
+    <div class="d-flex flex-column w-75">
+    @* Left hand content *@
+        <div class="row cat-items">
+        <div class="front">
+            <a class="text-decoration-none">Đại sảnh</a>
+        </div>
+        <div class="front-content">
+            @* Row 1 *@
+            <div class="row-content row">
+                <div class="row-content-content mt-2 col-6">
+                    <i class="fa-regular fa-comments fs-3"></i>
+                    <a href="#" class="m-2">Thông báo</a>
+                </div>
+                <div class="row-content-stat col-1">
+                    <div class="row-content-stat-tit">
+                        <p>Threads</p>
+                    </div>
+                    <div class="row-content-stat-p">
+                        <p>19</p>
+                    </div>
+                </div>
+                <div class="row-content-stat col-1">
+                    <div class="row-content-stat-tit">
+                        <p>Messages</p>
+                    </div>
+                    <div class="row-content-stat-p">
+                        <p>47</p>
+                    </div>
+                </div>
+                <div class="avt col-1">
+                    <img class="rounded-circle" src="https://data.voz.vn/avatars/m/0/1.jpg?1695794193" />
+                </div>
+                <div class="post-info col-3">
+                    <a href="#">VOZ cập nhật 2025</a>
+                    <p>Nov 13, 2024 - <a href="#">fRzzy</a></p>
+                </div>
+            </div>
+            @* End of Row 1 *@
+
+            @* Row 2 *@
+            <div class="row-content row">
+                <div class="row-content-content mt-2 col-6">
+                    <i id="feedback-icon" class="fa-regular fa-comments fs-3"></i>
+                    <a href="#" class="m-2 fw-bold">Góp ý</a>
+                </div>
+                <div class="row-content-stat col-1">
+                    <div class="row-content-stat-tit">
+                        <p>Threads</p>
+                    </div>
+                    <div class="row-content-stat-p">
+                        <p>19</p>
+                    </div>
+                </div>
+                <div class="row-content-stat col-1">
+                    <div class="row-content-stat-tit">
+                        <p>Messages</p>
+                    </div>
+                    <div class="row-content-stat-p">
+                        <p>47</p>
+                    </div>
+                </div>
+                <div class="avt col-1">
+                    <img class="rounded-circle" src="https://data.voz.vn/avatars/m/0/1.jpg?1695794193" />
+                </div>
+                <div class="post-info col-3">
+                    <a href="#">VOZ cập nhật 2025</a>
+                    <p>Nov 13, 2024 - <a href="#">fRzzy</a></p>
+                </div>
+            </div>
+            @* End of Row 2 *@
+
+            @* Row 3 *@
+            <div class="row-content row">
+                <div class="row-content-content mt-2 col-6">
+                    <i class="fa-solid fa-magnifying-glass fs-3"></i>
+                    <a href="#" class="m-2">Tin tức</a>
+                </div>
+                <div class="row-content-stat col-1">
+                    <div class="row-content-stat-tit">
+                        <p>Threads</p>
+                    </div>
+                    <div class="row-content-stat-p">
+                        <p>19</p>
+                    </div>
+                </div>
+                <div class="row-content-stat col-1">
+                    <div class="row-content-stat-tit">
+                        <p>Messages</p>
+                    </div>
+                    <div class="row-content-stat-p">
+                        <p>47</p>
+                    </div>
+                </div>
+                <div class="avt col-1">
+                    <img class="rounded-circle" src="https://data.voz.vn/avatars/m/0/1.jpg?1695794193" />
+                </div>
+                <div class="post-info col-3">
+                    <a href="#">VOZ cập nhật 2025</a>
+                    <p>Nov 13, 2024 - <a href="#">fRzzy</a></p>
+                </div>
+            </div>
+            @* End of Row 3 *@
+
+            @* Row 4 *@
+            <div class="row-content row">
+                <div class="row-content-content mt-2 col-6">
+                    <i class="fa-solid fa-magnifying-glass fs-3"></i>
+                    <a href="#" class="m-2">Review</a>
+                </div>
+                <div class="row-content-stat col-1">
+                    <div class="row-content-stat-tit">
+                        <p>Threads</p>
+                    </div>
+                    <div class="row-content-stat-p">
+                        <p>19</p>
+                    </div>
+                </div>
+                <div class="row-content-stat col-1">
+                    <div class="row-content-stat-tit">
+                        <p>Messages</p>
+                    </div>
+                    <div class="row-content-stat-p">
+                        <p>47</p>
+                    </div>
+                </div>
+                <div class="avt col-1">
+                    <img class="rounded-circle" src="https://data.voz.vn/avatars/m/0/1.jpg?1695794193" />
+                </div>
+                <div class="post-info col-3">
+                    <a href="#">VOZ cập nhật 2025</a>
+                    <p>Nov 13, 2024 - <a href="#">fRzzy</a></p>
+                </div>
+            </div>
+            @* End of Row 4 *@
+
+            @* Row 5 *@
+            <div class="row-content row">
+                <div class="row-content-content mt-2 col-6">
+                    <i class="fa-solid fa-magnifying-glass fs-3"></i>
+                    <a href="#" class="m-2">Chia sẻ kiến thức</a>
+                </div>
+                <div class="row-content-stat col-1">
+                    <div class="row-content-stat-tit">
+                        <p>Threads</p>
+                    </div>
+                    <div class="row-content-stat-p">
+                        <p>19</p>
+                    </div>
+                </div>
+                <div class="row-content-stat col-1">
+                    <div class="row-content-stat-tit">
+                        <p>Messages</p>
+                    </div>
+                    <div class="row-content-stat-p">
+                        <p>47</p>
+                    </div>
+                </div>
+                <div class="avt col-1">
+                    <img class="rounded-circle" src="https://data.voz.vn/avatars/m/0/1.jpg?1695794193" />
+                </div>
+                <div class="post-info col-3">
+                    <a href="#">VOZ cập nhật 2025</a>
+                    <p>Nov 13, 2024 - <a href="#">fRzzy</a></p>
+                </div>
+            </div>
+            @* End of Row 5 *@
+
+        </div>
+    </div>
+        <div class="row cat-items">
+            <div class="front">
+                <a class="text-decoration-none">Đại sảnh</a>
+            </div>
+            <div class="front-content">
+                @* Row 1 *@
+                <div class="row-content row">
+                    <div class="row-content-content mt-2 col-6">
+                        <i class="fa-regular fa-comments fs-3"></i>
+                        <a href="#" class="m-2">Thông báo</a>
+                    </div>
+                    <div class="row-content-stat col-1">
+                        <div class="row-content-stat-tit">
+                            <p>Threads</p>
+                        </div>
+                        <div class="row-content-stat-p">
+                            <p>19</p>
+                        </div>
+                    </div>
+                    <div class="row-content-stat col-1">
+                        <div class="row-content-stat-tit">
+                            <p>Messages</p>
+                        </div>
+                        <div class="row-content-stat-p">
+                            <p>47</p>
+                        </div>
+                    </div>
+                    <div class="avt col-1">
+                        <img class="rounded-circle" src="https://data.voz.vn/avatars/m/0/1.jpg?1695794193" />
+                    </div>
+                    <div class="post-info col-3">
+                        <a href="#">VOZ cập nhật 2025</a>
+                        <p>Nov 13, 2024 - <a href="#">fRzzy</a></p>
+                    </div>
+                </div>
+                @* End of Row 1 *@
+
+                @* Row 2 *@
+                <div class="row-content row">
+                    <div class="row-content-content mt-2 col-6">
+                        <i id="feedback-icon" class="fa-regular fa-comments fs-3"></i>
+                        <a href="#" class="m-2 fw-bold">Góp ý</a>
+                    </div>
+                    <div class="row-content-stat col-1">
+                        <div class="row-content-stat-tit">
+                            <p>Threads</p>
+                        </div>
+                        <div class="row-content-stat-p">
+                            <p>19</p>
+                        </div>
+                    </div>
+                    <div class="row-content-stat col-1">
+                        <div class="row-content-stat-tit">
+                            <p>Messages</p>
+                        </div>
+                        <div class="row-content-stat-p">
+                            <p>47</p>
+                        </div>
+                    </div>
+                    <div class="avt col-1">
+                        <img class="rounded-circle" src="https://data.voz.vn/avatars/m/0/1.jpg?1695794193" />
+                    </div>
+                    <div class="post-info col-3">
+                        <a href="#">VOZ cập nhật 2025</a>
+                        <p>Nov 13, 2024 - <a href="#">fRzzy</a></p>
+                    </div>
+                </div>
+                @* End of Row 2 *@
+
+                @* Row 3 *@
+                <div class="row-content row">
+                    <div class="row-content-content mt-2 col-6">
+                        <i class="fa-solid fa-magnifying-glass fs-3"></i>
+                        <a href="#" class="m-2">Tin tức</a>
+                    </div>
+                    <div class="row-content-stat col-1">
+                        <div class="row-content-stat-tit">
+                            <p>Threads</p>
+                        </div>
+                        <div class="row-content-stat-p">
+                            <p>19</p>
+                        </div>
+                    </div>
+                    <div class="row-content-stat col-1">
+                        <div class="row-content-stat-tit">
+                            <p>Messages</p>
+                        </div>
+                        <div class="row-content-stat-p">
+                            <p>47</p>
+                        </div>
+                    </div>
+                    <div class="avt col-1">
+                        <img class="rounded-circle" src="https://data.voz.vn/avatars/m/0/1.jpg?1695794193" />
+                    </div>
+                    <div class="post-info col-3">
+                        <a href="#">VOZ cập nhật 2025</a>
+                        <p>Nov 13, 2024 - <a href="#">fRzzy</a></p>
+                    </div>
+                </div>
+                @* End of Row 3 *@
+
+                @* Row 4 *@
+                <div class="row-content row">
+                    <div class="row-content-content mt-2 col-6">
+                        <i class="fa-solid fa-magnifying-glass fs-3"></i>
+                        <a href="#" class="m-2">Review</a>
+                    </div>
+                    <div class="row-content-stat col-1">
+                        <div class="row-content-stat-tit">
+                            <p>Threads</p>
+                        </div>
+                        <div class="row-content-stat-p">
+                            <p>19</p>
+                        </div>
+                    </div>
+                    <div class="row-content-stat col-1">
+                        <div class="row-content-stat-tit">
+                            <p>Messages</p>
+                        </div>
+                        <div class="row-content-stat-p">
+                            <p>47</p>
+                        </div>
+                    </div>
+                    <div class="avt col-1">
+                        <img class="rounded-circle" src="https://data.voz.vn/avatars/m/0/1.jpg?1695794193" />
+                    </div>
+                    <div class="post-info col-3">
+                        <a href="#">VOZ cập nhật 2025</a>
+                        <p>Nov 13, 2024 - <a href="#">fRzzy</a></p>
+                    </div>
+                </div>
+                @* End of Row 4 *@
+
+                @* Row 5 *@
+                <div class="row-content row">
+                    <div class="row-content-content mt-2 col-6">
+                        <i class="fa-solid fa-magnifying-glass fs-3"></i>
+                        <a href="#" class="m-2">Chia sẻ kiến thức</a>
+                    </div>
+                    <div class="row-content-stat col-1">
+                        <div class="row-content-stat-tit">
+                            <p>Threads</p>
+                        </div>
+                        <div class="row-content-stat-p">
+                            <p>19</p>
+                        </div>
+                    </div>
+                    <div class="row-content-stat col-1">
+                        <div class="row-content-stat-tit">
+                            <p>Messages</p>
+                        </div>
+                        <div class="row-content-stat-p">
+                            <p>47</p>
+                        </div>
+                    </div>
+                    <div class="avt col-1">
+                        <img class="rounded-circle" src="https://data.voz.vn/avatars/m/0/1.jpg?1695794193" />
+                    </div>
+                    <div class="post-info col-3">
+                        <a href="#">VOZ cập nhật 2025</a>
+                        <p>Nov 13, 2024 - <a href="#">fRzzy</a></p>
+                    </div>
+                </div>
+                @* End of Row 5 *@
+            </div>
+        </div>
+    </div>
+
+    @* Right Hand Content *@
+    <div class="w-25 d-flex flex-column">
+        <hr />
+        <div class="right-content d-flex flex-column p-0">
+            <div class="trending">
+                <p id="trending-title">Trending content</p>
+                <div class="d-flex">
+                    <img class="rounded-circle" src="https://data.voz.vn/avatars/s/1373/1373122.jpg?1667100155" />
+                    <div class="trending-content-detail">
+                        <a href="#" id="trending-content-title">Arsenal FC Official VOZ:  Arteta & The final Season Netflix 2024/2025</a>
+                        <p>dmt599 - Jan 14, 2025</p>
+                        <p>Replies: 10K</p>
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <img class="rounded-circle" src="https://data.voz.vn/avatars/s/1017/1017591.jpg?1731555456" />
+                    <div class="trending-content-detail">
+                        <a href="#" id="trending-content-title">Arsenal FC Official VOZ:  Arteta & The final Season Netflix 2024/2025</a>
+                        <p>dmt599 - Jan 14, 2025</p>
+                        <p>Replies: 10K</p>
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <img class="rounded-circle" src="https://data.voz.vn/avatars/s/1373/1373122.jpg?1667100155" />
+                    <div class="trending-content-detail">
+                        <a href="#" id="trending-content-title">Arsenal FC Official VOZ:  Arteta & The final Season Netflix 2024/2025</a>
+                        <p>dmt599 - Jan 14, 2025</p>
+                        <p>Replies: 10K</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="right-content d-flex flex-column p-0">
+            <div class="trending">
+                <p id="trending-title">Lastest posts</p>
+                <div class="d-flex">
+                    <img class="rounded-circle" src="https://data.voz.vn/avatars/s/1373/1373122.jpg?1667100155" />
+                    <div class="trending-content-detail">
+                        <a href="#" id="trending-content-title">Arsenal FC Official VOZ:  Arteta & The final Season Netflix 2024/2025</a>
+                        <p>dmt599 - Jan 14, 2025</p>
+                        <p>Replies: 10K</p>
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <img class="rounded-circle" src="https://data.voz.vn/avatars/s/1017/1017591.jpg?1731555456" />
+                    <div class="trending-content-detail">
+                        <a href="#" id="trending-content-title">Arsenal FC Official VOZ:  Arteta & The final Season Netflix 2024/2025</a>
+                        <p>dmt599 - Jan 14, 2025</p>
+                        <p>Replies: 10K</p>
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <img class="rounded-circle" src="https://data.voz.vn/avatars/s/1373/1373122.jpg?1667100155" />
+                    <div class="trending-content-detail">
+                        <a href="#" id="trending-content-title">Arsenal FC Official VOZ:  Arteta & The final Season Netflix 2024/2025</a>
+                        <p>dmt599 - Jan 14, 2025</p>
+                        <p>Replies: 10K</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
