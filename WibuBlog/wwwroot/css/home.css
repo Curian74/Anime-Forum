@@ -14,7 +14,7 @@ a {
     background-color: #f6f9fd;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
-    border-bottom: 1px solid rgb(201, 204, 207);
+    border-bottom: 1px solid rgb(191, 194, 197);
     font-size: 20px;
     font-weight: 400;
     padding: 5px 0px;
@@ -117,6 +117,8 @@ a {
     background-color: #eaebec;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
+    border-radius: 3px;
+    border: solid rgb(191, 194, 197) 1px;
 }
 
 .trending {
