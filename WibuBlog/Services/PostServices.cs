@@ -9,7 +9,7 @@ namespace WibuBlog.Services
     {
         private readonly IApiServices _apiService = apiService;
 
-        public async Task<PagedResult<Post>> GetPagedPostAsync(int page, int pageSize)
+        public async Task<PagedResult<Post>> GetPagedPostAsync(int? page, int? pageSize)
         {
             var response = await _apiService.GetAsync<ApiResponse<PagedResult<Post>>>(
                 $"Post/GetPaged?page={page}&size={pageSize}");

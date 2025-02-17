@@ -1,0 +1,58 @@
+﻿header {
+    background-color: #183254;
+    font-family: "Be Vietnam Pro", sans-serif;
+}
+
+#logo {
+    width: 6%;
+}
+
+.content {
+    margin-left: 10%;
+}
+
+.forum-dropdown {
+    color: #8cb0de;
+    font-weight: 500;
+    font-size: 17px;
+}
+
+.dropdown-item {
+    color: rgb(29, 31, 32);
+    font-size: 14px;
+}
+
+.dropdown-item:hover {
+    color: rgb(255, 102, 0);
+    background-color: #eff4fb;
+}
+
+.forum-dropdown:hover {
+    color: #8cb0de;
+}
+
+.dropdown-menu {
+    background-color: rgb(234, 235, 236);
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    width: 240px;
+}
+
+.auth-buttons a {
+    margin: 0px 10px;
+    font-size: 18px;
+    width: 100%;
+    text-decoration: none;
+    color: rgb(140, 176, 222);
+}
+
+.auth-buttons a:hover {
+    background-color: #172c44;
+}
+
+.auth-buttons {
+    cursor: pointer;
+    padding: 8px 0px;
+    background-color: rgba(29, 31, 32, 0.15);
+    border-left-color: rgb(140, 176, 222);
+    border-top-left-radius: 4px;
+}
