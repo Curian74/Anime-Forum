@@ -11,7 +11,7 @@ namespace WibuBlog.Services.Api
         {
             return _httpClientFactory.CreateClient("api");
         }
-            
+
         public async Task<T> GetAsync<T>(string endpoint)
         {
             var client = CreateClient();
@@ -46,8 +46,9 @@ namespace WibuBlog.Services.Api
             {
                 throw new HttpRequestException($"Request failed: {response.StatusCode}");
             }
-            var json = await response.Content.ReadAsStringAsync();
-            return DeserializeExtensions.Deserialize<T>(json);
+
+            var jsonResponse = await response.Content.ReadFromJsonAsync<T>();
+            return jsonResponse ?? throw new InvalidOperationException("Response content is null");
         }
     }
 }
