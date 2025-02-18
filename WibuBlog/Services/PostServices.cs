@@ -2,6 +2,7 @@
 using Domain.Entities;
 using Infrastructure.Common.ApiResponse;
 using WibuBlog.Interfaces.Api;
+using WibuBlog.ViewModels.Post;
 
 namespace WibuBlog.Services
 {
@@ -23,16 +24,17 @@ namespace WibuBlog.Services
             return response.Value!;
         }
 
-        public async Task<bool> AddNewPostAsync(object data)
+        public async Task<bool> AddNewPostAsync(AddPostVM data)
         {
-            var response = await _apiService.PostAsync<ApiResponse<object>>("Post/Create", data);
+            var response = await _apiService.PostAsync<ApiResponse<Post>>("Post/Create", data);
+            Console.WriteLine(response.Value);
             return response != null;
         }
 
-        public async Task<bool> UpdatePostAsync<T>(T id, object data)
+        public async Task<Post> UpdatePostAsync<T>(T id, Post data)
         {
-            var response = await _apiService.PutAsync<ApiResponse<object>>($"Post/Update/{id}", data);
-            return response != null;
+            var response = await _apiService.PutAsync<ApiResponse<Post>>($"Post/Update/{id}", data);
+            return response.Value!;
         }
 
         public async Task<bool> DeletePostAsync<T>(T id)

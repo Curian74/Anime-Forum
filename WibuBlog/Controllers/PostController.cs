@@ -66,13 +66,9 @@ namespace WibuBlog.Controllers
 
             try
             {
-                var isSuccess = await _postService.UpdatePostAsync(id, post);
+                var data = await _postService.UpdatePostAsync(id, post);
 
-                if (!isSuccess)
-                {
-                    ModelState.AddModelError("", "Failed to update post.");
-                    return View(post);
-                }
+                return RedirectToAction(nameof(Update), new { id });
             }
 
             catch (Exception)
@@ -80,8 +76,6 @@ namespace WibuBlog.Controllers
                 ModelState.AddModelError(string.Empty, "*De message loi vao day.*");
                 return View(post);
             }
-
-            return RedirectToAction(nameof(Update), new { id });
         }
 
         [HttpGet]
