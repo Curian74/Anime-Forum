@@ -1,6 +1,9 @@
 using Domain.Interfaces;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using WibuBlog.Interfaces.Api;
+using WibuBlog.Services;
+using WibuBlog.Services.Api;
 
 namespace WibuBlog
 {
@@ -16,8 +19,12 @@ namespace WibuBlog
             //DbContext
             builder.Services.AddDbContext<ApplicationDbContext>();
             builder.Services.AddScoped<DbContext, ApplicationDbContext>();
+
+            //Dependency injections
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<Domain.Interfaces.IConfigurationManager, Infrastructure.Configurations.ConfigurationManager>();
+            builder.Services.AddScoped<IApiServices, ApiServices>();
+            builder.Services.AddScoped<PostServices>();
 
             //HttpClient
             builder.Services.AddHttpClient("api", httpClient =>

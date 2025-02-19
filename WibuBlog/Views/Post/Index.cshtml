@@ -3,18 +3,32 @@
 <div class="container">
     <h1 class="text-center">Post List</h1>
 
+    <div class="d-flex justify-content-end">
+        <a class="btn btn-primary" asp-action="Add" asp-controller="Post">Add New Post</a>
+    </div>
+
     <table class="table table-striped mt-4">
         <tr>
             <th>Id</th>
             <th>Title</th>
             <th>Content</th>
+            <th>Actions</th>
         </tr>
         @foreach (var p in Model.Items)
         {
             <tr>
-                <td>@p.id</td>
+                <td><a asp-action="Update" asp-controller="Post" asp-route-id="@p.Id">@p.Id</a></td>
                 <td>@p.Title</td>
                 <td>@p.Content</td>
+                <td>
+                    <a class="btn btn-outline-primary" asp-action="Update" asp-controller="Post" asp-route-id="@p.Id">
+                        Update
+                    </a>
+
+                    <a class="btn btn-outline-danger" asp-action="Delete" asp-controller="Post" asp-route-id="@p.Id">
+                        Delete
+                    </a>
+                </td>
             </tr>
         }
     </table>
@@ -22,7 +36,7 @@
     @* Pagination *@
     <nav aria-label="Page navigation">
         <ul class="pagination">
-            @if (Model.PageNumber > 1)
+            @if (Model.HasPreviousPage)
             {
                 <li class="page-item">
                     <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber - 1)"
@@ -40,7 +54,7 @@
                 </li>
             }
 
-            @if (Model.PageNumber < Model.TotalPages)
+            @if (Model.HasNextPage)
             {
                 <li class="page-item">
                     <a class="page-link" asp-action="Index" asp-route-page="@(Model.PageNumber + 1)"
