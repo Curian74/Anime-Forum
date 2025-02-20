@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Infrastructure.Extensions;
 using Infrastructure.Configurations;
-using Infrastructure.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +36,7 @@ builder.Services.AddScoped<Domain.Interfaces.IConfigurationManager, Infrastructu
 builder.Services.AddScoped<PostServices>();
 builder.Services.AddScoped<UserServices>();
 builder.Services.AddScoped<AdminService>();
+
 // AutoMapper service
 // Quet project, tim tat ca file MappingProfile roi gop lai thanh 1
 // Mapping profile co san trong /Application/Common/Mappings/
@@ -44,6 +44,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 // Helper services
 builder.Services.AddScoped<JwtHelper>();
+//builder.Services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
 
 #endregion
 

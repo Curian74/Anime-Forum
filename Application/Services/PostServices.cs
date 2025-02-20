@@ -29,7 +29,7 @@ namespace Application.Services
             return await _postRepository.GetByIdAsync(postId);
         }
 
-        public async Task<int> CreatePostAsync(PostDto dto)
+        public async Task<int> CreatePostAsync(CreatePostDto dto)
         {
             var post = _mapper.Map<Post>(dto);
 

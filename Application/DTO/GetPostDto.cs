@@ -2,7 +2,7 @@
 
 namespace Application.DTO
 {
-    public class PostDto
+    public class GetPostDto
     {
         public Guid UserId { get; set; }
         public string Title { get; set; }
