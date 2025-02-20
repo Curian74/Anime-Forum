@@ -1,10 +1,32 @@
-﻿namespace Domain.Entities
+﻿using Domain.Common.BaseEntities;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Domain.Entities
 {
-    public class Post
+    public class Post : BaseAuditableEntity
     {
-        public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;
+
         public string Content { get; set; } = string.Empty;
 
+        [ForeignKey(nameof(User))]
+        public Guid? UserId { get; set; }
+
+        public string? Source {  get; set; }
+
+        public bool Hidden { get; set; } = false;
+
+        public ICollection<Vote> Votes { get; set; } = [];
+
+        public ICollection<Comment> Comments { get; set; } = [];
+
+        public ICollection<Report> Reports { get; set; } = [];
+
+        public int Views {  get; set; }
+
+        // Navigation properties
+        public User? User { get; set; }
+
+        public Media? Media { get; set; }
     }
 }

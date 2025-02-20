@@ -1,15 +1,12 @@
 ﻿using Application.DTO;
 using AutoMapper;
 using Domain.Entities;
-using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
 namespace Application.Services
 {
-    public class UserServices(IUnitOfWork unitOfWork, UserManager<User> userManager, IMapper mapper)
+    public class UserServices(UserManager<User> userManager, IMapper mapper)
     {
-        private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        private readonly IGenericRepository<User> _userRepository = unitOfWork.GetRepository<User>();
         private readonly UserManager<User> _userManager = userManager;
         private readonly IMapper _mapper = mapper;
 

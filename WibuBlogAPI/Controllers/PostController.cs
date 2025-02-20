@@ -43,7 +43,7 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] PostDto dto)
+        public async Task<IActionResult> Create([FromBody] CreatePostDto dto)
         {
             try 
             { 
