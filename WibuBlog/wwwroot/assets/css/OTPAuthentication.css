@@ -1,0 +1,73 @@
+﻿/* Định dạng chung */
+body {
+    background-color: #f4f6f9;
+    font-family: Arial, sans-serif;
+}
+
+.app {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Đưa form lên trên */
+    height: 100vh;
+    margin-left: 400px;
+    padding-top: 2vh; /* Tạo khoảng cách với mép trên */
+}
+
+/* Card chứa form */
+.card {
+    min-width: 500px;
+    padding: 25px;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Tiêu đề */
+h2 {
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Ô input */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Nút Next */
+.btn-primary {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s ease;
+    margin-top: 15px; /* Tạo khoảng cách với link */
+}
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+/* Liên kết */
+a.small {
+    text-decoration: none;
+    color: #007bff;
+    font-size: 13px;
+}
+
+    a.small:hover {
+        text-decoration: underline;
+    }
