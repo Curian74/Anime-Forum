@@ -71,8 +71,8 @@
                     </div>
 
                     <div class="col-12 col-md-2">
-                        <div class="d-flex align-items-center gap-4">
-                            <div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="time-container flex-grow-1 ms-3" style="min-width: 80px;">
                                 @{
                                     var timeDifference = DateTime.UtcNow.Subtract(post.CreatedAt);
                                     string timeAgo;
@@ -94,14 +94,15 @@
                                         timeAgo = "Just now";
                                     }
                                 }
-                                <p>@timeAgo</p>
-                                <div class="text-end">
+                                <p class="mb-0">@timeAgo</p>
+                                <div class="">
                                     <a href="#" style="color: rgb(140, 145, 151); font-size: 12px;">
                                         @post.User?.UserName
                                     </a>
                                 </div>
                             </div>
-                            <img class="rounded-circle img-fluid"
+
+                            <img class="rounded-circle img-fluid me-4"
                                  style="width: 30px; height: 30px;"
                                  src="@(post.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
                         </div>
