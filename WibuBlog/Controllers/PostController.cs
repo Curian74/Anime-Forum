@@ -15,6 +15,13 @@ namespace WibuBlog.Controllers
             return View("Index", value);
         }
 
+        public async Task<IActionResult> NewPosts(int? page = 1, int? pageSize = 10)
+        {
+            var value = await _postService.GetPagedPostAsync(page, pageSize);
+
+            return View(value);
+        }
+
         [HttpGet]
         public IActionResult Add()
         {

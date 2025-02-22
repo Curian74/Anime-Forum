@@ -38,6 +38,12 @@ namespace Infrastructure.Persistence
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Post>(opt =>
+            {
+                opt.Navigation(p => p.User)
+                    .AutoInclude();
+            });
+
             modelBuilder.Entity<Comment>()
                 .HasOne(c => c.Post)
                 .WithMany(p => p.Comments)
