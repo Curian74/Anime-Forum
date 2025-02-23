@@ -12,20 +12,21 @@
 }
 
 .forum-dropdown {
-    color: #8cb0de;
-    font-weight: 500;
-    font-size: 17px;
+    color: #8cb0de !important;
+    font-weight: 500 !important;
+    font-size: 17px !important;
 }
 
 .dropdown-item {
-    color: rgb(29, 31, 32);
-    font-size: 14px;
+    color: rgb(29, 31, 32) !important;
+    font-size: 14px !important;
 }
 
-.dropdown-item:hover {
-    color: rgb(255, 102, 0);
-    background-color: #eff4fb;
-}
+    .dropdown-item:hover {
+        color: rgb(255, 102, 0) !important;
+        background-color: #eff4fb !important;
+    }
+
 
 .forum-dropdown:hover {
     color: #8cb0de;

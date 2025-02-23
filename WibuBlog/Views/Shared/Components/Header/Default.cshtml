@@ -1,41 +1,43 @@
-﻿
-<link rel="stylesheet" href="~/css/header.css" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+﻿  @if (ViewData["ShowHeader"] as bool? != false)
+{
+    <link rel="stylesheet" href="~/css/header.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
 
-<header class="w-100 mb-3">
-    <div class="container">
-        <div>
-            <a class="banner text-decoration-none d-inline-block mt-2" href="/">
-                <img id="logo" src="~/images/header/logo.jpg" class="rounded-circle" />
-                <img src="~/images/header/WBB.png" alt="Logo" width="70" height="30" class="me-2">
-            </a>
-        </div>
-
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="dropdown">
-                <button class="forum-dropdown btn dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
-                    Forums
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                    <li><a class="dropdown-item" href="/post/newPosts">New posts</a></li>
-                </ul>
-
-                <button class="forum-dropdown btn dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
-                    Latests
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                    <li><button class="dropdown-item" type="button">Featured content</button></li>
-                    <li><a class="dropdown-item" href="/post/newPosts">New posts</a></li>
-                    <li><button class="dropdown-item" type="button">New profile posts</button></li>
-                    <li><button class="dropdown-item" type="button">Latest activity</button></li>
-                </ul>
+    <header class="w-100 mb-3">
+        <div class="container">
+            <div>
+                <a class="banner text-decoration-none d-inline-block mt-2" href="/">
+                    <img id="logo" src="~/images/header/logo.jpg" class="rounded-circle" />
+                    <img src="~/images/header/WBB.png" alt="Logo" width="70" height="30" class="me-2">
+                </a>
             </div>
-            <div class="auth-buttons">
-                <a href="#1">Log in</a>
-                <a href="#2">Register</a>
+
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="dropdown">
+                    <button class="forum-dropdown btn dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
+                        Forums
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                        <li><button class="dropdown-item" type="button">New posts</button></li>
+                    </ul>
+
+                    <button class="forum-dropdown btn dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
+                        Latests
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                        <li><button class="dropdown-item" type="button">Featured content</button></li>
+                        <li><button class="dropdown-item" type="button">New posts</button></li>
+                        <li><button class="dropdown-item" type="button">New profile posts</button></li>
+                        <li><button class="dropdown-item" type="button">Latest activity</button></li>
+                    </ul>
+                </div>
+                <div class="auth-buttons">
+                    <a href="/Authentication/Login">Log in</a>
+                    <a href="/Authentication/Register">Register</a>
+                </div>
             </div>
         </div>
-    </div>
-</header>
+    </header>
+}
