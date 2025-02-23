@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <_ContentIncludedByDefault Remove="wwwroot\assets\css\login.css" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.12" />
@@ -44,60 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\assets\css\app.min.css" />
-    <None Include="wwwroot\assets\images\Others\adobe-thumb.png" />
-    <None Include="wwwroot\assets\images\Others\amazon-thumb.png" />
-    <None Include="wwwroot\assets\images\Others\cambridge-thumb.png" />
-    <None Include="wwwroot\assets\images\Others\coffee-app-thumb.jpg" />
-    <None Include="wwwroot\assets\images\Others\error-1.png" />
-    <None Include="wwwroot\assets\images\Others\error-2.png" />
-    <None Include="wwwroot\assets\images\Others\file-manager.png" />
-    <None Include="wwwroot\assets\images\Others\img-1.jpg" />
-    <None Include="wwwroot\assets\images\Others\img-10.jpg" />
-    <None Include="wwwroot\assets\images\Others\img-11.jpg" />
-    <None Include="wwwroot\assets\images\Others\img-12.jpg" />
-    <None Include="wwwroot\assets\images\Others\img-13.jpg" />
-    <None Include="wwwroot\assets\images\Others\img-14.jpg" />
-    <None Include="wwwroot\assets\images\Others\img-2.jpg" />
-    <None Include="wwwroot\assets\images\Others\img-3.jpg" />
-    <None Include="wwwroot\assets\images\Others\img-4.jpg" />
-    <None Include="wwwroot\assets\images\Others\img-5.jpg" />
-    <None Include="wwwroot\assets\images\Others\img-6.jpg" />
-    <None Include="wwwroot\assets\images\Others\img-7.jpg" />
-    <None Include="wwwroot\assets\images\Others\img-8.jpg" />
-    <None Include="wwwroot\assets\images\Others\img-9.jpg" />
-    <None Include="wwwroot\assets\images\Others\local-image.jpg" />
-    <None Include="wwwroot\assets\images\Others\login-1.jpg" />
-    <None Include="wwwroot\assets\images\Others\login-2.png" />
-    <None Include="wwwroot\assets\images\Others\login-3.png" />
-    <None Include="wwwroot\assets\images\Others\music-app-thumb.jpg" />
-    <None Include="wwwroot\assets\images\Others\nvidia-thumb.png" />
-    <None Include="wwwroot\assets\images\Others\phillips-academy-thumb.png" />
-    <None Include="wwwroot\assets\images\Others\product-1.jpg" />
-    <None Include="wwwroot\assets\images\Others\product-2.jpg" />
-    <None Include="wwwroot\assets\images\Others\product-3.jpg" />
-    <None Include="wwwroot\assets\images\Others\sign-up-1.jpg" />
-    <None Include="wwwroot\assets\images\Others\sign-up-2.png" />
-    <None Include="wwwroot\assets\images\Others\thumb-1.jpg" />
-    <None Include="wwwroot\assets\images\Others\thumb-10.jpg" />
-    <None Include="wwwroot\assets\images\Others\thumb-11.jpg" />
-    <None Include="wwwroot\assets\images\Others\thumb-12.jpg" />
-    <None Include="wwwroot\assets\images\Others\thumb-13.jpg" />
-    <None Include="wwwroot\assets\images\Others\thumb-14.jpg" />
-    <None Include="wwwroot\assets\images\Others\thumb-15.jpg" />
-    <None Include="wwwroot\assets\images\Others\thumb-16.jpg" />
-    <None Include="wwwroot\assets\images\Others\thumb-2.jpg" />
-    <None Include="wwwroot\assets\images\Others\thumb-3.jpg" />
-    <None Include="wwwroot\assets\images\Others\thumb-4.jpg" />
-    <None Include="wwwroot\assets\images\Others\thumb-5.jpg" />
-    <None Include="wwwroot\assets\images\Others\thumb-6.jpg" />
-    <None Include="wwwroot\assets\images\Others\thumb-7.jpg" />
-    <None Include="wwwroot\assets\images\Others\thumb-8.jpg" />
-    <None Include="wwwroot\assets\images\Others\thumb-9.jpg" />
-    <None Include="wwwroot\assets\images\Others\visa.png" />
-    <None Include="wwwroot\assets\images\Others\weather-app-thumb.jpg" />
-    <None Include="wwwroot\assets\js\app.min.js" />
-    <None Include="wwwroot\assets\js\vendors.min.js" />
+    <None Include="wwwroot\css\app.min.css" />
   </ItemGroup>
 
 </Project>
