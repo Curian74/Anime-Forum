@@ -48,7 +48,7 @@
                         <div class="d-flex gap-3 align-items-center">
                             <img class="rounded-circle img-fluid ms-2"
                                  style="width: 40px; height: 40px;"
-                                 src="@(post.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
+                                 src="@(post.User?.ProfilePhoto?.Url != null ? post.User.ProfilePhoto.Url : Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
                             <div>
                                 <a class="post-title" href="#">@post.Title</a>
                                 <p class="post-info">

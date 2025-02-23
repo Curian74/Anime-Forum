@@ -40,8 +40,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Views\Auth\" />
     <Folder Include="wwwroot\images\defaults\user\" />
-    <Folder Include="wwwroot\images\user\" />
   </ItemGroup>
 
 </Project>
