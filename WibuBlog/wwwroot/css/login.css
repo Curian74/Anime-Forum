@@ -1,0 +1,91 @@
+﻿@import url('common.css'); /* Tái sử dụng CSS chung */
+
+/* Chỉnh card cho giống Register */
+.card {
+    max-width: 550px;
+    width: 100%;
+    min-height: 400px; /* Chiều cao tương tự Register */
+    padding: 30px;
+    margin-left: 400px;
+    border-radius: 12px;
+    background-color: #fff;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Tiêu đề */
+h2 {
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Input fields */
+.form-control {
+    font-size: 16px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    transition: all 0.3s ease-in-out;
+}
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
+    }
+
+/* Nút Sign In */
+.btn-primary {
+    width: 40%;
+    padding: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    transition: all 0.3s ease;
+    margin: 0 auto; /* Căn giữa */
+}
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+/* Link Forgot Password */
+.text-muted {
+    font-size: 14px;
+    text-decoration: none;
+    color: #6c757d;
+}
+
+    .text-muted:hover {
+        color: #0056b3;
+        text-decoration: underline;
+    }
+
+/* Link Register */
+.text-primary {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+    .text-primary:hover {
+        text-decoration: underline;
+    }
+
+/* Chỉnh background */
+.bg {
+    background-size: cover;
+    background-position: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .card {
+        max-width: 100%;
+        min-height: auto;
+    }
+}
+
+
+

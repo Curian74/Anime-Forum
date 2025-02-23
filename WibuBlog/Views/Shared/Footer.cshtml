@@ -2,6 +2,8 @@
 <link rel="stylesheet" href="~/css/footer.css" />
 
 <footer>
+    @if (ViewData["ShowFooter"] as bool? != false)
+    {
     <h2 class="text-white text-center pt-3">WBB - Wibu Blog</h2>
     <p class="text-center text-white">Contact us</p>
     <p class="text-center text-white">
@@ -10,4 +12,5 @@
     <p class="text-center text-white pb-3 mb-0">
         ©Copyright | Wibu - Blog
     </p>
+     }
 </footer>
