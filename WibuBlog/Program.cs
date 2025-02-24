@@ -26,6 +26,7 @@ namespace WibuBlog
             builder.Services.AddScoped<IApiServices, ApiServices>();
             builder.Services.AddScoped<PostServices>();
             builder.Services.AddScoped<TicketServices>();
+            builder.Services.AddScoped<UserServices>();
 
             //HttpClient
             builder.Services.AddHttpClient("api", httpClient =>
@@ -42,7 +43,7 @@ namespace WibuBlog
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            app.UseStatusCodePagesWithReExecute("/Error/NotFound");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 

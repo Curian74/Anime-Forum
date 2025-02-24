@@ -4,6 +4,7 @@ using Application.DTO;
 using Infrastructure.Extensions;
 using Microsoft.Extensions.Options;
 using Infrastructure.Configurations;
+using Domain.Entities;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -162,6 +163,17 @@ namespace WibuBlogAPI.Controllers
                 return new JsonResult(NotFound("Ticket not found or unauthorized"));
             }
             return new JsonResult(Ok("Ticket deleted successfully"));
+        }
+
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetUserById(Guid userId)
+        {
+                var result = await _userServices.GetProfileDetails(userId);
+                if(result == null)
+                {
+                     return new JsonResult(NotFound());
+                }
+                return new JsonResult(Ok(result));
         }
     }
 }
