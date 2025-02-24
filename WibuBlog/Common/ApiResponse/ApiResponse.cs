@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Common.ApiResponse
+﻿namespace WibuBlog.Common.ApiResponse
 {
     public class ApiResponse<T>
     {
