@@ -17,7 +17,7 @@ namespace Application.Services
         private readonly IGenericRepository<User> _userGenericRepository = unitOfWork.GetRepository<User>();
         private readonly IMapper _mapper = mapper;
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        public async Task<(IEnumerable<User> Items, int TotalCount)> GetAllUsersAsync()
         {
             return await _userGenericRepository.GetAllAsync();
         }
