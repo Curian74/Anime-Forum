@@ -11,12 +11,19 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Infrastructure.Extensions;
 using Infrastructure.Configurations;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles; //Ignore cycles
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull; //Ignore null objects
+    });
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -37,6 +44,7 @@ builder.Services.AddScoped<PostServices>();
 builder.Services.AddScoped<UserServices>();
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<TicketServices>();
+builder.Services.AddScoped<PostCategoryServices>();
 
 // AutoMapper service
 // Quet project, tim tat ca file MappingProfile roi gop lai thanh 1

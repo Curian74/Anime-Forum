@@ -41,7 +41,7 @@ namespace WibuBlogAPI.Controllers
 
             var cookieOptions = new CookieOptions
             {
-                Expires = DateTime.UtcNow.AddHours(_authTokenOptions.Expires),
+                Expires = DateTime.Now.AddHours(_authTokenOptions.Expires),
                 Secure = _authTokenOptions.Secure,
                 HttpOnly = _authTokenOptions.HttpOnly,
                 SameSite = _authTokenOptions.SameSite,

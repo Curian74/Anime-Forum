@@ -1,21 +1,38 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using WibuBlog.Models;
+using WibuBlog.Services;
+using WibuBlog.ViewModels.Home;
 
 namespace WibuBlog.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly PostServices _postService;
+        private readonly PostCategoryServices _postCategoryServices;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(PostServices postService, PostCategoryServices postCategoryServices)
         {
-            _logger = logger;
+            _postService = postService;
+            _postCategoryServices = postCategoryServices;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var restrictedCategories = await _postCategoryServices.GetAllCategories("isRestricted", "true" , false);
+            var nonrestrictedCategories = await _postCategoryServices.GetAllCategories("isRestricted", "false" , false);
+            var recentPosts = await _postService.GetPagedPostAsync(1, 5, "CreatedAt", true);
+            var postList = await _postService.GetAllPostAsync("", "", false);
+
+            HomeVM homeVM = new HomeVM
+            {
+                RestrictedCategories = restrictedCategories,
+                RecentPosts = recentPosts,
+                Posts = postList,
+                NonRestrictedCategories = nonrestrictedCategories
+            };
+
+            return View(homeVM);
         }
 
         public IActionResult Privacy()

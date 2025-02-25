@@ -25,6 +25,7 @@ namespace WibuBlog
             builder.Services.AddScoped<Domain.Interfaces.IConfigurationManager, Infrastructure.Configurations.ConfigurationManager>();
             builder.Services.AddScoped<IApiServices, ApiServices>();
             builder.Services.AddScoped<PostServices>();
+            builder.Services.AddScoped<PostCategoryServices>();
             builder.Services.AddScoped<TicketServices>();
 
             //HttpClient

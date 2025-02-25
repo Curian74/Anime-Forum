@@ -9,23 +9,31 @@ namespace Infrastructure.Extensions
             if (string.IsNullOrEmpty(filterBy) || string.IsNullOrEmpty(searchTerm))
                 return null;
 
-            var property = typeof(T).GetProperty(filterBy);
-            if (property == null) 
-            { 
-                return null; 
+            var parameter = Expression.Parameter(typeof(T), "p");
+
+            // Xu ly nested Props
+            Expression? propertyAccess = parameter;
+            foreach (var propertyName in filterBy.Split('.'))
+            {
+                propertyAccess = Expression.PropertyOrField(propertyAccess, propertyName);
+                if (propertyAccess == null)
+                {
+                    return null;
+                }
             }
 
-            var parameter = Expression.Parameter(typeof(T), "p");
-            var propertyAccess = Expression.Property(parameter, property);
-            var convertedSearchTerm = Convert.ChangeType(searchTerm, property.PropertyType);
+            var propertyType = propertyAccess.Type;
+            var convertedSearchTerm = Convert.ChangeType(searchTerm, propertyType);
             var searchExpression = Expression.Constant(convertedSearchTerm);
 
-            Expression comparison = property.PropertyType == typeof(string)
+            // Create comparison expression
+            Expression comparison = propertyType == typeof(string)
                 ? Expression.Call(propertyAccess, nameof(string.Contains), Type.EmptyTypes, searchExpression)
                 : Expression.Equal(propertyAccess, searchExpression);
 
             return Expression.Lambda<Func<T, bool>>(comparison, parameter);
         }
+
 
         public static Func<IQueryable<T>, IOrderedQueryable<T>>? BuildOrderExpression<T>(string? orderBy, bool descending)
         {

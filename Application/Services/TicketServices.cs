@@ -29,8 +29,8 @@ namespace Application.Services
         public async Task<TicketDto?> CreateTicket(CreateTicketDto dto)
         {
             var ticket = _mapper.Map<Ticket>(dto);
-            ticket.CreatedAt = DateTime.UtcNow;
-            ticket.LastModifiedAt = DateTime.UtcNow;
+            ticket.CreatedAt = DateTime.Now;
+            ticket.LastModifiedAt = DateTime.Now;
 
             await _context.Set<Ticket>().AddAsync(ticket);
             await _context.SaveChangesAsync();
@@ -49,7 +49,7 @@ namespace Application.Services
             }
 
             _mapper.Map(dto, ticket);
-            ticket.LastModifiedAt = DateTime.UtcNow;
+            ticket.LastModifiedAt = DateTime.Now;
 
             await _context.SaveChangesAsync();
             return true;
@@ -82,7 +82,7 @@ namespace Application.Services
 
             ticket.IsApproved = true;
             ticket.Note = note;
-            ticket.LastModifiedAt = DateTime.UtcNow;
+            ticket.LastModifiedAt = DateTime.Now;
 
             await _context.SaveChangesAsync();
             return true;
@@ -100,7 +100,7 @@ namespace Application.Services
 
             ticket.IsApproved = false;
             ticket.Note = note;
-            ticket.LastModifiedAt = DateTime.UtcNow;
+            ticket.LastModifiedAt = DateTime.Now;
 
             await _context.SaveChangesAsync();
             return true;
