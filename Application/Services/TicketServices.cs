@@ -80,7 +80,7 @@ namespace Application.Services
                 return false;
             }
 
-            ticket.Approved = true;
+            ticket.IsApproved = true;
             ticket.Note = note;
             ticket.LastModifiedAt = DateTime.UtcNow;
 
@@ -98,7 +98,7 @@ namespace Application.Services
                 return false;
             }
 
-            ticket.Approved = false;
+            ticket.IsApproved = false;
             ticket.Note = note;
             ticket.LastModifiedAt = DateTime.UtcNow;
 
