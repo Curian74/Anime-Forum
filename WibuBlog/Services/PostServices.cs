@@ -1,6 +1,6 @@
 ﻿using Application.Common.Pagination;
 using Domain.Entities;
-using Infrastructure.Common.ApiResponse;
+using WibuBlog.Common.ApiResponse;
 using WibuBlog.Interfaces.Api;
 using WibuBlog.ViewModels.Post;
 
