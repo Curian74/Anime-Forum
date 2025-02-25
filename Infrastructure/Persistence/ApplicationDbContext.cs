@@ -44,6 +44,7 @@ namespace Infrastructure.Persistence
             {
                 opt.Navigation(p => p.User).AutoInclude();
                 opt.Navigation(p => p.Comments).AutoInclude();
+                opt.Navigation(p => p.Category).AutoInclude();
             });
 
             modelBuilder.Entity<Comment>()
@@ -73,13 +74,13 @@ namespace Infrastructure.Persistence
             {
                 if (entry.State == EntityState.Added)
                 {
-                    entry.Entity.CreatedAt = DateTime.UtcNow;
+                    entry.Entity.CreatedAt = DateTime.Now;
                     //entry.Entity.CreatedBy = userId;
                 }
 
                 if (entry.State == EntityState.Modified)
                 {
-                    entry.Entity.LastModifiedAt = DateTime.UtcNow;
+                    entry.Entity.LastModifiedAt = DateTime.Now;
                     //entry.Entity.LastModifiedBy = userId;
                 }
             }
@@ -95,13 +96,13 @@ namespace Infrastructure.Persistence
             {
                 if (entry.State == EntityState.Added)
                 {
-                    entry.Entity.CreatedAt = DateTime.UtcNow;
+                    entry.Entity.CreatedAt = DateTime.Now;
                     //entry.Entity.CreatedBy = userId;
                 }
 
                 if (entry.State == EntityState.Modified)
                 {
-                    entry.Entity.LastModifiedAt = DateTime.UtcNow;
+                    entry.Entity.LastModifiedAt = DateTime.Now;
                     //entry.Entity.LastModifiedBy = userId;
                 }
             }

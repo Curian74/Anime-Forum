@@ -42,7 +42,7 @@ namespace Infrastructure.Extensions
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(authClaims),
-                Expires = DateTime.UtcNow.AddHours(_authTokenOptions.Expires),
+                Expires = DateTime.Now.AddHours(_authTokenOptions.Expires),
                 SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256),
                 Issuer = _issuer,
                 Audience = _audience
@@ -123,7 +123,7 @@ namespace Infrastructure.Extensions
                 };
 
                 var principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
-                return validatedToken is JwtSecurityToken jwt && jwt.ValidTo > DateTime.UtcNow;
+                return validatedToken is JwtSecurityToken jwt && jwt.ValidTo > DateTime.Now;
             }
             catch
             {

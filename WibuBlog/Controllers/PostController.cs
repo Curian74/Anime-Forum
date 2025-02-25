@@ -11,13 +11,13 @@ namespace WibuBlog.Controllers
 
         public async Task<IActionResult> Index(int? page = 1, int? pageSize = 5)
         {
-            var value = await _postService.GetPagedPostAsync(page, pageSize);
+            var value = await _postService.GetPagedPostAsync(page, pageSize, "", false);
             return View("Index", value);
         }
 
         public async Task<IActionResult> NewPosts(int? page = 1, int? pageSize = 10)
         {
-            var value = await _postService.GetPagedPostAsync(page, pageSize);
+            var value = await _postService.GetPagedPostAsync(page, pageSize, "", false);
 
             return View(value);
         }

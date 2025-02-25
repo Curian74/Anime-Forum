@@ -74,7 +74,7 @@
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="time-container flex-grow-1 ms-3" style="min-width: 80px;">
                                 @{
-                                    var timeDifference = DateTime.UtcNow.Subtract(post.CreatedAt);
+                                    var timeDifference = DateTime.Now.Subtract(post.CreatedAt);
                                     string timeAgo;
 
                                     if (timeDifference.TotalDays >= 1)
