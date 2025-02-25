@@ -38,10 +38,11 @@ namespace Infrastructure.Persistence
         {
             base.OnModelCreating(modelBuilder);
 
+            //Include props tu dong
             modelBuilder.Entity<Post>(opt =>
             {
-                opt.Navigation(p => p.User)
-                    .AutoInclude();
+                opt.Navigation(p => p.User).AutoInclude();
+                opt.Navigation(p => p.Comments).AutoInclude();
             });
 
             modelBuilder.Entity<Comment>()
