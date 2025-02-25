@@ -12,7 +12,9 @@ namespace Domain.Entities
         [ForeignKey(nameof(User))]
         public Guid? UserId { get; set; }
 
-        public bool Hidden { get; set; } = false;
+        public string? Source {  get; set; }
+
+        public bool IsHidden { get; set; } = false;
 
         public ICollection<Vote> Votes { get; set; } = [];
 

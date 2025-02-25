@@ -15,6 +15,7 @@ namespace Infrastructure.Persistence
         //private readonly IHttpContextAccessor _httpContextAccessor = contextAccessor;
 
         public DbSet<Post> Posts { get; set; }
+        public DbSet<PostCategory> PostCategories { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Vote> Votes { get; set; }
         public DbSet<Report> Reports { get; set; }
