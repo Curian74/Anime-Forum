@@ -14,7 +14,7 @@ namespace Domain.Entities
 
         public string? Source {  get; set; }
 
-        public bool Hidden { get; set; } = false;
+        public bool IsHidden { get; set; } = false;
 
         public ICollection<Vote> Votes { get; set; } = [];
 

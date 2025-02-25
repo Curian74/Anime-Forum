@@ -13,7 +13,7 @@ namespace Domain.Entities
 
         public string Content { get; set; } = string.Empty;
 
-        public bool Hidden { get; set; } = false;
+        public bool IsHidden { get; set; } = false;
 
         // Navigation properties
         public User User { get; set; } = null!;
