@@ -40,8 +40,8 @@ namespace Infrastructure.Persistence.Repositories
 
         // Example usage: _repository.GetPagedAsync(1, 10, x => x.Name.Contains("Memaybeo"), x => x.OrderByDescending(x.DateCreated)); 
         public async Task<(IEnumerable<T> Items, int TotalCount)> GetPagedAsync(
-            int page,
-            int size, 
+            int page = 1 ,
+            int size = 10, 
             Expression<Func<T, bool>>? filter = null,
             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null)
         {

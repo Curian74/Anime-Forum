@@ -10,7 +10,10 @@ namespace Infrastructure.Extensions
                 return null;
 
             var property = typeof(T).GetProperty(filterBy);
-            if (property == null) return null;
+            if (property == null) 
+            { 
+                return null; 
+            }
 
             var parameter = Expression.Parameter(typeof(T), "p");
             var propertyAccess = Expression.Property(parameter, property);
@@ -27,7 +30,9 @@ namespace Infrastructure.Extensions
         public static Func<IQueryable<T>, IOrderedQueryable<T>>? BuildOrderExpression<T>(string? orderBy, bool descending)
         {
             if (string.IsNullOrEmpty(orderBy))
+            {
                 return null;
+            }
 
             var parameter = Expression.Parameter(typeof(T), "x");
             var property = Expression.Property(parameter, orderBy);
