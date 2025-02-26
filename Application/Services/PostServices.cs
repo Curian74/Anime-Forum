@@ -12,6 +12,7 @@ namespace Application.Services
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IGenericRepository<Post> _postRepository = unitOfWork.GetRepository<Post>();
+        private readonly IGenericRepository<PostCategory> _categoryRepository = unitOfWork.GetRepository<PostCategory>();
         private readonly IMapper _mapper = mapper;
 
         public async Task<(IEnumerable<Post> Items, int TotalCount)> GetAllAsync(

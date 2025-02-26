@@ -2,19 +2,23 @@
 using WibuBlog.Services;
 using WibuBlog.ViewModels.Post;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WibuBlog.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     public class PostController(PostServices postService) : Controller
     {
         private readonly PostServices _postService = postService;
 
+        [AllowAnonymous]
         public async Task<IActionResult> Index(int? page = 1, int? pageSize = 5)
         {
             var value = await _postService.GetPagedPostAsync(page, pageSize, "", false);
             return View("Index", value);
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> NewPosts(int? page = 1, int? pageSize = 10)
         {
             var value = await _postService.GetPagedPostAsync(page, pageSize, "", false);
@@ -22,6 +26,7 @@ namespace WibuBlog.Controllers
             return View(value);
         }
 
+        
         [HttpGet]
         public IActionResult Add()
         {
