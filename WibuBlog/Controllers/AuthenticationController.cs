@@ -38,5 +38,11 @@ namespace WibuBlog.Controllers
         {
             return View();
         }
+
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View(NotFound());
+        }
     }
 }

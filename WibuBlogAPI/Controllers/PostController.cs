@@ -5,17 +5,20 @@ using System.ComponentModel.DataAnnotations;
 using Domain.Entities;
 using System.Linq.Expressions;
 using Infrastructure.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace WibuBlogAPI.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class PostController(PostServices postServices) : ControllerBase
     {
         private readonly PostServices _postServices = postServices;
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll(
             string? filterBy = null,
@@ -31,6 +34,7 @@ namespace WibuBlogAPI.Controllers
             return new JsonResult(Ok(result.Items));
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetPaged(
             int page = 1,
@@ -48,6 +52,7 @@ namespace WibuBlogAPI.Controllers
             return new JsonResult(Ok(result));
         }
 
+        [AllowAnonymous]
         [HttpGet("{postId}")]
         public async Task<IActionResult> Get(Guid postId)
         {
@@ -107,6 +112,7 @@ namespace WibuBlogAPI.Controllers
             return new JsonResult(NoContent());
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpDelete]
         public async Task<IActionResult> DeleteWhere(
             string filterBy,
