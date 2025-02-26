@@ -45,6 +45,7 @@ namespace Infrastructure.Persistence
                 opt.Navigation(p => p.User).AutoInclude();
                 opt.Navigation(p => p.Comments).AutoInclude();
                 opt.Navigation(p => p.Category).AutoInclude();
+                opt.Navigation(p => p.Votes).AutoInclude();
             });
 
             modelBuilder.Entity<Comment>()
