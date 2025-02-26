@@ -3,6 +3,7 @@ using WibuBlog.Services;
 using WibuBlog.ViewModels.Post;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
+using WibuBlog.Helpers;
 
 namespace WibuBlog.Controllers
 {
@@ -14,14 +15,15 @@ namespace WibuBlog.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index(int? page = 1, int? pageSize = 5)
         {
-            var value = await _postService.GetPagedPostAsync(page, pageSize, "", false);
+            var value = await _postService.GetPagedPostAsync(page, pageSize, "", "", "", false);
             return View("Index", value);
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> NewPosts(int? page = 1, int? pageSize = 10)
+        public async Task<IActionResult> NewPosts([FromQuery] QueryObject queryObject)
         {
-            var value = await _postService.GetPagedPostAsync(page, pageSize, "", false);
+            var value = await _postService.GetPagedPostAsync(queryObject.Page, queryObject.Size,
+                queryObject.FilterBy, queryObject.SearchTerm, queryObject.OrderBy, queryObject.Descending);
 
             return View(value);
         }

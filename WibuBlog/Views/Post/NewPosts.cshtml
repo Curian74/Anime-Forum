@@ -34,37 +34,15 @@
         <h1 class="title">New posts</h1>
         <a class="create-post btn btn-danger mt-1"> <i class="fa-regular fa-pen-to-square"></i> Create post...</a>
     </div>
-    <nav>
-        <ul class="pagination pagination-sm">
-            @if (Model.HasPreviousPage)
-            {
-                <li class="page-item me-2">
-                    <a class="page-link" asp-action="NewPosts" asp-route-page="@(Model.PageNumber - 1)"
-                    asp-route-pageSize="@Model.PageSize" aria-label="Previous">
-                        <span aria-hidden="true">Prev</span>
-                    </a>
-                </li>
-            }
 
-            @for (int i = 1; i <= Model.TotalPages; i++)
-            {
-                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                    <a class="page-link" asp-action="NewPosts" asp-route-page="@i"
-                    asp-route-pageSize="@Model.PageSize">@i</a>
-                </li>
-            }
+    <form asp-action="NewPosts" method="get" class="form-inline my-2 my-lg-0">
+        <div class="d-flex gap-2 mb-3">
+            <input type="hidden" name="FilterBy" value="Title" />
+            <input name="searchTerm" class="form-control mr-sm-2 w-25" style="background-color:#eaebec" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
+        </div>
+    </form>
 
-            @if (Model.HasNextPage)
-            {
-                <li class="page-item ms-2">
-                    <a class="page-link" asp-action="NewPosts" asp-route-page="@(Model.PageNumber + 1)"
-                    asp-route-pageSize="@Model.PageSize" aria-label="Next">
-                        <span aria-hidden="true">Next</span>
-                    </a>
-                </li>
-            }
-        </ul>
-    </nav>
     @{
         foreach (var post in Model.Items)
         {
@@ -126,4 +104,35 @@
             </div>
         }
     }
+    <nav>
+        <ul class="pagination pagination-sm">
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item me-2">
+                    <a class="page-link" asp-action="NewPosts" asp-route-page="@(Model.PageNumber - 1)"
+                       asp-route-pageSize="@Model.PageSize" aria-label="Previous">
+                        <span aria-hidden="true">Prev</span>
+                    </a>
+                </li>
+            }
+
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                    <a class="page-link" asp-action="NewPosts" asp-route-page="@i"
+                       asp-route-pageSize="@Model.PageSize">@i</a>
+                </li>
+            }
+
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item ms-2">
+                    <a class="page-link" asp-action="NewPosts" asp-route-page="@(Model.PageNumber + 1)"
+                       asp-route-pageSize="@Model.PageSize" aria-label="Next">
+                        <span aria-hidden="true">Next</span>
+                    </a>
+                </li>
+            }
+        </ul>
+    </nav>
 </div>
