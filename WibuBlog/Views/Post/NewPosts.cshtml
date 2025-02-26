@@ -96,7 +96,7 @@
 
                     <div class="col-6 col-md-2">
                         <p>@post.Comments.Count</p>
-                        <p>@post.Votes.Count</p>
+                        <p>@post.Votes.Where(v => v.IsUpvote).Count()</p>
                     </div>
 
                     @{

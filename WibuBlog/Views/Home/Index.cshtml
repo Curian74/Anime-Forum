@@ -156,7 +156,11 @@
                 @{
                     @if (Model?.Posts != null && Model.Posts.Any())
                     {
-                        foreach (var p in Model.Posts.Where(p => !p.Category.IsRestricted).OrderByDescending(x => x.Views))
+                        //Lay ra posts nhieu view nhat trong 7 ngay tro lai day
+                        foreach (var p in Model.Posts
+                            .Where(p => !p.Category.IsRestricted)
+                            .Where(p => (DateTime.Now - p.CreatedAt).TotalDays <= 7)
+                            .OrderByDescending(x => x.Views))
                         {
                             var latestTime = GetDateFormat(p.CreatedAt);
                             <div class="d-flex">
