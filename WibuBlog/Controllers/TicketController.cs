@@ -2,9 +2,11 @@
 using WibuBlog.Services;
 using WibuBlog.ViewModels.Ticket;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WibuBlog.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     public class TicketController(TicketServices ticketService) : Controller
     {
         private readonly TicketServices _ticketService = ticketService;
