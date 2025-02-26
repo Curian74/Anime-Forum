@@ -1,14 +1,19 @@
-﻿using Application.DTO;
+﻿using Application.Common.Pagination;
+using Application.DTO;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using System.Drawing;
 
 namespace Application.Services
 {
-    public class UserServices(UserManager<User> userManager, IMapper mapper)
+    public class UserServices(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork)
     {
         private readonly UserManager<User> _userManager = userManager;
         private readonly IMapper _mapper = mapper;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IGenericRepository<User> _userGenericRepository = unitOfWork.GetRepository<User>();
 
         public async Task<User?> FindByLoginAsync(LoginDto dto)
         {
@@ -60,6 +65,12 @@ namespace Application.Services
             result.Roles = await _userManager.GetRolesAsync(user);
 
             return result;
+        }
+
+        public async Task<PagedResult<User>> GetPagedUsersAsync(int page, int size)
+        {
+            var (items, totalCount) = await _userGenericRepository.GetPagedAsync(page, size);
+            return new PagedResult<User>(items, totalCount, page, size);
         }
 
     }

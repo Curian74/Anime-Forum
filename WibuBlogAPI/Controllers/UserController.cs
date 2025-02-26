@@ -166,7 +166,7 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpGet("{userId}")]
-        public async Task<IActionResult> GetUserById(Guid userId)
+        public async Task<IActionResult> GetUserByIdAsync(Guid userId)
         {
                 var result = await _userServices.GetProfileDetails(userId);
                 if(result == null)
@@ -174,6 +174,13 @@ namespace WibuBlogAPI.Controllers
                      return new JsonResult(NotFound());
                 }
                 return new JsonResult(Ok(result));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPagedUsersAsync(int page, int size)
+        {
+            var result = await _userServices.GetPagedUsersAsync(page, size);
+            return new JsonResult(Ok(result));
         }
     }
 }

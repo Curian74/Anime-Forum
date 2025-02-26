@@ -1,7 +1,9 @@
-﻿using Application.DTO;
+﻿using Application.Common.Pagination;
+using Application.DTO;
 using Domain.Entities;
 using Infrastructure.Common.ApiResponse;
 using Microsoft.AspNetCore.Mvc;
+using System.Drawing;
 using WibuBlog.Interfaces.Api;
 
 namespace WibuBlog.Services
@@ -15,5 +17,16 @@ namespace WibuBlog.Services
             return response.Value!;
         }
 
+        public async Task<PagedResult<User>> GetPagedUsersAsync(int page, int size)
+        {
+            var response = await _apiService.GetAsync<ApiResponse<PagedResult<User>>>($"User/GetPagedUsers?page={page}&size={size}");
+            return response.Value!;
+        }
+
+        public async Task<User> UpdateUserAsync<T>(T userId, User data)
+        {
+            var response = await _apiService.PutAsync<ApiResponse<User>>($"User/UpdateUser/{userId}", data);
+            return response.Value!;
+        }
     }
 }
