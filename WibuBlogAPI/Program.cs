@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Domain.Interfaces;
 using Infrastructure.Persistence;
@@ -11,12 +11,19 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Infrastructure.Extensions;
 using Infrastructure.Configurations;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles; //Ignore cycles
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull; //Ignore null objects
+    });
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -37,6 +44,7 @@ builder.Services.AddScoped<PostServices>();
 builder.Services.AddScoped<UserServices>();
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<TicketServices>();
+builder.Services.AddScoped<PostCategoryServices>();
 
 // AutoMapper service
 // Quet project, tim tat ca file MappingProfile roi gop lai thanh 1
@@ -128,6 +136,27 @@ using (var scope = app.Services.CreateScope())
     if (!await roleManager.RoleExistsAsync(UserRoles.Member))
     {
         await roleManager.CreateAsync(new IdentityRole<Guid>(UserRoles.Member));
+    }
+
+    if (!db.PostCategories.Any())
+    {
+        var categories = new List<PostCategory>
+        {
+            new() { Id = Guid.NewGuid(), Name = "Thông báo"},
+            new() { Id = Guid.NewGuid(), Name = "Góp ý"},
+            new() { Id = Guid.NewGuid(), Name = "Tin tức"},
+            new() { Id = Guid.NewGuid(), Name = "Chia sẻ kiến thức"},
+            new() { Id = Guid.NewGuid(), Name = "Review linh tinh"},
+            new() { Id = Guid.NewGuid(), Name = "Review manga"},
+            new() { Id = Guid.NewGuid(), Name = "Review anime"},
+            new() { Id = Guid.NewGuid(), Name = "Văn hóa Nhật"},
+            new() { Id = Guid.NewGuid(), Name = "Thời trang Nhật"},
+            new() { Id = Guid.NewGuid(), Name = "Ẩm thực Nhật"},
+            new() { Id = Guid.NewGuid(), Name = "Giáo dục"},
+        };
+
+        db.PostCategories.AddRange(categories);
+        await db.SaveChangesAsync();
     }
 }
 

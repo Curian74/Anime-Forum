@@ -1,11 +1,11 @@
 ﻿using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Infrastructure.Persistence.Repositories
 {
     public class GenericRepository<T>(DbContext context) : IGenericRepository<T> where T : class
     {
-        private readonly DbContext _context = context;
         private readonly DbSet<T> _dbSet = context.Set<T>();
 
         public async Task<T?> GetByIdAsync(object id)
@@ -13,15 +13,53 @@ namespace Infrastructure.Persistence.Repositories
             return await _dbSet.FindAsync(id);
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        // Example usage: _repository.GetPagedAsync(x => x.Name.Contains("Memaybeo"), x => x.OrderByDescending(x.DateCreated)); 
+        public async Task<(IEnumerable<T> Items, int TotalCount)> GetAllAsync(
+            Expression<Func<T, bool>>? filter = null, 
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null)
         {
-            return await _dbSet.ToListAsync();
+            IQueryable<T> query = _dbSet;
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+
+            var items = await query
+                .ToListAsync();
+
+            return (items, totalCount);
         }
 
-        public async Task<(IEnumerable<T> Items, int TotalCount)> GetPagedAsync(int page, int size)
+        // Example usage: _repository.GetPagedAsync(1, 10, x => x.Name.Contains("Memaybeo"), x => x.OrderByDescending(x.DateCreated)); 
+        public async Task<(IEnumerable<T> Items, int TotalCount)> GetPagedAsync(
+            int page = 1 ,
+            int size = 10, 
+            Expression<Func<T, bool>>? filter = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null)
         {
-            var totalCount = await _context.Set<T>().CountAsync();
-            var items = await _context.Set<T>()
+            IQueryable<T> query = _dbSet;
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+
+            var items = await query
                 .Skip((page - 1) * size)
                 .Take(size)
                 .ToListAsync();
@@ -29,9 +67,20 @@ namespace Infrastructure.Persistence.Repositories
             return (items, totalCount);
         }
 
+        // Example usage: _repository.CountAsync(x => x.Name.Contains("Memaybeo")); 
+        public async Task<int> CountAsync(Expression<Func<T, bool>>? filter = null)
+        {
+            return filter != null ? await _dbSet.CountAsync(filter) : await _dbSet.CountAsync();
+        }
+
         public async Task AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
+        }
+
+        public async Task AddRangeAsync(IEnumerable<T> entities)
+        {
+            await _dbSet.AddRangeAsync(entities);
         }
 
         public async Task UpdateAsync(T entity)
@@ -40,12 +89,36 @@ namespace Infrastructure.Persistence.Repositories
             await Task.CompletedTask;
         }
 
+        public async Task UpdateRangeAsync(IEnumerable<T> entities)
+        {
+            _dbSet.UpdateRange(entities);
+            await Task.CompletedTask;
+        }
+
+
         public async Task DeleteAsync(object id)
         {
             var entity = await _dbSet.FindAsync(id);
             if (entity != null)
             {
                 _dbSet.Remove(entity);
+            }
+
+            return;
+        }
+
+        public async Task DeleteRangeAsync(IEnumerable<T> entities)
+        {
+            _dbSet.RemoveRange(entities);
+            await Task.CompletedTask;
+        }
+
+        public async Task DeleteWhereAsync(Expression<Func<T, bool>> filter)
+        {
+            var entities = await _dbSet.Where(filter).ToListAsync();
+            if (entities.Count != 0)
+            {
+                _dbSet.RemoveRange(entities);
             }
         }
     }

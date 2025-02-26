@@ -1,6 +1,9 @@
-﻿@{
+﻿@model WibuBlog.ViewModels.Home.HomeVM
+
+@{
     ViewData["Title"] = "Home Page";
 }
+
 
 <link rel="stylesheet" href="~/fontawesome/css/all.css" />
 <link rel="stylesheet" href="~/css/home.css" />
@@ -8,340 +11,138 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
 
+@* C# codes *@
+
+@functions {
+    public string GetDateFormat(DateTime date)
+    {
+        var timeDifference = DateTime.Now.Subtract(date);
+        string timeAgo;
+
+        if (timeDifference.TotalDays >= 1)
+        {
+            timeAgo = $"{(int)timeDifference.TotalDays} days ago";
+        }
+        else if (timeDifference.TotalHours >= 1)
+        {
+            timeAgo = $"{(int)timeDifference.TotalHours} hours ago";
+        }
+        else if (timeDifference.TotalMinutes >= 1)
+        {
+            timeAgo = $"{(int)timeDifference.TotalMinutes} minutes ago";
+        }
+        else
+        {
+            timeAgo = "Just now";
+        }
+        return timeAgo;
+    }
+}
+
 <div class="d-flex gap-5 align-items-start">
     <div class="d-flex flex-column w-75">
-    @* Left hand content *@
-        <div class="row cat-items">
-        <div class="front">
-            <a class="text-decoration-none">Đại sảnh</a>
-        </div>
-        <div class="front-content">
-            @* Row 1 *@
-            <div class="row-content row">
-                <div class="row-content-content mt-2 col-6">
-                    <i class="fa-regular fa-comments fs-3"></i>
-                    <a href="#" class="m-2">Thông báo</a>
-                </div>
-                <div class="row-content-stat col-1">
-                    <div class="row-content-stat-tit">
-                        <p>Threads</p>
-                    </div>
-                    <div class="row-content-stat-p">
-                        <p>19</p>
-                    </div>
-                </div>
-                <div class="row-content-stat col-1">
-                    <div class="row-content-stat-tit">
-                        <p>Messages</p>
-                    </div>
-                    <div class="row-content-stat-p">
-                        <p>47</p>
-                    </div>
-                </div>
-                <div class="avt col-1">
-                    <img class="rounded-circle" src="https://data.voz.vn/avatars/m/0/1.jpg?1695794193" />
-                </div>
-                <div class="post-info col-3">
-                    <a href="#">VOZ cập nhật 2025</a>
-                    <p>Nov 13, 2024 - <a href="#">fRzzy</a></p>
-                </div>
-            </div>
-            @* End of Row 1 *@
-
-            @* Row 2 *@
-            <div class="row-content row">
-                <div class="row-content-content mt-2 col-6">
-                    <i id="feedback-icon" class="fa-regular fa-comments fs-3"></i>
-                    <a href="#" class="m-2 fw-bold">Góp ý</a>
-                </div>
-                <div class="row-content-stat col-1">
-                    <div class="row-content-stat-tit">
-                        <p>Threads</p>
-                    </div>
-                    <div class="row-content-stat-p">
-                        <p>19</p>
-                    </div>
-                </div>
-                <div class="row-content-stat col-1">
-                    <div class="row-content-stat-tit">
-                        <p>Messages</p>
-                    </div>
-                    <div class="row-content-stat-p">
-                        <p>47</p>
-                    </div>
-                </div>
-                <div class="avt col-1">
-                    <img class="rounded-circle" src="https://data.voz.vn/avatars/m/0/1.jpg?1695794193" />
-                </div>
-                <div class="post-info col-3">
-                    <a href="#">VOZ cập nhật 2025</a>
-                    <p>Nov 13, 2024 - <a href="#">fRzzy</a></p>
-                </div>
-            </div>
-            @* End of Row 2 *@
-
-            @* Row 3 *@
-            <div class="row-content row">
-                <div class="row-content-content mt-2 col-6">
-                    <i class="fa-solid fa-magnifying-glass fs-3"></i>
-                    <a href="#" class="m-2">Tin tức</a>
-                </div>
-                <div class="row-content-stat col-1">
-                    <div class="row-content-stat-tit">
-                        <p>Threads</p>
-                    </div>
-                    <div class="row-content-stat-p">
-                        <p>19</p>
-                    </div>
-                </div>
-                <div class="row-content-stat col-1">
-                    <div class="row-content-stat-tit">
-                        <p>Messages</p>
-                    </div>
-                    <div class="row-content-stat-p">
-                        <p>47</p>
-                    </div>
-                </div>
-                <div class="avt col-1">
-                    <img class="rounded-circle" src="https://data.voz.vn/avatars/m/0/1.jpg?1695794193" />
-                </div>
-                <div class="post-info col-3">
-                    <a href="#">VOZ cập nhật 2025</a>
-                    <p>Nov 13, 2024 - <a href="#">fRzzy</a></p>
-                </div>
-            </div>
-            @* End of Row 3 *@
-
-            @* Row 4 *@
-            <div class="row-content row">
-                <div class="row-content-content mt-2 col-6">
-                    <i class="fa-solid fa-magnifying-glass fs-3"></i>
-                    <a href="#" class="m-2">Review</a>
-                </div>
-                <div class="row-content-stat col-1">
-                    <div class="row-content-stat-tit">
-                        <p>Threads</p>
-                    </div>
-                    <div class="row-content-stat-p">
-                        <p>19</p>
-                    </div>
-                </div>
-                <div class="row-content-stat col-1">
-                    <div class="row-content-stat-tit">
-                        <p>Messages</p>
-                    </div>
-                    <div class="row-content-stat-p">
-                        <p>47</p>
-                    </div>
-                </div>
-                <div class="avt col-1">
-                    <img class="rounded-circle" src="https://data.voz.vn/avatars/m/0/1.jpg?1695794193" />
-                </div>
-                <div class="post-info col-3">
-                    <a href="#">VOZ cập nhật 2025</a>
-                    <p>Nov 13, 2024 - <a href="#">fRzzy</a></p>
-                </div>
-            </div>
-            @* End of Row 4 *@
-
-            @* Row 5 *@
-            <div class="row-content row">
-                <div class="row-content-content mt-2 col-6">
-                    <i class="fa-solid fa-magnifying-glass fs-3"></i>
-                    <a href="#" class="m-2">Chia sẻ kiến thức</a>
-                </div>
-                <div class="row-content-stat col-1">
-                    <div class="row-content-stat-tit">
-                        <p>Threads</p>
-                    </div>
-                    <div class="row-content-stat-p">
-                        <p>19</p>
-                    </div>
-                </div>
-                <div class="row-content-stat col-1">
-                    <div class="row-content-stat-tit">
-                        <p>Messages</p>
-                    </div>
-                    <div class="row-content-stat-p">
-                        <p>47</p>
-                    </div>
-                </div>
-                <div class="avt col-1">
-                    <img class="rounded-circle" src="https://data.voz.vn/avatars/m/0/1.jpg?1695794193" />
-                </div>
-                <div class="post-info col-3">
-                    <a href="#">VOZ cập nhật 2025</a>
-                    <p>Nov 13, 2024 - <a href="#">fRzzy</a></p>
-                </div>
-            </div>
-            @* End of Row 5 *@
-
-        </div>
-    </div>
+        @* Left hand content *@
         <div class="row cat-items">
             <div class="front">
                 <a class="text-decoration-none">Đại sảnh</a>
             </div>
             <div class="front-content">
-                @* Row 1 *@
-                <div class="row-content row">
-                    <div class="row-content-content mt-2 col-6">
-                        <i class="fa-regular fa-comments fs-3"></i>
-                        <a href="#" class="m-2">Thông báo</a>
-                    </div>
-                    <div class="row-content-stat col-1">
-                        <div class="row-content-stat-tit">
-                            <p>Threads</p>
-                        </div>
-                        <div class="row-content-stat-p">
-                            <p>19</p>
-                        </div>
-                    </div>
-                    <div class="row-content-stat col-1">
-                        <div class="row-content-stat-tit">
-                            <p>Messages</p>
-                        </div>
-                        <div class="row-content-stat-p">
-                            <p>47</p>
-                        </div>
-                    </div>
-                    <div class="avt col-1">
-                        <img class="rounded-circle" src="https://data.voz.vn/avatars/m/0/1.jpg?1695794193" />
-                    </div>
-                    <div class="post-info col-3">
-                        <a href="#">VOZ cập nhật 2025</a>
-                        <p>Nov 13, 2024 - <a href="#">fRzzy</a></p>
-                    </div>
-                </div>
-                @* End of Row 1 *@
+                @{
+                    if(Model?.RestrictedCategories != null && Model.RestrictedCategories.Any())
+                    {
+                        foreach (var c in Model?.RestrictedCategories)
+                        {
+                            <div class="row-content row">
+                                <div class="row-content-content mt-2 col-6">
+                                    <i class="fa-regular fa-comments fs-3"></i>
+                                    <a href="#" class="m-2">@c.Name</a>
+                                </div>
+                                <div class="row-content-stat col-2">
+                                    <div class="row-content-stat-tit text-center">
+                                        <p>Threads</p>
+                                    </div>
+                                    <div class="row-content-stat-p">
+                                        <p>@Model.Posts?.Where(p => p.Category?.Name == c.Name).Count()</p>
+                                    </div>
+                                </div>
 
-                @* Row 2 *@
-                <div class="row-content row">
-                    <div class="row-content-content mt-2 col-6">
-                        <i id="feedback-icon" class="fa-regular fa-comments fs-3"></i>
-                        <a href="#" class="m-2 fw-bold">Góp ý</a>
-                    </div>
-                    <div class="row-content-stat col-1">
-                        <div class="row-content-stat-tit">
-                            <p>Threads</p>
-                        </div>
-                        <div class="row-content-stat-p">
-                            <p>19</p>
-                        </div>
-                    </div>
-                    <div class="row-content-stat col-1">
-                        <div class="row-content-stat-tit">
-                            <p>Messages</p>
-                        </div>
-                        <div class="row-content-stat-p">
-                            <p>47</p>
-                        </div>
-                    </div>
-                    <div class="avt col-1">
-                        <img class="rounded-circle" src="https://data.voz.vn/avatars/m/0/1.jpg?1695794193" />
-                    </div>
-                    <div class="post-info col-3">
-                        <a href="#">VOZ cập nhật 2025</a>
-                        <p>Nov 13, 2024 - <a href="#">fRzzy</a></p>
-                    </div>
-                </div>
-                @* End of Row 2 *@
+                                @{
+                                    var latestPost = Model.Posts?
+                                    .Where(p => p.Category?.Name == c.Name)
+                                    .OrderByDescending(p => p.CreatedAt)
+                                    .FirstOrDefault();
+                                }
 
-                @* Row 3 *@
-                <div class="row-content row">
-                    <div class="row-content-content mt-2 col-6">
-                        <i class="fa-solid fa-magnifying-glass fs-3"></i>
-                        <a href="#" class="m-2">Tin tức</a>
-                    </div>
-                    <div class="row-content-stat col-1">
-                        <div class="row-content-stat-tit">
-                            <p>Threads</p>
-                        </div>
-                        <div class="row-content-stat-p">
-                            <p>19</p>
-                        </div>
-                    </div>
-                    <div class="row-content-stat col-1">
-                        <div class="row-content-stat-tit">
-                            <p>Messages</p>
-                        </div>
-                        <div class="row-content-stat-p">
-                            <p>47</p>
-                        </div>
-                    </div>
-                    <div class="avt col-1">
-                        <img class="rounded-circle" src="https://data.voz.vn/avatars/m/0/1.jpg?1695794193" />
-                    </div>
-                    <div class="post-info col-3">
-                        <a href="#">VOZ cập nhật 2025</a>
-                        <p>Nov 13, 2024 - <a href="#">fRzzy</a></p>
-                    </div>
-                </div>
-                @* End of Row 3 *@
 
-                @* Row 4 *@
-                <div class="row-content row">
-                    <div class="row-content-content mt-2 col-6">
-                        <i class="fa-solid fa-magnifying-glass fs-3"></i>
-                        <a href="#" class="m-2">Review</a>
-                    </div>
-                    <div class="row-content-stat col-1">
-                        <div class="row-content-stat-tit">
-                            <p>Threads</p>
-                        </div>
-                        <div class="row-content-stat-p">
-                            <p>19</p>
-                        </div>
-                    </div>
-                    <div class="row-content-stat col-1">
-                        <div class="row-content-stat-tit">
-                            <p>Messages</p>
-                        </div>
-                        <div class="row-content-stat-p">
-                            <p>47</p>
-                        </div>
-                    </div>
-                    <div class="avt col-1">
-                        <img class="rounded-circle" src="https://data.voz.vn/avatars/m/0/1.jpg?1695794193" />
-                    </div>
-                    <div class="post-info col-3">
-                        <a href="#">VOZ cập nhật 2025</a>
-                        <p>Nov 13, 2024 - <a href="#">fRzzy</a></p>
-                    </div>
-                </div>
-                @* End of Row 4 *@
+                                @if (latestPost != null)
+                                {
+                                    <div class="avt col-1">
+                                        <img class="rounded-circle" src="@(latestPost?.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
+                                    </div>
+                                    var latestTime = GetDateFormat(latestPost.CreatedAt);
+                                    <div class="post-info col-3">
+                                        <a href="#">@latestPost.Title</a>
+                                        <p>
+                                            @latestTime -
+                                            <a href="#">@latestPost.User?.UserName</a>
+                                        </p>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+                }
 
-                @* Row 5 *@
-                <div class="row-content row">
-                    <div class="row-content-content mt-2 col-6">
-                        <i class="fa-solid fa-magnifying-glass fs-3"></i>
-                        <a href="#" class="m-2">Chia sẻ kiến thức</a>
-                    </div>
-                    <div class="row-content-stat col-1">
-                        <div class="row-content-stat-tit">
-                            <p>Threads</p>
-                        </div>
-                        <div class="row-content-stat-p">
-                            <p>19</p>
-                        </div>
-                    </div>
-                    <div class="row-content-stat col-1">
-                        <div class="row-content-stat-tit">
-                            <p>Messages</p>
-                        </div>
-                        <div class="row-content-stat-p">
-                            <p>47</p>
-                        </div>
-                    </div>
-                    <div class="avt col-1">
-                        <img class="rounded-circle" src="https://data.voz.vn/avatars/m/0/1.jpg?1695794193" />
-                    </div>
-                    <div class="post-info col-3">
-                        <a href="#">VOZ cập nhật 2025</a>
-                        <p>Nov 13, 2024 - <a href="#">fRzzy</a></p>
-                    </div>
-                </div>
-                @* End of Row 5 *@
+            </div>
+        </div>
+        <div class="row cat-items">
+            <div class="front">
+                <a class="text-decoration-none">Danh mục</a>
+            </div>
+            <div class="front-content">
+                @{
+                    if (Model?.NonRestrictedCategories != null && Model.NonRestrictedCategories.Any())
+                    {
+                        foreach (var c in Model?.NonRestrictedCategories)
+                        {
+                            <div class="row-content row">
+                                <div class="row-content-content mt-2 col-6">
+                                    <i class="fa-regular fa-comments fs-3"></i>
+                                    <a href="#" class="m-2">@c.Name</a>
+                                </div>
+                                <div class="row-content-stat col-2">
+                                    <div class="row-content-stat-tit text-center">
+                                        <p>Threads</p>
+                                    </div>
+                                    <div class="row-content-stat-p">
+                                        <p>@Model.Posts?.Where(p => p.Category?.Name == c.Name).Count()</p>
+                                    </div>
+                                </div>
+                                @{
+                                    var latestPost = Model.Posts?
+                                    .Where(p => p.Category?.Name == c.Name)
+                                    .OrderByDescending(p => p.CreatedAt)
+                                    .FirstOrDefault();
+                                }
+
+                                @if (latestPost != null)
+                                {
+                                    <div class="avt col-1">
+                                        <img class="rounded-circle" src="@(latestPost?.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
+                                    </div>
+                                    var latestTime = GetDateFormat(latestPost.CreatedAt);
+                                    <div class="post-info col-3">
+                                        <a href="#">@latestPost.Title</a>
+                                        <p>
+                                            @latestTime -
+                                            <a href="#">@latestPost.User?.UserName</a>
+                                        </p>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+                }
             </div>
         </div>
     </div>
@@ -352,60 +153,46 @@
         <div class="right-content d-flex flex-column p-0">
             <div class="trending">
                 <p id="trending-title" class="mb-2">Trending content</p>
-                <div class="d-flex">
-                    <img class="rounded-circle" src="https://data.voz.vn/avatars/s/1373/1373122.jpg?1667100155" />
-                    <div class="trending-content-detail">
-                        <a href="#" id="trending-content-title">Arsenal FC Official VOZ:  Arteta & The final Season Netflix 2024/2025</a>
-                        <p>dmt599 - Jan 14, 2025</p>
-                        <p>Replies: 10K</p>
-                    </div>
-                </div>
-                <div class="d-flex">
-                    <img class="rounded-circle" src="https://data.voz.vn/avatars/s/1017/1017591.jpg?1731555456" />
-                    <div class="trending-content-detail">
-                        <a href="#" id="trending-content-title">Arsenal FC Official VOZ:  Arteta & The final Season Netflix 2024/2025</a>
-                        <p>dmt599 - Jan 14, 2025</p>
-                        <p>Replies: 10K</p>
-                    </div>
-                </div>
-                <div class="d-flex">
-                    <img class="rounded-circle" src="https://data.voz.vn/avatars/s/1373/1373122.jpg?1667100155" />
-                    <div class="trending-content-detail">
-                        <a href="#" id="trending-content-title">Arsenal FC Official VOZ:  Arteta & The final Season Netflix 2024/2025</a>
-                        <p>dmt599 - Jan 14, 2025</p>
-                        <p>Replies: 10K</p>
-                    </div>
-                </div>
+                @{
+                    @if (Model?.Posts != null && Model.Posts.Any())
+                    {
+                        foreach (var p in Model.Posts.Where(p => !p.Category.IsRestricted).OrderByDescending(x => x.Views))
+                        {
+                            var latestTime = GetDateFormat(p.CreatedAt);
+                            <div class="d-flex">
+                                <img class="rounded-circle" src="@(p?.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
+                                <div class="trending-content-detail">
+                                    <a href="#" id="trending-content-title">@p?.Title</a>
+                                    <p>@p.User?.UserName - @latestTime</p>
+                                    <p>Replies: @p.Comments.Count()</p>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
             </div>
         </div>
         <hr />
         <div class="right-content d-flex flex-column p-0">
             <div class="trending">
                 <p id="trending-title" class="mb-2">Lastest posts</p>
-                <div class="d-flex">
-                    <img class="rounded-circle" src="https://data.voz.vn/avatars/s/1373/1373122.jpg?1667100155" />
-                    <div class="trending-content-detail">
-                        <a href="#" id="trending-content-title">Arsenal FC Official VOZ:  Arteta & The final Season Netflix 2024/2025</a>
-                        <p>dmt599 - Jan 14, 2025</p>
-                        <p>Replies: 10K</p>
-                    </div>
-                </div>
-                <div class="d-flex">
-                    <img class="rounded-circle" src="https://data.voz.vn/avatars/s/1017/1017591.jpg?1731555456" />
-                    <div class="trending-content-detail">
-                        <a href="#" id="trending-content-title">Arsenal FC Official VOZ:  Arteta & The final Season Netflix 2024/2025</a>
-                        <p>dmt599 - Jan 14, 2025</p>
-                        <p>Replies: 10K</p>
-                    </div>
-                </div>
-                <div class="d-flex">
-                    <img class="rounded-circle" src="https://data.voz.vn/avatars/s/1373/1373122.jpg?1667100155" />
-                    <div class="trending-content-detail">
-                        <a href="#" id="trending-content-title">Arsenal FC Official VOZ:  Arteta & The final Season Netflix 2024/2025</a>
-                        <p>dmt599 - Jan 14, 2025</p>
-                        <p>Replies: 10K</p>
-                    </div>
-                </div>
+                @{
+                    if(Model?.RecentPosts?.Items != null && Model.RecentPosts.Items.Any())
+                    {
+                        foreach (var p in Model.RecentPosts?.Items.Where(p => !p.Category.IsRestricted))
+                        {
+                            var latestTime = GetDateFormat(p.CreatedAt);
+                            <div class="d-flex">
+                                <img class="rounded-circle" src="@(p?.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
+                                <div class="trending-content-detail">
+                                    <a href="#" id="trending-content-title">@p?.Title</a>
+                                    <p>@p.User?.UserName - @latestTime</p>
+                                    <p>Replies: @p.Comments.Count()</p>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
             </div>
         </div>
     </div>

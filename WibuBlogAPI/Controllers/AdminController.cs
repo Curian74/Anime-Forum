@@ -1,6 +1,5 @@
 ﻿using Application.DTO;
 using Application.Services;
-using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -16,7 +15,7 @@ namespace WibuBlogAPI.Controllers
         public async Task<IActionResult> GetAllUsers()
         {
             var allUserList = await _adminServices.GetAllUsersAsync();
-            return new JsonResult(Ok(allUserList));
+            return new JsonResult(Ok(allUserList.Items));
         }
 
         [HttpGet("{userId}")]

@@ -12,9 +12,10 @@ namespace Domain.Entities
         [ForeignKey(nameof(User))]
         public Guid? UserId { get; set; }
 
-        public string? Source {  get; set; }
+        [ForeignKey(nameof(PostCategory))]
+        public Guid? PostCategoryId { get; set; }
 
-        public bool Hidden { get; set; } = false;
+        public bool IsHidden { get; set; } = false;
 
         public ICollection<Vote> Votes { get; set; } = [];
 
@@ -26,7 +27,7 @@ namespace Domain.Entities
 
         // Navigation properties
         public User? User { get; set; }
-
+        public PostCategory? Category { get; set; }
         public Media? Media { get; set; }
     }
 }

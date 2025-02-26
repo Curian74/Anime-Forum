@@ -42,7 +42,7 @@ namespace WibuBlogAPI.Controllers
 
             var cookieOptions = new CookieOptions
             {
-                Expires = DateTime.UtcNow.AddHours(_authTokenOptions.Expires),
+                Expires = DateTime.Now.AddHours(_authTokenOptions.Expires),
                 Secure = _authTokenOptions.Secure,
                 HttpOnly = _authTokenOptions.HttpOnly,
                 SameSite = _authTokenOptions.SameSite,
@@ -79,8 +79,9 @@ namespace WibuBlogAPI.Controllers
             }
 
             var result = await _userServices.Register(dto);
+            
+            return result.Succeeded ? Ok(result) : BadRequest(result);
 
-            return new JsonResult(result);
         }
 
         [HttpGet]

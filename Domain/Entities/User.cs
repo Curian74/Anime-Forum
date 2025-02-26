@@ -6,7 +6,7 @@ namespace Domain.Entities
     {
         public int Points { get; set; } = 0;
 
-        public bool Banned { get; set; } = false;
+        public bool IsBanned { get; set; } = false;
 
         public DateTime? DateOfBirth { get; set; }
 

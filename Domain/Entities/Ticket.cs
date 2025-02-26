@@ -10,7 +10,7 @@ namespace Domain.Entities
 
         public string? Content { get; set; }
 
-        public bool? Approved { get; set; } = null;
+        public bool? IsApproved { get; set; } = null;
 
         public string? Note { get; set; }
 
