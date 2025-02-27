@@ -1,33 +1,8 @@
-﻿@model Application.Common.Pagination.PagedResult<Post>
+﻿@using WibuBlog.Helpers
+@model Application.Common.Pagination.PagedResult<Post>
 
 <link rel="stylesheet" href="~/css/newPosts.css" />
 <link rel="stylesheet" href="~/fontawesome/css/all.css" />
-
-@functions {
-    public string GetDateFormat(DateTime date)
-    {
-        var timeDifference = DateTime.Now.Subtract(date);
-        string timeAgo;
-
-        if (timeDifference.TotalDays >= 1)
-        {
-            timeAgo = $"{(int)timeDifference.TotalDays} days ago";
-        }
-        else if (timeDifference.TotalHours >= 1)
-        {
-            timeAgo = $"{(int)timeDifference.TotalHours} hours ago";
-        }
-        else if (timeDifference.TotalMinutes >= 1)
-        {
-            timeAgo = $"{(int)timeDifference.TotalMinutes} minutes ago";
-        }
-        else
-        {
-            timeAgo = "Just now";
-        }
-        return timeAgo;
-    }
-}
 
 <div class="d-flex flex-column">
     <div class="d-flex justify-content-between">
@@ -38,7 +13,8 @@
     <form asp-action="NewPosts" method="get" class="form-inline my-2 my-lg-0">
         <div class="d-flex gap-2 mb-3">
             <input type="hidden" name="FilterBy" value="Title" />
-            <input name="searchTerm" class="form-control mr-sm-2 w-25" style="background-color:#eaebec" type="search" placeholder="Search" aria-label="Search">
+            <input name="searchTerm" class="form-control mr-sm-2 w-25" style="background-color:#eaebec"
+                type="search" placeholder="Search" aria-label="Search" value="@Context.Request.Query["searchTerm"]">
             <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
         </div>
     </form>
@@ -55,7 +31,7 @@
                             src="@(post.User?.ProfilePhoto?.Url != null ? post.User.ProfilePhoto.Url : Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
                             <div>
                                 @{
-                                    var latestTime = GetDateFormat(post.CreatedAt);
+                                    var latestTime = DateFormatHelper.GetDateFormat(post.CreatedAt);
                                 }
                                 <a class="post-title" href="#">@post.Title</a>
                                 <p class="post-info">
@@ -81,7 +57,7 @@
                         var latestComment = post.Comments.OrderByDescending(c => c.CreatedAt).FirstOrDefault();
                         if (latestComment != null)
                         {
-                            var latestCommentTime = GetDateFormat(latestComment.CreatedAt);
+                            var latestCommentTime = DateFormatHelper.GetDateFormat(post.CreatedAt);
                             <div class="col-12 col-md-2">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="time-container flex-grow-1 ms-3" style="min-width: 80px;">
@@ -109,8 +85,11 @@
             @if (Model.HasPreviousPage)
             {
                 <li class="page-item me-2">
-                    <a class="page-link" asp-action="NewPosts" asp-route-page="@(Model.PageNumber - 1)"
-                       asp-route-pageSize="@Model.PageSize" aria-label="Previous">
+                    <a class="page-link" asp-action="NewPosts"
+                       asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, v => (string)v.Value))"
+                       asp-route-page="@(Model.PageNumber - 1)"
+                       asp-route-pageSize="@Model.PageSize"
+                       aria-label="Previous">
                         <span aria-hidden="true">Prev</span>
                     </a>
                 </li>
@@ -119,20 +98,28 @@
             @for (int i = 1; i <= Model.TotalPages; i++)
             {
                 <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                    <a class="page-link" asp-action="NewPosts" asp-route-page="@i"
-                       asp-route-pageSize="@Model.PageSize">@i</a>
+                    <a class="page-link" asp-action="NewPosts"
+                       asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, v => (string)v.Value))"
+                       asp-route-page="@i"
+                       asp-route-pageSize="@Model.PageSize">
+                        @i
+                    </a>
                 </li>
             }
 
             @if (Model.HasNextPage)
             {
                 <li class="page-item ms-2">
-                    <a class="page-link" asp-action="NewPosts" asp-route-page="@(Model.PageNumber + 1)"
-                       asp-route-pageSize="@Model.PageSize" aria-label="Next">
+                    <a class="page-link" asp-action="NewPosts"
+                       asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, v => (string)v.Value))"
+                       asp-route-page="@(Model.PageNumber + 1)"
+                       asp-route-pageSize="@Model.PageSize"
+                       aria-label="Next">
                         <span aria-hidden="true">Next</span>
                     </a>
                 </li>
             }
         </ul>
+
     </nav>
 </div>

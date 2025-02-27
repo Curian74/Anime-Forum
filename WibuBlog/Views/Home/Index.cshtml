@@ -1,4 +1,5 @@
-﻿@model WibuBlog.ViewModels.Home.HomeVM
+﻿@using WibuBlog.Helpers
+@model WibuBlog.ViewModels.Home.HomeVM
 
 @{
     ViewData["Title"] = "Home Page";
@@ -12,32 +13,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
 
 @* C# codes *@
-
-@functions {
-    public string GetDateFormat(DateTime date)
-    {
-        var timeDifference = DateTime.Now.Subtract(date);
-        string timeAgo;
-
-        if (timeDifference.TotalDays >= 1)
-        {
-            timeAgo = $"{(int)timeDifference.TotalDays} days ago";
-        }
-        else if (timeDifference.TotalHours >= 1)
-        {
-            timeAgo = $"{(int)timeDifference.TotalHours} hours ago";
-        }
-        else if (timeDifference.TotalMinutes >= 1)
-        {
-            timeAgo = $"{(int)timeDifference.TotalMinutes} minutes ago";
-        }
-        else
-        {
-            timeAgo = "Just now";
-        }
-        return timeAgo;
-    }
-}
 
 <div class="d-flex gap-5 align-items-start">
     <div class="d-flex flex-column w-75">
@@ -79,7 +54,7 @@
                                     <div class="avt col-1">
                                         <img class="rounded-circle" src="@(latestPost?.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
                                     </div>
-                                    var latestTime = GetDateFormat(latestPost.CreatedAt);
+                                    var latestTime = DateFormatHelper.GetDateFormat(latestPost.CreatedAt);
                                     <div class="post-info col-3">
                                         <a href="#">@latestPost.Title</a>
                                         <p>
@@ -130,7 +105,7 @@
                                     <div class="avt col-1">
                                         <img class="rounded-circle" src="@(latestPost?.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
                                     </div>
-                                    var latestTime = GetDateFormat(latestPost.CreatedAt);
+                                    var latestTime = DateFormatHelper.GetDateFormat(latestPost.CreatedAt);
                                     <div class="post-info col-3">
                                         <a href="#">@latestPost.Title</a>
                                         <p>
@@ -162,7 +137,7 @@
                             .Where(p => (DateTime.Now - p.CreatedAt).TotalDays <= 7)
                             .OrderByDescending(x => x.Views))
                         {
-                            var latestTime = GetDateFormat(p.CreatedAt);
+                            var latestTime = DateFormatHelper.GetDateFormat(p.CreatedAt);
                             <div class="d-flex">
                                 <img class="rounded-circle" src="@(p?.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
                                 <div class="trending-content-detail">
@@ -185,7 +160,7 @@
                     {
                         foreach (var p in Model.RecentPosts?.Items.Where(p => !p.Category.IsRestricted))
                         {
-                            var latestTime = GetDateFormat(p.CreatedAt);
+                            var latestTime = DateFormatHelper.GetDateFormat(p.CreatedAt);
                             <div class="d-flex">
                                 <img class="rounded-circle" src="@(p?.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
                                 <div class="trending-content-detail">
