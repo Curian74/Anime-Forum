@@ -33,7 +33,7 @@
                                 @{
                                     var latestTime = DateFormatHelper.GetDateFormat(post.CreatedAt);
                                 }
-                                <a class="post-title" href="#">@post.Title</a>
+                                <a class="post-title" asp-action="Detail" asp-route-id="@post.Id">@post.Title</a>
                                 <p class="post-info">
                                     <a class="post-author" href="#">@post.User?.UserName - </a>
                                     <a class="post-date" href="#">@latestTime - </a>

@@ -34,6 +34,7 @@ namespace WibuBlog
             builder.Services.AddScoped<TicketServices>();
             builder.Services.AddScoped<UserServices>();
             builder.Services.AddScoped<AuthenticationServices>();
+            builder.Services.AddScoped<CommentServices>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

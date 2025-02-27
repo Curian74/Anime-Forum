@@ -47,6 +47,7 @@ builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<TicketServices>();
 builder.Services.AddScoped<EmailServices>();
 builder.Services.AddScoped<PostCategoryServices>();
+builder.Services.AddScoped<CommentSerivces>();
 
 // AutoMapper service
 // Quet project, tim tat ca file MappingProfile roi gop lai thanh 1

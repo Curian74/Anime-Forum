@@ -8,9 +8,10 @@ using WibuBlog.Helpers;
 namespace WibuBlog.Controllers
 {
     [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
-    public class PostController(PostServices postService) : Controller
+    public class PostController(PostServices postService, CommentServices commentServices) : Controller
     {
         private readonly PostServices _postService = postService;
+        private readonly CommentServices _commentServices = commentServices;
 
         [AllowAnonymous]
         public async Task<IActionResult> Index(int? page = 1, int? pageSize = 5)
@@ -28,6 +29,27 @@ namespace WibuBlog.Controllers
             return View(value);
         }
 
+        [AllowAnonymous]
+        public async Task<IActionResult> Detail(Guid id, int? page = 1, int? pageSize = 10)
+        {
+            var post = await _postService.GetPostByIdAsync(id);
+            var comments = await _commentServices.GetPagedComments(page, pageSize);
+
+            var postComments = comments.Items.Where(x => x.PostId == post.Id).ToList();
+
+            PostDetailVM postDetailVM = new PostDetailVM
+            {
+                Comments = postComments,
+                Post = post,
+            };
+
+            if (post is null)
+            {
+                return NotFound();
+            }
+
+            return View(postDetailVM);
+        }
         
         [HttpGet]
         public IActionResult Add()
