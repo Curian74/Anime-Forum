@@ -35,5 +35,6 @@ namespace Application.Common.MessageOperations
         //message chua co (da phan la validation thi them chu 'M' vao)
         public const string MEN001 = "Username must not exceed 50 characters";
         public const string MEN002 = "Username must have at least 5 characters";
+        public const string MEN003 = "Successfully registered, please login again.";
     }
 }

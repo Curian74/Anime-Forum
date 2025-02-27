@@ -1,0 +1,80 @@
+﻿@model Application.Common.Pagination.PagedResult<User>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<link rel="stylesheet" href="~/css/userList.css" />
+<link rel="stylesheet" href="~/fontawesome/css/all.css" />
+
+<div class="d-flex flex-column">
+    <div class="d-flex justify-content-between">
+        <h1 class="user-list-title">User List</h1>
+        <a class="btn btn-danger user-register-btn mt-1" href="/Authentication/Register"> 
+            <i class="fa-regular fa-pen-to-square"></i> Register
+        </a>
+    </div>
+    <nav>
+        <ul class="pagination pagination-sm">
+            @if (Model.HasPreviousPage)
+            {
+                    <li class="page-item me-2">
+                        <a class="page-link" asp-action="UserList" asp-route-page="@(Model.PageNumber - 1)"
+                           asp-route-pageSize="@Model.PageSize" aria-label="Previous">
+                            <span aria-hidden="true">Prev</span>
+                        </a>
+                    </li>
+            }
+
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" asp-action="UserList" asp-route-page="@i"
+                           asp-route-pageSize="@Model.PageSize">@i</a>
+                    </li>
+            }
+
+            @if (Model.HasNextPage)
+            {
+                    <li class="page-item ms-2">
+                        <a class="page-link" asp-action="UserList" asp-route-page="@(Model.PageNumber + 1)"
+                           asp-route-pageSize="@Model.PageSize" aria-label="Next">
+                            <span aria-hidden="true">Next</span>
+                        </a>
+                    </li>
+            }
+        </ul>
+    </nav>
+    @foreach (var user in Model.Items)
+    {
+            <div class="user-card">
+                <div class="row mt-2 mb-2">
+                    <div class="col-12 col-md-7">
+                        <div class="d-flex gap-3 align-items-center">
+                            <img class="rounded-circle user-avatar" 
+                                 src="@(user.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
+                            <div>
+                                <a class="user-name" href="#">@user.UserName</a>
+                                <p class="user-info">
+                                    <span class="user-email">@user.Email</span>
+                                    <span class="user-role">@user.Rank</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-1 user-stat">
+                        <p>Points:</p>
+                        <p>Rank:</p>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <p>@user.Points</p>
+                        <p>@user.Rank</p>
+                    </div>
+                    <div class="col-12 col-md-2">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <p class="mb-0">ID: @user.Id</p>
+                            <img class="rounded-circle user-avatar-small" 
+                                 src="@(user.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+    }
+</div>

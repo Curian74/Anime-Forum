@@ -12,6 +12,7 @@ using System.Text;
 using Infrastructure.Extensions;
 using Infrastructure.Configurations;
 using System.Text.Json.Serialization;
+using WibuBlogAPI.HelperServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,7 @@ builder.Services.AddScoped<PostServices>();
 builder.Services.AddScoped<UserServices>();
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<TicketServices>();
+builder.Services.AddScoped<EmailServices>();
 builder.Services.AddScoped<PostCategoryServices>();
 
 // AutoMapper service
