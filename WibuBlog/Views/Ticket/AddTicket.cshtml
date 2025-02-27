@@ -11,6 +11,22 @@
 
         <br />
 
+        <label asp-for="Tag">Select Tag</label>
+        <select asp-for="Tag" class="form-control">
+            <option value="#BannedAccount">#BannedAccount</option>
+            <option value="#HelpCreatePost">#HelpCreatePost</option>
+            <option value="#TechnicalIssue">#TechnicalIssue</option>
+        </select>
+        <span class="text-danger" asp-validation-for="Tag"></span>
+
+        <br />
+
+        <label asp-for="Email">Email</label>
+        <input asp-for="Email" class="form-control" readonly />
+        <span class="text-danger" asp-validation-for="Email"></span>
+
+        <br />
+
         <button class="btn btn-primary">Submit Ticket</button>
     </form>
 </div>
