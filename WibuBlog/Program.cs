@@ -1,4 +1,5 @@
 using Domain.Interfaces;
+using Infrastructure.Configurations;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using WibuBlog.Interfaces.Api;
@@ -28,12 +29,15 @@ namespace WibuBlog
             builder.Services.AddScoped<PostCategoryServices>();
             builder.Services.AddScoped<TicketServices>();
             builder.Services.AddScoped<UserServices>();
-
+            builder.Services.AddScoped<AuthenticationServices>();
             //HttpClient
             builder.Services.AddHttpClient("api", httpClient =>
             {
                 httpClient.BaseAddress = new Uri("http://localhost:5002/api/");
             });
+            //builder.Services.Configure<AuthTokenOptions>(
+            //    builder.Configuration.GetSection("AuthTokenOptions")
+            //);
 
             var app = builder.Build();
 
@@ -44,6 +48,7 @@ namespace WibuBlog
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
             app.UseStatusCodePagesWithReExecute("/Error/NotFound");
             app.UseHttpsRedirection();
             app.UseStaticFiles();

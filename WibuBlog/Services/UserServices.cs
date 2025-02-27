@@ -1,7 +1,7 @@
 ﻿using Application.Common.Pagination;
 using Application.DTO;
 using Domain.Entities;
-using Infrastructure.Common.ApiResponse;
+using WibuBlog.Common.ApiResponse;
 using Microsoft.AspNetCore.Mvc;
 using System.Drawing;
 using WibuBlog.Interfaces.Api;
@@ -28,5 +28,6 @@ namespace WibuBlog.Services
             var response = await _apiService.PutAsync<ApiResponse<User>>($"User/UpdateUser/{userId}", data);
             return response.Value!;
         }
+
     }
 }

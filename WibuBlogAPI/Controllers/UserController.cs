@@ -5,6 +5,7 @@ using Infrastructure.Extensions;
 using Microsoft.Extensions.Options;
 using Infrastructure.Configurations;
 using Domain.Entities;
+using WibuBlogAPI.HelperServices;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,11 +13,13 @@ namespace WibuBlogAPI.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class UserController(UserServices userServices, TicketServices ticketServices, JwtHelper jwtHelper, IOptions<AuthTokenOptions> authTokenOptions) : ControllerBase
+    public class UserController(UserServices userServices, TicketServices ticketServices, JwtHelper jwtHelper,
+        IOptions<AuthTokenOptions> authTokenOptions, EmailServices emailServices) : ControllerBase
     {
         private readonly UserServices _userServices = userServices;
         private readonly TicketServices _ticketServices = ticketServices;
         private readonly JwtHelper _jwtHelper = jwtHelper;
+        private readonly EmailServices _emailService = emailServices;
         private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
 
         [HttpPost]
@@ -182,6 +185,13 @@ namespace WibuBlogAPI.Controllers
         {
             var result = await _userServices.GetPagedUsersAsync(page, size);
             return new JsonResult(Ok(result));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SendTestEmail()
+        {
+            await _emailService.SendEmailAsync("phathnhe187251@fpt.edu.vn", "Test Email", "Memaybeo!");
+            return Ok("Email sent successfully!");
         }
     }
 }
