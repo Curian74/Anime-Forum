@@ -1,5 +1,6 @@
 using Domain.Common.Roles;
 using Domain.Interfaces;
+using Infrastructure.Configurations;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,8 @@ namespace WibuBlog
             builder.Services.AddScoped<PostServices>();
             builder.Services.AddScoped<PostCategoryServices>();
             builder.Services.AddScoped<TicketServices>();
+            builder.Services.AddScoped<UserServices>();
+            builder.Services.AddScoped<AuthenticationServices>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -68,12 +71,15 @@ namespace WibuBlog
     .AddPolicy("MemberPolicy", policy => policy.RequireRole(UserRoles.Member, UserRoles.Moderator, UserRoles.Admin))
     .AddPolicy("ModeratorPolicy", policy => policy.RequireRole(UserRoles.Moderator, UserRoles.Admin))
     .AddPolicy("AdminPolicy", policy => policy.RequireRole(UserRoles.Admin));
-
+          
             //HttpClient
             builder.Services.AddHttpClient("api", httpClient =>
             {
                 httpClient.BaseAddress = new Uri("http://localhost:5002/api/");
             });
+            //builder.Services.Configure<AuthTokenOptions>(
+            //    builder.Configuration.GetSection("AuthTokenOptions")
+            //);
 
             var app = builder.Build();
 
@@ -85,6 +91,7 @@ namespace WibuBlog
                 app.UseHsts();
             }
 
+            app.UseStatusCodePagesWithReExecute("/Error/NotFound");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
