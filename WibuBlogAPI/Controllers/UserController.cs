@@ -6,11 +6,14 @@ using Microsoft.Extensions.Options;
 using Infrastructure.Configurations;
 using Domain.Entities;
 using WibuBlogAPI.HelperServices;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace WibuBlogAPI.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class UserController(UserServices userServices, TicketServices ticketServices, JwtHelper jwtHelper,
@@ -90,16 +93,9 @@ namespace WibuBlogAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAccountDetails()
         {
-            Request.Cookies.TryGetValue(_authTokenOptions.Name, out string? authToken);
+            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-            if (authToken == null || !_jwtHelper.IsValidToken(authToken))
-            {
-                return new JsonResult(BadRequest("User is not logged in"));
-            }
-
-            var id = (Guid)JwtHelper.ExtractUserIdFromToken(authToken);
-
-            var result = await _userServices.GetProfileDetails(id);
+            var result = await _userServices.GetProfileDetails(userId);
 
             if (result == null)
             {
@@ -108,15 +104,11 @@ namespace WibuBlogAPI.Controllers
 
             return new JsonResult(result);
         }
+
         [HttpGet]
         public async Task<IActionResult> GetUserTickets()
         {
-            Request.Cookies.TryGetValue(_authTokenOptions.Name, out string? authToken);
-            if (authToken == null || !_jwtHelper.IsValidToken(authToken))
-            {
-                return new JsonResult(BadRequest("User is not logged in"));
-            }
-            var userId = (Guid)JwtHelper.ExtractUserIdFromToken(authToken);
+            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             var tickets = await _ticketServices.GetUserTickets(userId);
             return new JsonResult(Ok(tickets));
         }
@@ -124,12 +116,7 @@ namespace WibuBlogAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateTicket(CreateTicketDto dto)
         {
-            Request.Cookies.TryGetValue(_authTokenOptions.Name, out string? authToken);
-            if (authToken == null || !_jwtHelper.IsValidToken(authToken))
-            {
-                return new JsonResult(BadRequest("User is not logged in"));
-            }
-            var userId = (Guid)JwtHelper.ExtractUserIdFromToken(authToken);
+            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             dto.UserId = userId;
             var result = await _ticketServices.CreateTicket(dto);
             return new JsonResult(Ok(result));
@@ -138,12 +125,7 @@ namespace WibuBlogAPI.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateTicket(UpdateTicketDto dto)
         {
-            Request.Cookies.TryGetValue(_authTokenOptions.Name, out string? authToken);
-            if (authToken == null || !_jwtHelper.IsValidToken(authToken))
-            {
-                return new JsonResult(BadRequest("User is not logged in"));
-            }
-            var userId = (Guid)JwtHelper.ExtractUserIdFromToken(authToken);
+            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             var result = await _ticketServices.UpdateTicket(dto, userId);
             if (!result)
             {
@@ -155,12 +137,7 @@ namespace WibuBlogAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTicket(Guid id)
         {
-            Request.Cookies.TryGetValue(_authTokenOptions.Name, out string? authToken);
-            if (authToken == null || !_jwtHelper.IsValidToken(authToken))
-            {
-                return new JsonResult(BadRequest("User is not logged in"));
-            }
-            var userId = (Guid)JwtHelper.ExtractUserIdFromToken(authToken);
+            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             var result = await _ticketServices.DeleteTicket(id, userId);
             if (!result)
             {

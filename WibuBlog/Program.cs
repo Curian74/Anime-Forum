@@ -1,7 +1,11 @@
+using Domain.Common.Roles;
 using Domain.Interfaces;
 using Infrastructure.Configurations;
 using Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using WibuBlog.Interfaces.Api;
 using WibuBlog.Services;
 using WibuBlog.Services.Api;
@@ -30,6 +34,44 @@ namespace WibuBlog
             builder.Services.AddScoped<TicketServices>();
             builder.Services.AddScoped<UserServices>();
             builder.Services.AddScoped<AuthenticationServices>();
+
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]))
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                if (context.Request.Cookies.TryGetValue(builder.Configuration["AuthTokenOptions:Name"], out var token))
+                {
+                    context.Token = token;
+                }
+
+                return Task.CompletedTask;
+            }
+        };
+    })
+    .AddCookie(options => {
+        options.LoginPath = "/Authentication/Login"; // Where to redirect when not logged in
+        options.AccessDeniedPath = "/Authentication/AccessDenied"; // For unauthorized access
+    });
+
+            builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("MemberPolicy", policy => policy.RequireRole(UserRoles.Member, UserRoles.Moderator, UserRoles.Admin))
+    .AddPolicy("ModeratorPolicy", policy => policy.RequireRole(UserRoles.Moderator, UserRoles.Admin))
+    .AddPolicy("AdminPolicy", policy => policy.RequireRole(UserRoles.Admin));
+          
             //HttpClient
             builder.Services.AddHttpClient("api", httpClient =>
             {
@@ -54,6 +96,24 @@ namespace WibuBlog
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseStatusCodePages(context =>
+            {
+                var response = context.HttpContext.Response;
+
+                if (response.StatusCode == 401)
+                {
+                    response.Redirect("/Authentication/Login");
+                }
+                else if (response.StatusCode == 403)
+                {
+                    response.Redirect("/Authentication/AccessDenied");
+                }
+
+                return Task.CompletedTask;
+            });
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

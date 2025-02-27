@@ -86,6 +86,10 @@ namespace WibuBlog.Controllers
             return View(registerVM);
         }
 
-
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View(NotFound());
+        }
     }
 }

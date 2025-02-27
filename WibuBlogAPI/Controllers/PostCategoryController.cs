@@ -1,18 +1,20 @@
 ﻿using Application.Services;
 using Domain.Entities;
 using Infrastructure.Extensions;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
 
 namespace WibuBlogAPI.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Bearer", Policy = "AdminPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class PostCategoryController(PostCategoryServices postCategoryServices) : ControllerBase
     {
         private readonly PostCategoryServices _postCategoryServices = postCategoryServices;
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll(
             string? filterBy = null,

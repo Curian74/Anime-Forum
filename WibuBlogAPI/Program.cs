@@ -65,7 +65,7 @@ builder.Services.AddScoped<RoleManager<IdentityRole<Guid>>>();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
-    // Password settings.
+    // Password settings
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireNonAlphanumeric = true;
@@ -73,12 +73,12 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequiredLength = 6;
     options.Password.RequiredUniqueChars = 1;
 
-    // Lockout settings.
+    // Lockout settings
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
     options.Lockout.MaxFailedAccessAttempts = 5;
     options.Lockout.AllowedForNewUsers = true;
 
-    // User settings.
+    // User settings
     options.User.AllowedUserNameCharacters =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
     options.User.RequireUniqueEmail = false;
@@ -101,7 +101,26 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]))
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                if (context.Request.Cookies.TryGetValue(builder.Configuration["AuthTokenOptions:Name"], out var token))
+                {
+                    context.Token = token;
+                }
+
+                return Task.CompletedTask;
+            }
+        };
     });
+
+// Add the authorization middleware with hierarchy-based auth policies
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("MemberPolicy", policy => policy.RequireRole(UserRoles.Member, UserRoles.Moderator, UserRoles.Admin))
+    .AddPolicy("ModeratorPolicy", policy => policy.RequireRole(UserRoles.Moderator, UserRoles.Admin))
+    .AddPolicy("AdminPolicy", policy => policy.RequireRole(UserRoles.Admin));
 
 // Auth token configuration
 builder.Services.Configure<AuthTokenOptions>(
@@ -140,9 +159,42 @@ using (var scope = app.Services.CreateScope())
         await roleManager.CreateAsync(new IdentityRole<Guid>(UserRoles.Member));
     }
 
-    if (!db.PostCategories.Any())
+    // Seed a superuser account, for testing purposes. Username and password are both "admin"
+    var userManager = services.GetRequiredService<UserManager<User>>();
+    var admin = await userManager.FindByNameAsync("admin");
+    if (admin == null)
     {
-        var categories = new List<PostCategory>
+        admin = new User
+        {
+            Id = Guid.NewGuid(),
+            UserName = "admin",
+            Email = "admin@animeforum.com",
+            Bio = "admin"
+        };
+
+        var passwordValidators = userManager.PasswordValidators;
+        var userValidators = userManager.UserValidators;
+
+        userManager.PasswordValidators.Clear();
+        userManager.UserValidators.Clear();
+
+        var result = await userManager.CreateAsync(admin, "admin");
+        await userManager.AddToRoleAsync(admin, UserRoles.Admin);
+
+        foreach (var validator in passwordValidators)
+        {
+            userManager.PasswordValidators.Add(validator);
+        }
+
+        foreach (var validator in userValidators)
+        {
+            userManager.UserValidators.Add(validator);
+        }
+
+        // Seed category table with categories
+        if (!db.PostCategories.Any())
+        {
+            var categories = new List<PostCategory>
         {
             new() { Id = Guid.NewGuid(), Name = "Thông báo"},
             new() { Id = Guid.NewGuid(), Name = "Góp ý"},
@@ -157,8 +209,9 @@ using (var scope = app.Services.CreateScope())
             new() { Id = Guid.NewGuid(), Name = "Giáo dục"},
         };
 
-        db.PostCategories.AddRange(categories);
-        await db.SaveChangesAsync();
+            db.PostCategories.AddRange(categories);
+            await db.SaveChangesAsync();
+        }
     }
 }
 
@@ -171,9 +224,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
-
 app.UseAuthentication();
+
+app.UseAuthorization();
 
 app.MapControllers();
 
