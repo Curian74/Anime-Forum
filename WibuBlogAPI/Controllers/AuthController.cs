@@ -76,12 +76,16 @@ namespace WibuBlogAPI.Controllers
         {
             Request.Cookies.TryGetValue(_authTokenOptions.Name, out string? authToken);
 
-            if (authToken != null && _jwtHelper.IsValidToken(authToken))
+            if (string.IsNullOrEmpty(authToken) && Request.Headers.TryGetValue("Authorization", out var authHeader))
             {
-                return true;
+                var bearerToken = authHeader.FirstOrDefault();
+                if (!string.IsNullOrEmpty(bearerToken) && bearerToken.StartsWith("Bearer "))
+                {
+                    authToken = bearerToken["Bearer ".Length..]; // Strip "Bearer " prefix
+                }
             }
 
-            return false;
+            return !string.IsNullOrEmpty(authToken) && _jwtHelper.IsValidToken(authToken);
         }
     }
 }

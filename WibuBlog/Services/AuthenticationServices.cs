@@ -18,6 +18,13 @@ namespace WibuBlog.Services
 
         public async Task<bool> AuthorizeLogin(LoginVM loginVM)
         {
+            var authToken = _httpContextAccessor.HttpContext?.Request.Cookies[_authTokenOptions.Name];
+
+            if (!string.IsNullOrEmpty(authToken))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
+            }
+
             var loginDTO = new LoginDto
             {
                 Login = loginVM.Login,
