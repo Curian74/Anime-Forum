@@ -17,10 +17,12 @@ namespace WibuBlog.Services
             return response.Value!;
         }
 
-        public async Task<PagedResult<Post>> GetPagedPostAsync(int? page, int? pageSize, string? orderBy, bool? isDescending)
+        public async Task<PagedResult<Post>> GetPagedPostAsync(int? page, int? pageSize,
+            string? filterBy, string? searchTerm, string? orderBy, bool? isDescending)
         {
             var response = await _apiService.GetAsync<ApiResponse<PagedResult<Post>>>(
-                $"Post/GetPaged?page={page}&size={pageSize}&orderBy={orderBy}&descending={isDescending}");
+                $"Post/GetPaged?page={page}&size={pageSize}&filterBy={filterBy}" +
+                $"&searchTerm={searchTerm}&orderBy={orderBy}&descending={isDescending}");
 
             return response.Value!;
         }

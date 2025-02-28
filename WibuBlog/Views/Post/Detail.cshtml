@@ -1,0 +1,109 @@
+﻿@using WibuBlog.ViewModels.Post
+@model PostDetailVM
+
+<link rel="stylesheet" href="~/fontawesome/css/all.css" />
+<link rel="stylesheet" href="~/css/postDetail.css" />
+<script src="https://cdn.tiny.cloud/1/77vrrilumumhps2l6p6hg9fm5ta77hsaprmukv02z5gxsyrs/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+
+
+<section>
+    <div class="container mt-4">
+        <div class="post-container">
+            <div class="post-header">
+                <img src="https://data.voz.vn/avatars/l/1857/1857672.jpg?1674878168" alt="Avatar" class="avatar">
+                <div>
+                    <h5 class="m-0">@Model.Post?.User?.UserName</h5>
+                    <small class="text-muted">Posted on @Model.Post?.CreatedAt</small>
+                </div>
+            </div>
+            <div class="post-content mt-2">
+                <h3 class="mb-3">@Model.Post?.Title</h3>
+                <p id="post-content">@Html.Raw(Model.Post?.Content)</p>
+            </div>
+
+            <!-- Post Actions -->
+            <div class="post-actions mt-5">
+                <div class="action-button d-flex align-items-center justify-content-between px-3 py-2">
+                    <div class="d-flex align-items-center">
+                        <a href="#" class="vote-btn me-1" data-vote="up"><i class="fa-regular fa-circle-up"></i></a>
+                        <span>@Model.Post?.Votes.Where(x => x.IsUpvote).Count()</span>
+                    </div>
+                    <a href="#" class="vote-btn" data-vote="down"><i class="fa-regular fa-circle-down"></i></a>
+                </div>
+                <div class="action-button d-flex align-items-center justify-content-center px-3">
+                    <a href="#"><i class="fa-regular fa-comment"></i> @Model.Post?.Comments.Count()</a>
+                </div>
+                <div class="action-button d-flex align-items-center justify-content-center px-3">
+                    <a href="#"><i class="fa-regular fa-share-from-square"></i> Share</a>
+                </div>
+            </div>
+
+            <!-- Comment Input -->
+            <div class="mt-3">
+                <textarea class="form-control" rows="3" placeholder="Add a comment"></textarea>
+                <button class="btn btn-primary mt-3">Post Comment</button>
+            </div>
+
+            <!-- Comment Section -->
+            @{
+                if (Model.Comments != null && Model.Comments.Any())
+                {
+                    <div class="comment-section">
+                        <h5>Comments (@Model.Comments.Count())</h5>
+                        @{
+                            foreach (var c in Model.Comments)
+                            {
+                                <div class="card p-2 mb-2">
+                                    <div class="d-flex align-items-start">
+                                        <img class="rounded-circle avatar me-2"
+                                             src="@(c.User?.ProfilePhoto?.Url != null ? c.User.ProfilePhoto.Url : Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
+                                        <div>
+                                            <div>
+                                                <strong>@c.User?.UserName</strong>
+                                                <p class="mb-1">@c.Content</p>
+                                                @*<a href="#" class="btn-reply"><i class="fa-regular fa-comment"></i> Reply</a> *@
+                                            </div>
+                                            @*<div class="replies">
+                                                <div class="card p-1 mb-1 mt-1">
+                                                    <div class="d-flex align-items-start p-1">
+                                                        <img src="https:data.voz.vn/avatars/l/1857/1857672.jpg?1674878168" alt="Avatar" class="avatar me-2">
+                                                        <div class="h-25">
+                                                            <strong>Reply 1</strong>
+                                                            <p class="mb-0">This is a reply to the comment.This is a reply to the comment.This is a reply to the comment.This is a reply to the comment.This is a reply to the comment.This is a reply to the comment.This is a reply to the comment.</p>
+                                                            <a href="#" class="btn-reply"><i class="fa-regular fa-comment"></i> Reply</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>*@
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                }
+
+                else
+                {
+                    <div class="d-flex align-items-center mt-5 gap-5">
+                        <img style="width:4%" src="https://www.redditstatic.com/shreddit/assets/thinking-snoo.png" />
+                        <div style="font-size: 14px;">
+                            <h5 style="font-weight: 500">Be the first to comment</h5>
+                            <div>
+                                <p class="mb-0">Nobody's responded to this post yet.</p>
+                                <p class="mb-0">Add your thoughts and get the conversation going.</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</section>
+<script>
+    tinymce.init({
+      selector: 'textarea',
+      height: 300,
+      toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough || align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+    });
+</script>
