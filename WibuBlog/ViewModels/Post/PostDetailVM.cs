@@ -7,5 +7,6 @@ namespace WibuBlog.ViewModels.Post
     {
         public Domain.Entities.Post? Post { get; set; }
         public List<Comment>? Comments { get; set; }
+        public Guid? UserId {  get; set; }
     }
 }
