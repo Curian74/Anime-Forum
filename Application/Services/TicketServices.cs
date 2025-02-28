@@ -105,5 +105,12 @@ namespace Application.Services
             await _context.SaveChangesAsync();
             return true;
         }
+        public async Task<List<TicketDto>> GetAllTicketsAsync()
+        {
+            var tickets = await _context.Set<Ticket>().ToListAsync();
+            return _mapper.Map<List<TicketDto>>(tickets);
+
+        }
+
     }
 }
