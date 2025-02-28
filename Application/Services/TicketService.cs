@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
 {
-    public class TicketServices
+    public class TicketService
     {
         private readonly DbContext _context;
         private readonly IMapper _mapper;
 
-        public TicketServices(DbContext context, IMapper mapper)
+        public TicketService(DbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;

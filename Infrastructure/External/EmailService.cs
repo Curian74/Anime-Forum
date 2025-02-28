@@ -1,16 +1,12 @@
 ﻿using System.Net.Mail;
 using System.Net;
+using Microsoft.Extensions.Configuration;
 
-namespace WibuBlogAPI.HelperServices
+namespace Infrastructure.External
 {
-    public class EmailServices
+    public class EmailService(IConfiguration configuration)
     {
-        private readonly IConfiguration _configuration;
-
-        public EmailServices(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
+        private readonly IConfiguration _configuration = configuration;
 
         public async Task SendEmailAsync(string toEmail, string subject, string body)
         {
