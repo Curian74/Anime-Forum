@@ -12,7 +12,7 @@ using System.Text;
 using Infrastructure.Extensions;
 using Infrastructure.Configurations;
 using System.Text.Json.Serialization;
-using WibuBlogAPI.HelperServices;
+using Infrastructure.External;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,12 +37,9 @@ builder.Services.AddScoped<DbContext, ApplicationDbContext>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-// Configuration manager
-builder.Services.AddScoped<Domain.Interfaces.IConfigurationManager, Infrastructure.Configurations.ConfigurationManager>();
-
 // Service classes
-builder.Services.AddScoped<PostServices>();
-builder.Services.AddScoped<UserServices>();
+builder.Services.AddScoped<PostService>();
+builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<TicketServices>();
 builder.Services.AddScoped<EmailServices>();
@@ -87,9 +84,13 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 builder.Services.AddIdentity<User, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
-.AddDefaultTokenProviders();
+    .AddDefaultTokenProviders();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -127,6 +128,26 @@ builder.Services.AddAuthorizationBuilder()
 builder.Services.Configure<AuthTokenOptions>(
     builder.Configuration.GetSection("AuthTokenOptions")
 );
+
+
+// Cookie configuration + CORS
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+    options.CheckConsentNeeded = context => true;
+    options.MinimumSameSitePolicy = SameSiteMode.None;
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        builder => builder
+            .SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost") // Allow any localhost port
+            .AllowCredentials()
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
 
 var app = builder.Build();
 
@@ -224,6 +245,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 

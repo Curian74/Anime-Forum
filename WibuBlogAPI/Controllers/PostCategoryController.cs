@@ -10,9 +10,9 @@ namespace WibuBlogAPI.Controllers
     [Authorize(AuthenticationSchemes = "Bearer", Policy = "AdminPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class PostCategoryController(PostCategoryServices postCategoryServices) : ControllerBase
+    public class PostCategoryController(PostCategoryService postCategoryService) : ControllerBase
     {
-        private readonly PostCategoryServices _postCategoryServices = postCategoryServices;
+        private readonly PostCategoryService _postCategoryService = postCategoryService;
 
         [AllowAnonymous]
         [HttpGet]
@@ -25,7 +25,7 @@ namespace WibuBlogAPI.Controllers
             Expression<Func<PostCategory, bool>>? filter = ExpressionBuilder.BuildFilterExpression<PostCategory>(filterBy, searchTerm);
             Func<IQueryable<PostCategory>, IOrderedQueryable<PostCategory>>? orderExpression = ExpressionBuilder.BuildOrderExpression<PostCategory>(orderBy, descending);
 
-            var result = await _postCategoryServices.GetAllAsync(filter, orderExpression);
+            var result = await _postCategoryService.GetAllAsync(filter, orderExpression);
 
             return new JsonResult(Ok(result.Items));
         }

@@ -67,13 +67,13 @@ namespace WibuBlog.Controllers
 
             try
             {
+                //var authToken = Request.Cookies[_authTokenOptions.Name];
                 await _postService.AddNewPostAsync(addPostVM);
                 return RedirectToAction(nameof(Index));
             }
-
-            catch (Exception)
+            catch (HttpRequestException e)
             {
-                ModelState.AddModelError(string.Empty, "*De message loi vao day.*");
+                ModelState.AddModelError(string.Empty, $"{e.GetType().Name}: {e.Message} {e.StatusCode}");
                 return View(addPostVM);
             }
 

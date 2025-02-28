@@ -1,13 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Application.Services;
 using Application.DTO;
-using Infrastructure.Extensions;
-using Microsoft.Extensions.Options;
-using Infrastructure.Configurations;
-using Domain.Entities;
-using WibuBlogAPI.HelperServices;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Infrastructure.External;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,86 +12,18 @@ namespace WibuBlogAPI.Controllers
     [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class UserController(UserServices userServices, TicketServices ticketServices, JwtHelper jwtHelper,
-        IOptions<AuthTokenOptions> authTokenOptions, EmailServices emailServices) : ControllerBase
+    public class UserController(UserService userService, TicketService ticketService, EmailService emailServices) : ControllerBase
     {
-        private readonly UserServices _userServices = userServices;
-        private readonly TicketServices _ticketServices = ticketServices;
-        private readonly JwtHelper _jwtHelper = jwtHelper;
-        private readonly EmailServices _emailService = emailServices;
-        private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
-
-        [HttpPost]
-        public async Task<IActionResult> Login(LoginDto dto)
-        {
-            Request.Cookies.TryGetValue(_authTokenOptions.Name, out string? authToken);
-
-            if (authToken != null || _jwtHelper.IsValidToken(authToken))
-            {
-                return new JsonResult(BadRequest("User is already logged in"));
-            }
-
-            var result = await _userServices.Login(dto);
-
-            if (result == false)
-            {
-                return new JsonResult(Challenge("Invalid credentials"));
-            }
-
-            var user = await _userServices.FindByLoginAsync(dto);
-
-            var token = await _jwtHelper.GenerateJwtToken(user);
-
-            var cookieOptions = new CookieOptions
-            {
-                Expires = DateTime.Now.AddHours(_authTokenOptions.Expires),
-                Secure = _authTokenOptions.Secure,
-                HttpOnly = _authTokenOptions.HttpOnly,
-                SameSite = _authTokenOptions.SameSite,
-            };
-
-            Response.Cookies.Append(_authTokenOptions.Name, token, cookieOptions);
-
-            return new JsonResult(Ok("Login approved"));
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Logout()
-        {
-            Request.Cookies.TryGetValue(_authTokenOptions.Name, out string? authToken);
-
-            if (authToken == null || !_jwtHelper.IsValidToken(authToken))
-            {
-                return new JsonResult(BadRequest("User is not logged in"));
-            }
-
-            Response.Cookies.Delete(_authTokenOptions.Name);
-
-            return new JsonResult(Ok("Logged out"));
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Register(RegisterDto dto)
-        {
-            Request.Cookies.TryGetValue(_authTokenOptions.Name, out string? authToken);
-
-            if (authToken != null || _jwtHelper.IsValidToken(authToken))
-            {
-                return new JsonResult(BadRequest("User is already logged in"));
-            }
-
-            var result = await _userServices.Register(dto);
-            
-            return result.Succeeded ? Ok(result) : BadRequest(result);
-
-        }
+        private readonly UserService _userService = userService;
+        private readonly TicketService _ticketService = ticketService;
+        private readonly EmailService _emailService = emailServices;
 
         [HttpGet]
         public async Task<IActionResult> GetAccountDetails()
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-            var result = await _userServices.GetProfileDetails(userId);
+            var result = await _userService.GetProfileDetails(userId);
 
             if (result == null)
             {
@@ -109,7 +37,7 @@ namespace WibuBlogAPI.Controllers
         public async Task<IActionResult> GetUserTickets()
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            var tickets = await _ticketServices.GetUserTickets(userId);
+            var tickets = await _ticketService.GetUserTickets(userId);
             return new JsonResult(Ok(tickets));
         }
 
@@ -118,15 +46,31 @@ namespace WibuBlogAPI.Controllers
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             dto.UserId = userId;
+
+            // Kiểm tra xem email có thuộc user không
+            var user = await _userServices.FindByIdAsync(userId);
+            if (user == null || user.Email != dto.Email)
+            {
+                return new JsonResult(BadRequest("Email không hợp lệ"));
+            }
+
+            // Danh sách tag hợp lệ
+            var validTags = new HashSet<string> { "#BannedAccount", "#HelpCreatePost", "#TechnicalIssue" };
+            if (!validTags.Contains(dto.Tag))
+            {
+                return new JsonResult(BadRequest("Tag không hợp lệ"));
+            }
+
             var result = await _ticketServices.CreateTicket(dto);
             return new JsonResult(Ok(result));
         }
+
 
         [HttpPut]
         public async Task<IActionResult> UpdateTicket(UpdateTicketDto dto)
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            var result = await _ticketServices.UpdateTicket(dto, userId);
+            var result = await _ticketService.UpdateTicket(dto, userId);
             if (!result)
             {
                 return new JsonResult(NotFound("Ticket not found or unauthorized"));
@@ -138,7 +82,7 @@ namespace WibuBlogAPI.Controllers
         public async Task<IActionResult> DeleteTicket(Guid id)
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            var result = await _ticketServices.DeleteTicket(id, userId);
+            var result = await _ticketService.DeleteTicket(id, userId);
             if (!result)
             {
                 return new JsonResult(NotFound("Ticket not found or unauthorized"));
@@ -149,7 +93,7 @@ namespace WibuBlogAPI.Controllers
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetUserByIdAsync(Guid userId)
         {
-                var result = await _userServices.GetProfileDetails(userId);
+                var result = await _userService.GetProfileDetails(userId);
                 if(result == null)
                 {
                      return new JsonResult(NotFound());
@@ -160,7 +104,7 @@ namespace WibuBlogAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPagedUsersAsync(int page, int size)
         {
-            var result = await _userServices.GetPagedUsersAsync(page, size);
+            var result = await _userService.GetPagedUsersAsync(page, size);
             return new JsonResult(Ok(result));
         }
 

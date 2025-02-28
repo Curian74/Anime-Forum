@@ -1,18 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Domain.Entities;
-using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Domain.Common.BaseEntities;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Persistence
 {
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfigurationManager configurationManager) : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration) : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
     {
-        private readonly IConfigurationManager _configurationManager = configurationManager;
-        //private readonly IHttpContextAccessor _httpContextAccessor = contextAccessor;
+        private readonly IConfiguration _configuration = configuration;
 
         public DbSet<Post> Posts { get; set; }
         public DbSet<PostCategory> PostCategories { get; set; }
@@ -30,7 +27,7 @@ namespace Infrastructure.Persistence
         {
             if (!optionsBuilder.IsConfigured)
             {
-                var connectionString = _configurationManager.GetConnectionString("Default");
+                var connectionString = _configuration.GetConnectionString("Default");
                 optionsBuilder.UseSqlServer(connectionString);
             }
         }

@@ -4,20 +4,20 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Domain.Interfaces;
 using Microsoft.Extensions.Options;
 using Infrastructure.Configurations;
+using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Extensions
 {
-    public class JwtHelper(IConfigurationManager configurationManager, UserManager<User> userManager, IOptions<AuthTokenOptions> authTokenOptions)
+    public class JwtHelper(IConfiguration configuration, UserManager<User> userManager, IOptions<AuthTokenOptions> authTokenOptions)
     {
         private readonly UserManager<User> _userManager = userManager;
         private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
 
-        private readonly string _secretKey = configurationManager.GetValue("Jwt:Secret");
-        private readonly string _issuer = configurationManager.GetValue("Jwt:Issuer");
-        private readonly string _audience = configurationManager.GetValue("Jwt:Audience");
+        private readonly string _secretKey = configuration["Jwt:Secret"];
+        private readonly string _issuer = configuration["Jwt:Issuer"];
+        private readonly string _audience = configuration["Jwt:Audience"];
 
         // Gen jwt token voi user claims
         public async Task<string> GenerateJwtToken(User user)

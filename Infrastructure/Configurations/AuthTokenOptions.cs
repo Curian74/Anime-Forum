@@ -9,5 +9,6 @@ namespace Infrastructure.Configurations
         public bool Secure { get; set; }
         public bool HttpOnly { get; set; }
         public SameSiteMode SameSite { get; set; }
+        public bool IsEssential { get; set; }
     }
 }

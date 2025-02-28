@@ -7,6 +7,7 @@ namespace WibuBlog.ViewModels.Ticket
         [Required(ErrorMessage = "Content is required")]
         public string Content { get; set; } = string.Empty;
 
-        public string? Note { get; set; }
+        public string Tag { get; set; } = null!;
+        public string Email { get; set; } = null!;
     }
 }

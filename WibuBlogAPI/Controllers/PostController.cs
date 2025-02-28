@@ -14,9 +14,9 @@ namespace WibuBlogAPI.Controllers
     [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class PostController(PostServices postServices) : ControllerBase
+    public class PostController(PostService postService) : ControllerBase
     {
-        private readonly PostServices _postServices = postServices;
+        private readonly PostService _postService = postService;
 
         [AllowAnonymous]
         [HttpGet]
@@ -29,7 +29,7 @@ namespace WibuBlogAPI.Controllers
             Expression<Func<Post, bool>>? filter = ExpressionBuilder.BuildFilterExpression<Post>(filterBy, searchTerm);
             Func<IQueryable<Post>, IOrderedQueryable<Post>>? orderExpression = ExpressionBuilder.BuildOrderExpression<Post>(orderBy, descending);
 
-            var result = await _postServices.GetAllAsync(filter, orderExpression);
+            var result = await _postService.GetAllAsync(filter, orderExpression);
 
             return new JsonResult(Ok(result.Items));
         }
@@ -47,7 +47,7 @@ namespace WibuBlogAPI.Controllers
             Expression<Func<Post, bool>>? filter = ExpressionBuilder.BuildFilterExpression<Post>(filterBy, searchTerm);
             Func<IQueryable<Post>, IOrderedQueryable<Post>>? orderExpression = ExpressionBuilder.BuildOrderExpression<Post>(orderBy, descending);
 
-            var result = await _postServices.GetPagedAsync(page, size, filter, orderExpression);
+            var result = await _postService.GetPagedAsync(page, size, filter, orderExpression);
 
             return new JsonResult(Ok(result));
         }
@@ -56,7 +56,7 @@ namespace WibuBlogAPI.Controllers
         [HttpGet("{postId}")]
         public async Task<IActionResult> Get(Guid postId)
         {
-            var result = await _postServices.GetByIdAsync(postId);
+            var result = await _postService.GetByIdAsync(postId);
 
             if (result == null)
             {
@@ -71,7 +71,7 @@ namespace WibuBlogAPI.Controllers
         {
             try
             {
-                await _postServices.CreatePostAsync(dto);
+                await _postService.CreatePostAsync(dto);
             }
             catch (ValidationException ex)
             {
@@ -86,7 +86,7 @@ namespace WibuBlogAPI.Controllers
         {
             try
             {
-                await _postServices.UpdatePostAsync(postId, dto);
+                await _postService.UpdatePostAsync(postId, dto);
             }
             catch (KeyNotFoundException ex)
             {
@@ -102,7 +102,7 @@ namespace WibuBlogAPI.Controllers
         {
             try
             {
-                await _postServices.DeletePostAsync(postId);
+                await _postService.DeletePostAsync(postId);
             }
             catch (KeyNotFoundException ex)
             {
@@ -120,7 +120,7 @@ namespace WibuBlogAPI.Controllers
         {
             Expression<Func<Post, bool>>? filter = ExpressionBuilder.BuildFilterExpression<Post>(filterBy, searchTerm);
 
-            await _postServices.DeletePostWhereAsync(filter);
+            await _postService.DeletePostWhereAsync(filter);
 
             return new JsonResult(NoContent());
         }

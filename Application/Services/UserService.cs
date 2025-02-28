@@ -4,11 +4,12 @@ using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Drawing;
 
 namespace Application.Services
 {
-    public class UserServices(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork)
+    public class UserService(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork)
     {
         private readonly UserManager<User> _userManager = userManager;
         private readonly IMapper _mapper = mapper;
@@ -67,6 +68,11 @@ namespace Application.Services
 
             return result;
         }
+        public async Task<User?> FindByIdAsync(Guid userId)
+        {
+            return await _userManager.FindByIdAsync(userId.ToString());
+        }
+
 
         public async Task<PagedResult<User>> GetPagedUsersAsync(int page, int size)
         {
