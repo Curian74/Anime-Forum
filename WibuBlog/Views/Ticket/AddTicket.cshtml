@@ -21,8 +21,14 @@
 
         <br />
 
+        <label asp-for="UserId">User ID</label>
+        <input asp-for="UserId" class="form-control" />
+        <span class="text-danger" asp-validation-for="UserId"></span>
+
+        <br />
+
         <label asp-for="Email">Email</label>
-        <input asp-for="Email" class="form-control" readonly />
+        <input asp-for="Email" class="form-control" />
         <span class="text-danger" asp-validation-for="Email"></span>
 
         <br />

@@ -9,5 +9,7 @@ namespace WibuBlog.ViewModels.Ticket
 
         public string Tag { get; set; } = null!;
         public string Email { get; set; } = null!;
+        public Guid UserId { get; set; }
+
     }
 }

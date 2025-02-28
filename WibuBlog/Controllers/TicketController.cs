@@ -34,7 +34,7 @@ namespace WibuBlog.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View("AddTicket", addTicketVM); // Chỉ định rõ tên view là "AddTicket"
+                return View("AddTicket", addTicketVM);
             }
             try
             {
@@ -44,7 +44,7 @@ namespace WibuBlog.Controllers
             catch (Exception)
             {
                 ModelState.AddModelError(string.Empty, "*De message loi vao day.*");
-                return View("AddTicket", addTicketVM); // Chỉ định rõ tên view là "AddTicket"  
+                return View("AddTicket", addTicketVM);
             }
         }
 
