@@ -9,7 +9,7 @@ using System.Drawing;
 
 namespace Application.Services
 {
-    public class UserServices(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork)
+    public class UserService(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork)
     {
         private readonly UserManager<User> _userManager = userManager;
         private readonly IMapper _mapper = mapper;

@@ -36,50 +36,54 @@ namespace WibuBlog
             builder.Services.AddScoped<AuthenticationServices>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]))
-        };
-
-        options.Events = new JwtBearerEvents
-        {
-            OnMessageReceived = context =>
+            .AddJwtBearer(options =>
             {
-                if (context.Request.Cookies.TryGetValue(builder.Configuration["AuthTokenOptions:Name"], out var token))
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    context.Token = token;
-                }
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]))
+                };
 
-                return Task.CompletedTask;
-            }
-        };
-    })
-    .AddCookie(options => {
-        options.LoginPath = "/Authentication/Login"; // Where to redirect when not logged in
-        options.AccessDeniedPath = "/Authentication/AccessDenied"; // For unauthorized access
-    });
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        if (context.Request.Cookies.TryGetValue(builder.Configuration["AuthTokenOptions:Name"], out var token))
+                        {
+                            context.Token = token;
+                        }
+
+                        return Task.CompletedTask;
+                    }
+                };
+            })
+            .AddCookie(options =>
+                {
+                    options.LoginPath = "/Authentication/Login"; // Where to redirect when not logged in
+                    options.AccessDeniedPath = "/Authentication/AccessDenied"; // For unauthorized access
+                });
 
             builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("MemberPolicy", policy => policy.RequireRole(UserRoles.Member, UserRoles.Moderator, UserRoles.Admin))
-    .AddPolicy("ModeratorPolicy", policy => policy.RequireRole(UserRoles.Moderator, UserRoles.Admin))
-    .AddPolicy("AdminPolicy", policy => policy.RequireRole(UserRoles.Admin));
-          
+                .AddPolicy("MemberPolicy", policy => policy.RequireRole(UserRoles.Member, UserRoles.Moderator, UserRoles.Admin))
+                .AddPolicy("ModeratorPolicy", policy => policy.RequireRole(UserRoles.Moderator, UserRoles.Admin))
+                .AddPolicy("AdminPolicy", policy => policy.RequireRole(UserRoles.Admin));
+
             //HttpClient
             builder.Services.AddHttpClient("api", httpClient =>
             {
-                httpClient.BaseAddress = new Uri("http://localhost:5002/api/");
+                httpClient.BaseAddress = new Uri("https://localhost:7186/api/");
             });
-            //builder.Services.Configure<AuthTokenOptions>(
-            //    builder.Configuration.GetSection("AuthTokenOptions")
-            //);
+
+            builder.Services.Configure<AuthTokenOptions>(
+                builder.Configuration.GetSection("AuthTokenOptions")
+            );
+
+            builder.Services.AddHttpContextAccessor();
 
             var app = builder.Build();
 
@@ -92,7 +96,9 @@ namespace WibuBlog
             }
 
             app.UseStatusCodePagesWithReExecute("/Error/NotFound");
+
             app.UseHttpsRedirection();
+            
             app.UseStaticFiles();
 
             app.UseRouting();

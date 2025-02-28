@@ -1,16 +1,12 @@
-﻿using Application.Common.MessageOperations;
-using Domain.Entities;
-using Infrastructure.Configurations;
+﻿using Infrastructure.Configurations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using WibuBlog.Services;
-using WibuBlog.ViewModels;
 using WibuBlog.ViewModels.Authentication;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 namespace WibuBlog.Controllers
 {
-    public class AuthenticationController(AuthenticationServices authenticationService,IOptions<AuthTokenOptions> authTokenOptions) : Controller
+    public class AuthenticationController(AuthenticationServices authenticationService, IOptions<AuthTokenOptions> authTokenOptions) : Controller
     {
         private readonly AuthenticationServices _authenticationService = authenticationService;
         private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
@@ -49,20 +45,27 @@ namespace WibuBlog.Controllers
             return View();
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> LoginAuthentication([FromBody] LoginVM loginVM)
-        //{
-        //    _ = await _authenticationService.AuthorizeLogin(loginVM);
-        //    Request.Cookies.TryGetValue(_authTokenOptions.Name, out string? authToken);
-        //    if (authToken is null)
-        //    {
-        //        return RedirectToAction("Login", "Authentication");
-        //    }
+        [HttpPost]
+        public async Task<IActionResult> LoginAuthentication(LoginVM loginVM)
+        {
+            var result = await _authenticationService.AuthorizeLogin(loginVM);
 
-        //    Response.Cookies.Append("AuthToken", token, cookieOptions);
+            if (!result)
+            {
+                return RedirectToAction(nameof(Login));
+            }
 
-        //    return RedirectToAction("Index", "Home");
-        //}
+            return RedirectToAction("Index", "Home");
+        }
+
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await _authenticationService.AuthorizeLogout();
+
+            return RedirectToAction("Index", "Home");
+        }
 
         [HttpPost]
         public async Task<IActionResult> RegisterAuthentication(RegisterVM registerVM)

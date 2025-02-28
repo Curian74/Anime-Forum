@@ -2,14 +2,9 @@
 
 namespace Infrastructure.Configurations 
 { 
-    public class ConfigurationManager : Domain.Interfaces.IConfigurationManager
+    public class ConfigurationManager(IConfiguration configuration) : Domain.Interfaces.IConfigurationManager
     {
-        private readonly IConfiguration _configuration;
-
-        public ConfigurationManager(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
+        private readonly IConfiguration _configuration = configuration;
 
         public string GetValue(string key)
         {
