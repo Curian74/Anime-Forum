@@ -10,9 +10,9 @@ namespace WibuBlogAPI.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class AuthController(UserServices userServices, JwtHelper jwtHelper, IOptions<AuthTokenOptions> authTokenOptions) : ControllerBase
+    public class AuthController(UserService userService, JwtHelper jwtHelper, IOptions<AuthTokenOptions> authTokenOptions) : ControllerBase
     {
-        private readonly UserServices _userServices = userServices;
+        private readonly UserService _userService = userService;
         private readonly JwtHelper _jwtHelper = jwtHelper;
         private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
 
@@ -24,14 +24,14 @@ namespace WibuBlogAPI.Controllers
                 return new JsonResult(BadRequest("User is already logged in"));
             }
 
-            var result = await _userServices.Login(dto);
+            var result = await _userService.Login(dto);
 
             if (result == false)
             {
                 return new JsonResult(Challenge("Invalid credentials"));
             }
 
-            var user = await _userServices.FindByLoginAsync(dto);
+            var user = await _userService.FindByLoginAsync(dto);
 
             var token = await _jwtHelper.GenerateJwtToken(user);
 
@@ -41,6 +41,7 @@ namespace WibuBlogAPI.Controllers
                 Secure = _authTokenOptions.Secure,
                 HttpOnly = _authTokenOptions.HttpOnly,
                 SameSite = _authTokenOptions.SameSite,
+                IsEssential = _authTokenOptions.IsEssential
             };
 
             Response.Cookies.Append(_authTokenOptions.Name, token, cookieOptions);
@@ -56,7 +57,7 @@ namespace WibuBlogAPI.Controllers
                 return new JsonResult(BadRequest("User is already logged in"));
             }
 
-            var result = await _userServices.Register(dto);
+            var result = await _userService.Register(dto);
 
             return result.Succeeded ? Ok(result) : BadRequest(result);
 

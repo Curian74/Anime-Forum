@@ -1,9 +1,6 @@
 ﻿using Application.Common.Pagination;
-using Application.DTO;
 using Domain.Entities;
 using WibuBlog.Common.ApiResponse;
-using Microsoft.AspNetCore.Mvc;
-using System.Drawing;
 using WibuBlog.Interfaces.Api;
 
 namespace WibuBlog.Services

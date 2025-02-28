@@ -4,7 +4,6 @@ using Domain.Entities;
 
 namespace WibuBlog.Controllers
 {
-  
     public class UserController(UserServices userServices) : Controller
     {
         private readonly UserServices _userServices = userServices;
@@ -12,7 +11,6 @@ namespace WibuBlog.Controllers
         {
             return View();
         }
-
 
         [HttpGet]
         public async Task<IActionResult> UserProfile(Guid id)
