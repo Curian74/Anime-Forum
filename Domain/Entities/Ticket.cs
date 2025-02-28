@@ -9,6 +9,8 @@ namespace Domain.Entities
         public Guid UserId { get; set; }
 
         public string? Content { get; set; }
+        public string Tag { get; set; } = null!;
+        public string Email { get; set; } = null!;
 
         public bool? IsApproved { get; set; } = null;
 

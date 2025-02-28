@@ -46,9 +46,25 @@ namespace WibuBlogAPI.Controllers
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             dto.UserId = userId;
-            var result = await _ticketService.CreateTicket(dto);
+
+            // Kiểm tra xem email có thuộc user không
+            var user = await _userServices.FindByIdAsync(userId);
+            if (user == null || user.Email != dto.Email)
+            {
+                return new JsonResult(BadRequest("Email không hợp lệ"));
+            }
+
+            // Danh sách tag hợp lệ
+            var validTags = new HashSet<string> { "#BannedAccount", "#HelpCreatePost", "#TechnicalIssue" };
+            if (!validTags.Contains(dto.Tag))
+            {
+                return new JsonResult(BadRequest("Tag không hợp lệ"));
+            }
+
+            var result = await _ticketServices.CreateTicket(dto);
             return new JsonResult(Ok(result));
         }
+
 
         [HttpPut]
         public async Task<IActionResult> UpdateTicket(UpdateTicketDto dto)
