@@ -14,7 +14,7 @@ namespace WibuBlog.Services
         private readonly IApiServices _apiService = apiService;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
-        private readonly HttpClient _httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7186/api/Auth") };
+        private readonly HttpClient _httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7186/api/Auth/") };
 
         public async Task<bool> AuthorizeLogin(LoginVM loginVM)
         {
@@ -24,7 +24,7 @@ namespace WibuBlog.Services
                 Password = loginVM.Password
             };
 
-            var response = await _httpClient.PostAsJsonAsync($"Auth/Login", loginDTO);
+            var response = await _httpClient.PostAsJsonAsync($"Login", loginDTO);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -80,7 +80,7 @@ namespace WibuBlog.Services
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
             }
 
-            var response = await _httpClient.PostAsync("Auth/Logout", null);
+            var response = await _httpClient.PostAsync("Logout", null);
 
             if (!response.IsSuccessStatusCode)
             {
