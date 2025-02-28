@@ -48,7 +48,7 @@ namespace WibuBlogAPI.Controllers
             dto.UserId = userId;
 
             // Kiểm tra xem email có thuộc user không
-            var user = await _userServices.FindByIdAsync(userId);
+            var user = await _userService.FindByIdAsync(userId);
             if (user == null || user.Email != dto.Email)
             {
                 return new JsonResult(BadRequest("Email không hợp lệ"));
@@ -61,7 +61,7 @@ namespace WibuBlogAPI.Controllers
                 return new JsonResult(BadRequest("Tag không hợp lệ"));
             }
 
-            var result = await _ticketServices.CreateTicket(dto);
+            var result = await _ticketService.CreateTicket(dto);
             return new JsonResult(Ok(result));
         }
 
