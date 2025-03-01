@@ -19,9 +19,22 @@ namespace WibuBlog.Services
 
         public async Task<Ticket> GetTicketByIdAsync<T>(T id)
         {
-            var response = await _apiService.GetAsync<ApiResponse<Ticket>>($"Ticket/Get/{id}");
-            return response.Value!;
+            try
+            {
+                // Get all user tickets and filter
+                var response = await _apiService.GetAsync<ApiResponse<IEnumerable<Ticket>>>("User/GetUserTickets");
+                if (response?.Value != null)
+                {
+                    return response.Value.FirstOrDefault(t => t.Id.ToString() == id.ToString());
+                }
+                return null;
+            }
+            catch (HttpRequestException)
+            {
+                return null;
+            }
         }
+
 
         public async Task<bool> AddNewTicketAsync(AddTicketVM data)
         {
@@ -32,7 +45,7 @@ namespace WibuBlog.Services
 
         public async Task<Ticket> UpdateTicketAsync<T>(T id, Ticket data)
         {
-            var response = await _apiService.PutAsync<ApiResponse<Ticket>>($"Ticket/Update/{id}", data);
+            var response = await _apiService.PutAsync<ApiResponse<Ticket>>($"User/Update/{id}", data);
             return response.Value!;
         }
 
