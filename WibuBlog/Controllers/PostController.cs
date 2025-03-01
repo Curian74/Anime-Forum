@@ -4,6 +4,7 @@ using WibuBlog.ViewModels.Post;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using WibuBlog.Helpers;
+using System.Security.Claims;
 
 namespace WibuBlog.Controllers
 {
@@ -33,15 +34,33 @@ namespace WibuBlog.Controllers
         public async Task<IActionResult> Detail(Guid id, int? page = 1, int? pageSize = 10)
         {
             var post = await _postService.GetPostByIdAsync(id);
-            var comments = await _commentServices.GetPagedComments(page, pageSize);
+            var comments = await _commentServices
+                .GetPagedComments(page, pageSize, "postId", id.ToString());
 
-            var postComments = comments.Items.Where(x => x.PostId == post.Id).ToList();
+            //var postComments = comments.Items.Where(x => x.PostId == post.Id).ToList();
 
-            PostDetailVM postDetailVM = new PostDetailVM
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            PostDetailVM postDetailVM;
+
+            if (userId != null)
             {
-                Comments = postComments,
-                Post = post,
-            };
+                postDetailVM = new PostDetailVM
+                {
+                    Comments = comments,
+                    Post = post,
+                    UserId = Guid.Parse(userId),
+                };
+            }
+
+            else
+            {
+                postDetailVM = new PostDetailVM
+                {
+                    Comments = comments,
+                    Post = post,
+                };
+            }
 
             if (post is null)
             {
@@ -50,7 +69,7 @@ namespace WibuBlog.Controllers
 
             return View(postDetailVM);
         }
-        
+
         [HttpGet]
         public IActionResult Add()
         {

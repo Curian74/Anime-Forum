@@ -1,9 +1,11 @@
-﻿using Application.Services;
+﻿using Application.DTO.Comment;
+using Application.Services;
 using Domain.Entities;
 using Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 
 namespace WibuBlogAPI.Controllers
@@ -12,7 +14,7 @@ namespace WibuBlogAPI.Controllers
     [ApiController]
     public class CommentController(CommentSerivces commentSerivces) : ControllerBase
     {
-        private readonly CommentSerivces _commentSerivces = commentSerivces;
+        private readonly CommentSerivces _commentSerivce = commentSerivces;
 
         [AllowAnonymous]
         [HttpGet]
@@ -25,7 +27,7 @@ namespace WibuBlogAPI.Controllers
             Expression<Func<Comment, bool>>? filter = ExpressionBuilder.BuildFilterExpression<Comment>(filterBy, searchTerm);
             Func<IQueryable<Comment>, IOrderedQueryable<Comment>>? orderExpression = ExpressionBuilder.BuildOrderExpression<Comment>(orderBy, descending);
 
-            var result = await _commentSerivces.GetAllAsync(filter, orderExpression);
+            var result = await _commentSerivce.GetAllAsync(filter, orderExpression);
 
             return new JsonResult(Ok(result.Items));
         }
@@ -43,9 +45,29 @@ namespace WibuBlogAPI.Controllers
             Expression<Func<Comment, bool>>? filter = ExpressionBuilder.BuildFilterExpression<Comment>(filterBy, searchTerm);
             Func<IQueryable<Comment>, IOrderedQueryable<Comment>>? orderExpression = ExpressionBuilder.BuildOrderExpression<Comment>(orderBy, descending);
 
-            var result = await _commentSerivces.GetPagedAsync(page, size, filter, orderExpression);
+            var result = await _commentSerivce.GetPagedAsync(page, size, filter, orderExpression);
 
             return new JsonResult(Ok(result));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PostComment([FromBody] PostCommentDto dto)
+        {
+            try
+            {
+                await _commentSerivce.PostCommentAsync(dto);
+            }
+            catch (ValidationException ex)
+            {
+                return new JsonResult(BadRequest($"{ex.GetType().Name}: {ex.Message}"));
+            }
+
+            catch(Exception ex)
+            {
+                return new JsonResult(BadRequest(ex.Message));
+            }
+
+            return new JsonResult(Ok());
         }
     }
 }

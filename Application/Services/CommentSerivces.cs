@@ -1,5 +1,6 @@
 ﻿
 using Application.Common.Pagination;
+using Application.DTO.Comment;
 using Application.Interfaces.Pagination;
 using AutoMapper;
 using Domain.Entities;
@@ -29,6 +30,15 @@ namespace Application.Services
         {
             var (items, totalCount) = await _commentGenericRepository.GetPagedAsync(page, size, filter, orderBy);
             return new PagedResult<Comment>(items, totalCount, page, size);
+        }
+
+        public async Task<int> PostCommentAsync(PostCommentDto dto)
+        {
+            var comment = _mapper.Map<Comment>(dto);
+
+            await _commentGenericRepository.AddAsync(comment);
+
+            return await _unitOfWork.SaveChangesAsync();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Application.DTO;
+using Application.DTO.Comment;
 using AutoMapper;
 using Domain.Entities;
 
@@ -21,6 +22,7 @@ namespace Application.Common.Mappings
             CreateMap<Ticket, TicketDto>().ReverseMap();
             CreateMap<Ticket, CreateTicketDto>().ReverseMap();
             CreateMap<Ticket, UpdateTicketDto>().ReverseMap();
+            CreateMap<Comment, PostCommentDto>().ReverseMap();
         }
     }
 }

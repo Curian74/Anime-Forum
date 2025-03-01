@@ -23,16 +23,34 @@ namespace Infrastructure.Extensions
             }
 
             var propertyType = propertyAccess.Type;
-            var convertedSearchTerm = Convert.ChangeType(searchTerm, propertyType);
+
+            // Check Guid type truoc
+            object convertedSearchTerm;
+            try
+            {
+                if (propertyType == typeof(Guid))
+                {
+                    convertedSearchTerm = Guid.Parse(searchTerm);
+                }
+                else
+                {
+                    convertedSearchTerm = Convert.ChangeType(searchTerm, propertyType);
+                }
+            }
+            catch
+            {
+                return null; // Null neu k convert duoc
+            }
+
             var searchExpression = Expression.Constant(convertedSearchTerm);
 
-            // Create comparison expression
             Expression comparison = propertyType == typeof(string)
                 ? Expression.Call(propertyAccess, nameof(string.Contains), Type.EmptyTypes, searchExpression)
                 : Expression.Equal(propertyAccess, searchExpression);
 
             return Expression.Lambda<Func<T, bool>>(comparison, parameter);
         }
+
 
 
         public static Func<IQueryable<T>, IOrderedQueryable<T>>? BuildOrderExpression<T>(string? orderBy, bool descending)
