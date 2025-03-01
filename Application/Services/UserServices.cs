@@ -4,15 +4,16 @@ using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using System.Drawing;
+using Application.Interfaces.Email;
 
 namespace Application.Services
 {
-    public class UserServices(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork)
+    public class UserServices(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork, IEmailService emailService)
     {
         private readonly UserManager<User> _userManager = userManager;
         private readonly IMapper _mapper = mapper;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IEmailService _emailServices = emailService;
         private readonly IGenericRepository<User> _userGenericRepository = unitOfWork.GetRepository<User>();
 
         public async Task<User?> FindByLoginAsync(LoginDto dto)
@@ -24,10 +25,15 @@ namespace Application.Services
             return user;
         }
 
+        public async Task<User?> GetUserByEmail(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            return user;
+        }
+
         public async Task<IdentityResult> Register(RegisterDto dto) 
         {
             var user = new User { UserName = dto.UserName, Email = dto.Email };
-
             var result = await _userManager.CreateAsync(user, dto.Password);
 
             if (result.Succeeded)

@@ -5,7 +5,6 @@ using Infrastructure.Extensions;
 using Microsoft.Extensions.Options;
 using Infrastructure.Configurations;
 using Domain.Entities;
-using WibuBlogAPI.HelperServices;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
@@ -13,82 +12,17 @@ using System.Security.Claims;
 
 namespace WibuBlogAPI.Controllers
 {
-    [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
+   // [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class UserController(UserServices userServices, TicketServices ticketServices, JwtHelper jwtHelper,
-        IOptions<AuthTokenOptions> authTokenOptions, EmailServices emailServices) : ControllerBase
+        IOptions<AuthTokenOptions> authTokenOptions) : ControllerBase
     {
         private readonly UserServices _userServices = userServices;
         private readonly TicketServices _ticketServices = ticketServices;
         private readonly JwtHelper _jwtHelper = jwtHelper;
-        private readonly EmailServices _emailService = emailServices;
+       
         private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
-
-        [HttpPost]
-        public async Task<IActionResult> Login(LoginDto dto)
-        {
-            Request.Cookies.TryGetValue(_authTokenOptions.Name, out string? authToken);
-
-            if (authToken != null || _jwtHelper.IsValidToken(authToken))
-            {
-                return new JsonResult(BadRequest("User is already logged in"));
-            }
-
-            var result = await _userServices.Login(dto);
-
-            if (result == false)
-            {
-                return new JsonResult(Challenge("Invalid credentials"));
-            }
-
-            var user = await _userServices.FindByLoginAsync(dto);
-
-            var token = await _jwtHelper.GenerateJwtToken(user);
-
-            var cookieOptions = new CookieOptions
-            {
-                Expires = DateTime.Now.AddHours(_authTokenOptions.Expires),
-                Secure = _authTokenOptions.Secure,
-                HttpOnly = _authTokenOptions.HttpOnly,
-                SameSite = _authTokenOptions.SameSite,
-            };
-
-            Response.Cookies.Append(_authTokenOptions.Name, token, cookieOptions);
-
-            return new JsonResult(Ok("Login approved"));
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Logout()
-        {
-            Request.Cookies.TryGetValue(_authTokenOptions.Name, out string? authToken);
-
-            if (authToken == null || !_jwtHelper.IsValidToken(authToken))
-            {
-                return new JsonResult(BadRequest("User is not logged in"));
-            }
-
-            Response.Cookies.Delete(_authTokenOptions.Name);
-
-            return new JsonResult(Ok("Logged out"));
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Register(RegisterDto dto)
-        {
-            Request.Cookies.TryGetValue(_authTokenOptions.Name, out string? authToken);
-
-            if (authToken != null || _jwtHelper.IsValidToken(authToken))
-            {
-                return new JsonResult(BadRequest("User is already logged in"));
-            }
-
-            var result = await _userServices.Register(dto);
-            
-            return result.Succeeded ? Ok(result) : BadRequest(result);
-
-        }
 
         [HttpGet]
         public async Task<IActionResult> GetAccountDetails()
@@ -158,17 +92,23 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetUserByEmailAsync(string email)
+        {
+            var result = await _userServices.GetUserByEmail(email);
+            if (result == null)
+            {
+                return new JsonResult(NotFound());
+            }
+            return new JsonResult(Ok(result));
+        }
+
+        [HttpGet]
         public async Task<IActionResult> GetPagedUsersAsync(int page, int size)
         {
             var result = await _userServices.GetPagedUsersAsync(page, size);
             return new JsonResult(Ok(result));
         }
 
-        [HttpGet]
-        public async Task<IActionResult> SendTestEmail()
-        {
-            await _emailService.SendEmailAsync("phathnhe187251@fpt.edu.vn", "Test Email", "Memaybeo!");
-            return Ok("Email sent successfully!");
-        }
+      
     }
 }

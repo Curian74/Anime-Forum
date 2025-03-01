@@ -13,15 +13,15 @@ namespace WibuBlog.Services
     {
         private readonly IApiServices _apiService = apiService;
 
-        public async Task<IActionResult> AuthorizeLogin(LoginVM loginVM)
+        public async Task<ApiResponse<JsonResult>> AuthorizeLogin(LoginVM loginVM)
         {
             var loginDTO = new LoginDto
             {
                 Login = loginVM.Login,
                 Password = loginVM.Password
             };
-            var response = await _apiService.PostAsync<ApiResponse<JsonResult>>($"User/Login",loginDTO);
-            return response.Value!;
+            var response = await _apiService.PostAsync<ApiResponse<JsonResult>>($"Auth/Login",loginDTO);
+            return response;
         }
 
         public async Task<IdentityResult> AuthorizeRegister(RegisterVM registerVM) 
@@ -33,7 +33,7 @@ namespace WibuBlog.Services
                 Password = registerVM.password
 
             };
-            var response = await _apiService.PostAsync<ApiResponse<IdentityResult>>($"User/Register", RegisterDTO);
+            var response = await _apiService.PostAsync<ApiResponse<IdentityResult>>($"Auth/Register", RegisterDTO);
             return response.Value!;
         }
 

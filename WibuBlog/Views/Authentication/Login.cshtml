@@ -1,6 +1,8 @@
 ﻿@{
     ViewData["ShowFooter"] = false;
 }
+@using WibuBlog.ViewModels.Authentication
+@model LoginVM
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -23,12 +25,18 @@
                                         <div class="d-flex align-items-center justify-content-end m-b-30">
                                             <h2 class="m-b-0">Sign In</h2>
                                         </div>
-                                            <form action="login" method="post">
+                                      @if (TempData["SuccessRegistrationMessage"] != null)
+                                      {
+                                         <div class="alert alert-success">
+                                                    @TempData["SuccessRegistrationMessage"]
+                                          </div>
+                                       }
+                                            <form asp-action="LoginAuthentication" asp-controller="Authentication" method="post">
                                             <div class="form-group">
                                                 <label class="font-weight-semibold" for="userName">Username:</label>
                                                 <div class="input-affix">
                                                     <i class="prefix-icon anticon anticon-user"></i>
-                                                    <input type="text" name="username" class="form-control" id="userName" placeholder="Username" required="">
+                                                   <input asp-for="Login" class="form-control" id="userName" placeholder="Username">
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -36,7 +44,7 @@
                                                 <a class="float-right font-size-13 text-muted" href="forgotPassword">Forgot Password?</a>
                                                 <div class="input-affix m-b-10">
                                                     <i class="prefix-icon anticon anticon-lock"></i>
-                                                    <input type="password" name="password" class="form-control" id="password" placeholder="Password" required="">
+                                                     <input asp-for="Password" type="password" class="form-control" id="password" placeholder="Password">
                                                 </div>
                                             </div>
                                             <div class="form-group">

@@ -12,7 +12,9 @@ using System.Text;
 using Infrastructure.Extensions;
 using Infrastructure.Configurations;
 using System.Text.Json.Serialization;
-using WibuBlogAPI.HelperServices;
+using Infrastructure.External;
+using Application.Interfaces.Email;
+using Application.Common.EmailTemplate;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,7 +47,8 @@ builder.Services.AddScoped<PostServices>();
 builder.Services.AddScoped<UserServices>();
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<TicketServices>();
-builder.Services.AddScoped<EmailServices>();
+builder.Services.AddScoped<TemplateBody>();
+builder.Services.AddScoped<IEmailService,EmailService>();
 builder.Services.AddScoped<PostCategoryServices>();
 
 // AutoMapper service
@@ -81,7 +84,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     // User settings
     options.User.AllowedUserNameCharacters =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.User.RequireUniqueEmail = false;
+    options.User.RequireUniqueEmail = true;
 });
 
 builder.Services.AddIdentity<User, IdentityRole<Guid>>()
@@ -126,6 +129,23 @@ builder.Services.AddAuthorizationBuilder()
 builder.Services.Configure<AuthTokenOptions>(
     builder.Configuration.GetSection("AuthTokenOptions")
 );
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        builder => builder
+            .WithOrigins("https://localhost:7139")
+            .AllowCredentials()
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+    options.CheckConsentNeeded = context => false;
+    options.MinimumSameSitePolicy = SameSiteMode.None;
+});
 
 var app = builder.Build();
 
@@ -223,6 +243,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 

@@ -1,53 +1,64 @@
 ﻿@{
-    ViewData["ShowFooter"] = false;
+	ViewData["ShowFooter"] = false;
 }
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>OTP Authentication</title>
-        <link rel="shortcut icon" href="">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<title>OTP Authentication</title>
+		<link rel="shortcut icon" href="">
 
-        <link href="~/css/OTPAuthentication.css" rel="stylesheet">
-    </head>
+		<link href="~/css/OTPAuthentication.css" rel="stylesheet">
+	</head>
 
-    <body>
-        <div class="app">
-            <div class="container-fluid p-h-0 p-v-20 bg full-height d-flex" >
-                <div class="d-flex flex-column justify-content-between w-100">
-                    <div class="container d-flex h-100">
-                        <div class="row align-items-center w-100">
-                            <div class="col-md-7 col-lg-5 m-h-auto">
-                                <div class="card shadow-lg">
-                                    <div class="card-body">                                  
-                                        <div class="d-flex align-items-center justify-content-end m-b-30">
-                                            <h2 class="m-b-0">OTP Authentication</h2>
-                                        </div>
-                                        <form action="OTPAuthentication" method="post">
-                                            <div class="form-group">
-                                                <label class="font-weight-semibold" for="userName">Enter OTP</label>
-                                                <div class="input-affix">
-                                                    <i class="prefix-icon anticon anticon-user"></i>
-                                                    <input type="text" class="form-control" id="userName" placeholder="Enter OTP" name="OTP" oninput="this.value = this.value.replace(/[^0-9]/g, '');" maxlength="6" required="">
-                                                </div>
-                                            </div>                                     
-                                            <div class="form-group">
-                                                <div class="d-flex align-items-center justify-content-between">
-                                                    <span class="font-size-13 text-muted">                                                    
-                                                        <a class="small" href="forgotPassword">Back</a>
-                                                    </span>
-                                                </div>
-                                                <button class="btn btn-primary">Next</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>           
-                </div>
-            </div>
-        </div>
-    </body>
+	<body>
+		<div class="app">
+			<div class="container-fluid p-h-0 p-v-20 bg full-height d-flex" >
+				<div class="d-flex flex-column justify-content-between w-100">
+					<div class="container d-flex h-100">
+						<div class="row align-items-center w-100">
+							<div class="col-md-7 col-lg-5 m-h-auto">
+								<div class="card shadow-lg">
+									<div class="card-body">                                  
+										<div class="d-flex align-items-center justify-content-end m-b-30">
+											<h2 class="m-b-0">OTP Authentication</h2>
+										</div>
+								  <form action="OTPAuthentication" method="post">
+										<div class="form-group">
+											<label class="font-weight-semibold" for="OTP">Enter OTP</label>
+											<div class="input-affix">
+												<i class="prefix-icon anticon anticon-user"></i>
+												<input type="text" class="form-control" id="OTP" placeholder="Enter OTP" name="OTP" 
+													   oninput="this.value = this.value.replace(/[^0-9]/g, '');" maxlength="6" required="">
+											</div>
+										</div>                                     
+
+										<div class="form-group">
+											<div class="d-flex align-items-center justify-content-between">
+												<span class="font-size-13 text-muted">
+													<a class="small" href="forgotPassword">Back</a>
+												</span>
+											</div>
+											<button class="btn btn-primary" type="submit">Next</button>
+										</div>
+									</form>
+									@if (!ViewData.ModelState.IsValid)
+									{
+										<div class="alert alert-danger">
+										@foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+										{
+										<p>@error.ErrorMessage</p>
+										}
+										</div>
+									}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>           
+				</div>
+			</div>
+		</div>
+	</body>
 
 </html>

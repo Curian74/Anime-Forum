@@ -24,20 +24,6 @@
                                     <div class="d-flex align-items-center justify-content-end m-b-30">
                                         <h2 class="m-b-0">Register</h2>
                                     </div>
-
-                                    <!-- Hiển thị lỗi từ Controller -->
-                                    @if (!ViewData.ModelState.IsValid)
-                                    {
-                                            <div class="alert alert-danger">
-                                                <ul>
-                                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                                                {
-                                                            <li>@error.ErrorMessage</li>
-                                                }
-                                                </ul>
-                                            </div>
-                                    }
-
                                     <!-- Form đăng ký -->
                                     <form asp-action="RegisterAuthentication" asp-controller="Authentication" method="post" class="form-signup">
                                         <div class="form-group">
