@@ -43,7 +43,7 @@
             </div>
 
             <!-- Comment Input -->
-            <div id="comment-field">
+            <div id="comment-field" class="w-75">
                 <form asp-controller="Comment" asp-action="PostComment" class="mt-3">
                     <div asp-validation-summary="All"></div>
                     <input type="hidden" name="postId" id="post-id" value="@Model.Post?.Id" />
@@ -118,5 +118,8 @@
 @section Scripts {
     <script src="~/js/postDetail.js"></script>
     <partial name="_ValidationScriptsPartial"></partial>
-    <partial name="_TinyMCEInit"></partial>
+    <partial name="_RichTextEditorInit"></partial>
+    <script type="text/javascript">
+        var editor = new RichTextEditor("#content", configs);
+    </script>
 }

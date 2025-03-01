@@ -10,7 +10,6 @@ let isCommentFieldOpen = false;
 commentField.style.display = "none";
 
 const toggleCommentInput = () => {
-    const editor = tinymce.get('content'); //thg nay la async nen tranh khai bao ben ngoai
     isCommentFieldOpen = !isCommentFieldOpen;
     commentField.style.display = isCommentFieldOpen ? "block" : "none";
     toggleBtn.style.display = !isCommentFieldOpen ? "block" : "none";
