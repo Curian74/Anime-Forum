@@ -1,0 +1,21 @@
+﻿<script src="https://cdn.tiny.cloud/1/77vrrilumumhps2l6p6hg9fm5ta77hsaprmukv02z5gxsyrs/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+        tinymce.init({
+        selector: 'textarea',
+        height: 300,
+        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough || align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+        paste_postprocess: function(plugin, args) {
+            let div = document.createElement("div");
+            div.innerHTML = args.node.innerHTML;
+
+            div.querySelectorAll("img").forEach(img => {
+                img.style.maxWidth = "300px"; // Limit max width
+                img.style.maxHeight = "300px"; // Limit max height
+                img.style.height = "auto"; // Maintain aspect ratio
+                img.style.width = "auto";
+            });
+
+            args.node.innerHTML = div.innerHTML;
+        }
+    });
+</script>

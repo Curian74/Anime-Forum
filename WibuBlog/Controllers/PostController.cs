@@ -31,12 +31,13 @@ namespace WibuBlog.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> Detail(Guid id, int? page = 1, int? pageSize = 100)
+        public async Task<IActionResult> Detail(Guid id, int? page = 1, int? pageSize = 10)
         {
             var post = await _postService.GetPostByIdAsync(id);
-            var comments = await _commentServices.GetPagedComments(page, pageSize);
+            var comments = await _commentServices
+                .GetPagedComments(page, pageSize, "postId", id.ToString());
 
-            var postComments = comments.Items.Where(x => x.PostId == post.Id).ToList();
+            //var postComments = comments.Items.Where(x => x.PostId == post.Id).ToList();
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -46,7 +47,7 @@ namespace WibuBlog.Controllers
             {
                 postDetailVM = new PostDetailVM
                 {
-                    Comments = postComments,
+                    Comments = comments,
                     Post = post,
                     UserId = Guid.Parse(userId),
                 };
@@ -56,7 +57,7 @@ namespace WibuBlog.Controllers
             {
                 postDetailVM = new PostDetailVM
                 {
-                    Comments = postComments,
+                    Comments = comments,
                     Post = post,
                 };
             }
@@ -67,13 +68,6 @@ namespace WibuBlog.Controllers
             }
 
             return View(postDetailVM);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> PostComment(string content)
-        {
-            Console.WriteLine(content);
-            return BadRequest(content);
         }
 
         [HttpGet]
