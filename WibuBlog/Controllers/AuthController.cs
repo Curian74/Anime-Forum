@@ -11,9 +11,9 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace WibuBlog.Controllers
 {
-    public class AuthController(AuthenticationService authenticationService, IEmailService emailService, UserService userService, OTPValidation OTPValidation) : Controller
+    public class AuthController(AuthService authenticationService, IEmailService emailService, UserService userService, OTPValidation OTPValidation) : Controller
     {
-        private readonly AuthenticationService _authenticationService = authenticationService;
+        private readonly AuthService _authenticationService = authenticationService;
         private readonly IEmailService _emailService = emailService;
         private readonly UserService _userService = userService;
         private readonly OTPValidation _OTPValidation = OTPValidation;

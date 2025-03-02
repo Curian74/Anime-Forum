@@ -9,7 +9,7 @@ using WibuBlog.Common.ApiResponse;
 
 namespace WibuBlog.Services
 {
-    public class AuthenticationService(IApiService apiService, IHttpContextAccessor httpContextAccessor, IOptions<AuthTokenOptions> authTokenOptions)
+    public class AuthService(IApiService apiService, IHttpContextAccessor httpContextAccessor, IOptions<AuthTokenOptions> authTokenOptions)
     {
         private readonly IApiService _apiService = apiService;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;

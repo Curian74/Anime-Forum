@@ -38,7 +38,7 @@ namespace WibuBlog
             builder.Services.AddScoped<TicketService>();
             builder.Services.AddScoped<UserService>();
 			builder.Services.AddScoped<TemplateBody>();
-			builder.Services.AddScoped<AuthenticationService>();
+			builder.Services.AddScoped<AuthService>();
 			builder.Services.AddScoped<OTPValidation>();
             builder.Services.AddScoped<IEmailService,EmailService>();
             //
