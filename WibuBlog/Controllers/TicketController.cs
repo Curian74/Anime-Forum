@@ -108,14 +108,10 @@ namespace WibuBlog.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
                 ModelState.AddModelError(string.Empty, "An error occurred while updating the ticket.");
                 return View("Detail", model);
             }
         }
-
-
-
 
         [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetById(Guid id)

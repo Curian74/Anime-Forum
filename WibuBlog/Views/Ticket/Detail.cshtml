@@ -56,7 +56,7 @@
 
                 <div class="form-group mb-3">
                     <label asp-for="Content" class="form-label fw-bold">Content</label>
-                    <textarea asp-for="Content" class="form-control" rows="6"></textarea>
+                    <textarea id="content" asp-for="Content" class="form-control" rows="6"></textarea>
                     <span asp-validation-for="Content" class="text-danger"></span>
                 </div>
 
@@ -84,10 +84,12 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial"></partial>
     <partial name="_RichTextEditorInit"></partial>
+
     <script type="text/javascript">
-        var editor = new RichTextEditor("#content", configs);
-    </script>
-    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var editor = new RichTextEditor("#content", configs);
+        });
+
         setTimeout(function() {
             $('.alert').alert('close');
         }, 5000);
