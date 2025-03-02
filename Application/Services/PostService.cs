@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 
 namespace Application.Services
 {
-    public class PostServices(IUnitOfWork unitOfWork, IMapper mapper)
+    public class PostService(IUnitOfWork unitOfWork, IMapper mapper)
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IGenericRepository<Post> _postRepository = unitOfWork.GetRepository<Post>();

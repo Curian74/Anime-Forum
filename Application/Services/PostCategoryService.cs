@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace Application.Services
 {
-    public class PostCategoryServices(IUnitOfWork unitOfWork, IMapper mapper)
+    public class PostCategoryService(IUnitOfWork unitOfWork, IMapper mapper)
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IGenericRepository<PostCategory> _postCategoryRepository = unitOfWork.GetRepository<PostCategory>();

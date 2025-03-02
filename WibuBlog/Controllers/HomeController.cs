@@ -21,7 +21,7 @@ namespace WibuBlog.Controllers
         {
             var restrictedCategories = await _postCategoryServices.GetAllCategories("isRestricted", "true" , false);
             var nonrestrictedCategories = await _postCategoryServices.GetAllCategories("isRestricted", "false" , false);
-            var recentPosts = await _postService.GetPagedPostAsync(1, 5, "CreatedAt", true);
+            var recentPosts = await _postService.GetPagedPostAsync(1, 5, "CreatedAt", "", "", true);
             var postList = await _postService.GetAllPostAsync("", "", false);
 
             HomeVM homeVM = new HomeVM

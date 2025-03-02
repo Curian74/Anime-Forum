@@ -7,6 +7,7 @@ using Infrastructure.Configurations;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Infrastructure.External;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,21 +16,18 @@ namespace WibuBlogAPI.Controllers
    // [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class UserController(UserServices userServices, TicketServices ticketServices, JwtHelper jwtHelper,
-        IOptions<AuthTokenOptions> authTokenOptions) : ControllerBase
+    public class UserController(UserService userService, TicketService ticketService, EmailService emailServices) : ControllerBase
     {
-        private readonly UserServices _userServices = userServices;
-        private readonly TicketServices _ticketServices = ticketServices;
-        private readonly JwtHelper _jwtHelper = jwtHelper;
-       
-        private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
+        private readonly UserService _userService = userService;
+        private readonly TicketService _ticketService = ticketService;
+        private readonly EmailService _emailService = emailServices;
 
         [HttpGet]
         public async Task<IActionResult> GetAccountDetails()
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-            var result = await _userServices.GetProfileDetails(userId);
+            var result = await _userService.GetProfileDetails(userId);
 
             if (result == null)
             {
@@ -43,7 +41,7 @@ namespace WibuBlogAPI.Controllers
         public async Task<IActionResult> GetUserTickets()
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            var tickets = await _ticketServices.GetUserTickets(userId);
+            var tickets = await _ticketService.GetUserTickets(userId);
             return new JsonResult(Ok(tickets));
         }
 
@@ -53,21 +51,19 @@ namespace WibuBlogAPI.Controllers
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             dto.UserId = userId;
 
-            // Kiểm tra xem email có thuộc user không
-            var user = await _userServices.FindByIdAsync(userId);
+            var user = await _userService.FindByIdAsync(userId);
             if (user == null || user.Email != dto.Email)
             {
                 return new JsonResult(BadRequest("Email không hợp lệ"));
             }
 
-            // Danh sách tag hợp lệ
             var validTags = new HashSet<string> { "#BannedAccount", "#HelpCreatePost", "#TechnicalIssue" };
             if (!validTags.Contains(dto.Tag))
             {
                 return new JsonResult(BadRequest("Tag không hợp lệ"));
             }
 
-            var result = await _ticketServices.CreateTicket(dto);
+            var result = await _ticketService.CreateTicket(dto);
             return new JsonResult(Ok(result));
         }
 
@@ -76,19 +72,21 @@ namespace WibuBlogAPI.Controllers
         public async Task<IActionResult> UpdateTicket(UpdateTicketDto dto)
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            var result = await _ticketServices.UpdateTicket(dto, userId);
+            var result = await _ticketService.UpdateTicket(dto, userId);
+
             if (!result)
             {
-                return new JsonResult(NotFound("Ticket not found or unauthorized"));
+                return NotFound(new { success = false, message = "Ticket not found or unauthorized" });
             }
-            return new JsonResult(Ok("Ticket updated successfully"));
+
+            return Ok(new { success = true, message = "Ticket updated successfully" });
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTicket(Guid id)
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            var result = await _ticketServices.DeleteTicket(id, userId);
+            var result = await _ticketService.DeleteTicket(id, userId);
             if (!result)
             {
                 return new JsonResult(NotFound("Ticket not found or unauthorized"));
@@ -99,7 +97,7 @@ namespace WibuBlogAPI.Controllers
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetUserByIdAsync(Guid userId)
         {
-                var result = await _userServices.GetProfileDetails(userId);
+                var result = await _userService.GetProfileDetails(userId);
                 if(result == null)
                 {
                      return new JsonResult(NotFound());
@@ -121,10 +119,15 @@ namespace WibuBlogAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPagedUsersAsync(int page, int size)
         {
-            var result = await _userServices.GetPagedUsersAsync(page, size);
+            var result = await _userService.GetPagedUsersAsync(page, size);
             return new JsonResult(Ok(result));
         }
 
-      
+        [HttpGet]
+        public async Task<IActionResult> SendTestEmail()
+        {
+            await _emailService.SendEmailAsync("phathnhe187251@fpt.edu.vn", "Test Email", "Memaybeo!");
+            return Ok("Email sent successfully!");
+        }
     }
 }

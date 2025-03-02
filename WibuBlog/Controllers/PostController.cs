@@ -3,30 +3,73 @@ using WibuBlog.Services;
 using WibuBlog.ViewModels.Post;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
+using WibuBlog.Helpers;
+using System.Security.Claims;
 
 namespace WibuBlog.Controllers
 {
     [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
-    public class PostController(PostServices postService) : Controller
+    public class PostController(PostServices postService, CommentServices commentServices) : Controller
     {
         private readonly PostServices _postService = postService;
+        private readonly CommentServices _commentServices = commentServices;
 
         [AllowAnonymous]
         public async Task<IActionResult> Index(int? page = 1, int? pageSize = 5)
         {
-            var value = await _postService.GetPagedPostAsync(page, pageSize, "", false);
+            var value = await _postService.GetPagedPostAsync(page, pageSize, "", "", "", false);
             return View("Index", value);
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> NewPosts(int? page = 1, int? pageSize = 10)
+        public async Task<IActionResult> NewPosts([FromQuery] QueryObject queryObject)
         {
-            var value = await _postService.GetPagedPostAsync(page, pageSize, "", false);
+            var value = await _postService.GetPagedPostAsync(queryObject.Page, queryObject.Size,
+                queryObject.FilterBy, queryObject.SearchTerm, queryObject.OrderBy, queryObject.Descending);
 
             return View(value);
         }
 
-        
+        [AllowAnonymous]
+        public async Task<IActionResult> Detail(Guid id, int? page = 1, int? pageSize = 10)
+        {
+            var post = await _postService.GetPostByIdAsync(id);
+            var comments = await _commentServices
+                .GetPagedComments(page, pageSize, "postId", id.ToString());
+
+            //var postComments = comments.Items.Where(x => x.PostId == post.Id).ToList();
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            PostDetailVM postDetailVM;
+
+            if (userId != null)
+            {
+                postDetailVM = new PostDetailVM
+                {
+                    Comments = comments,
+                    Post = post,
+                    UserId = Guid.Parse(userId),
+                };
+            }
+
+            else
+            {
+                postDetailVM = new PostDetailVM
+                {
+                    Comments = comments,
+                    Post = post,
+                };
+            }
+
+            if (post is null)
+            {
+                return NotFound();
+            }
+
+            return View(postDetailVM);
+        }
+
         [HttpGet]
         public IActionResult Add()
         {
@@ -43,13 +86,13 @@ namespace WibuBlog.Controllers
 
             try
             {
+                //var authToken = Request.Cookies[_authTokenOptions.Name];
                 await _postService.AddNewPostAsync(addPostVM);
                 return RedirectToAction(nameof(Index));
             }
-
-            catch (Exception)
+            catch (HttpRequestException e)
             {
-                ModelState.AddModelError(string.Empty, "*De message loi vao day.*");
+                ModelState.AddModelError(string.Empty, $"{e.GetType().Name}: {e.Message} {e.StatusCode}");
                 return View(addPostVM);
             }
 

@@ -1,10 +1,11 @@
-﻿using Application.Common.EmailTemplate;
+using Application.Common.EmailTemplate;
 using Application.Common.MessageOperations;
 using Application.Common.OTPGenerator;
 using Application.Common.Session;
 using Application.DTO;
 using Application.Interfaces.Email;
 using Infrastructure.Configurations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -57,6 +58,21 @@ namespace WibuBlog.Controllers
         {
             return View();
         }
+
+        //[HttpPost]
+        //public async Task<IActionResult> LoginAuthentication([FromBody] LoginVM loginVM)
+        //{
+        //    _ = await _authenticationService.AuthorizeLogin(loginVM);
+        //    Request.Cookies.TryGetValue(_authTokenOptions.Name, out string? authToken);
+        //    if (authToken is null)
+        //    {
+        //        return RedirectToAction("Login", "Authentication");
+        //    }
+
+        //    Response.Cookies.Append("AuthToken", token, cookieOptions);
+
+        //    return RedirectToAction("Index", "Home");
+        //}
 
         [HttpPost]
         public async Task<IActionResult> LoginAuthentication(LoginVM loginVM)

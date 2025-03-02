@@ -1,11 +1,15 @@
-﻿using Infrastructure.Extensions;
+﻿using Infrastructure.Configurations;
+using Microsoft.Extensions.Options;
+using System.Net.Http.Headers;
 using WibuBlog.Interfaces.Api;
 
 namespace WibuBlog.Services.Api
 {
-    public class ApiServices(IHttpClientFactory httpClientFactory) : IApiServices
+    public class ApiServices(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, IOptions<AuthTokenOptions> authTokenOptions) : IApiServices
     {
         private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
 
         private HttpClient CreateClient()
         {
@@ -15,6 +19,7 @@ namespace WibuBlog.Services.Api
         public async Task<T> GetAsync<T>(string endpoint)
         {
             var client = CreateClient();
+            AddAuthorizationHeader(ref client);
             var response = await client.GetAsync(endpoint);
             return await HandleResponse<T>(response);
         }
@@ -22,6 +27,7 @@ namespace WibuBlog.Services.Api
         public async Task<T> PostAsync<T>(string endpoint, object data)
         {
             var client = CreateClient();
+            AddAuthorizationHeader(ref client);
             var response = await client.PostAsJsonAsync(endpoint, data);
             return await HandleResponse<T>(response);
         }
@@ -29,6 +35,7 @@ namespace WibuBlog.Services.Api
         public async Task<T> PutAsync<T>(string endpoint, object data)
         {
             var client = CreateClient();
+            AddAuthorizationHeader(ref client);
             var response = await client.PutAsJsonAsync(endpoint, data);
             return await HandleResponse<T>(response);
         }
@@ -36,6 +43,7 @@ namespace WibuBlog.Services.Api
         public async Task<bool> DeleteAsync(string endpoint)
         {
             var client = CreateClient();
+            AddAuthorizationHeader(ref client);
             var response = await client.DeleteAsync(endpoint);
             return response.IsSuccessStatusCode;
         }
@@ -49,6 +57,16 @@ namespace WibuBlog.Services.Api
 
             var jsonResponse = await response.Content.ReadFromJsonAsync<T>();
             return jsonResponse ?? throw new InvalidOperationException("Response content is null");
+        }
+
+        private void AddAuthorizationHeader(ref HttpClient client)
+        {
+            var authToken = _httpContextAccessor.HttpContext?.Request.Cookies[_authTokenOptions.Name];
+
+            if (!string.IsNullOrEmpty(authToken) && client.DefaultRequestHeaders.Authorization == null)
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
+            }
         }
     }
 }

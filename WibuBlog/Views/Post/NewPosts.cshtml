@@ -1,4 +1,5 @@
-﻿@model Application.Common.Pagination.PagedResult<Post>
+﻿@using WibuBlog.Helpers
+@model Application.Common.Pagination.PagedResult<Post>
 
 <link rel="stylesheet" href="~/css/newPosts.css" />
 <link rel="stylesheet" href="~/fontawesome/css/all.css" />
@@ -8,37 +9,16 @@
         <h1 class="title">New posts</h1>
         <a class="create-post btn btn-danger mt-1"> <i class="fa-regular fa-pen-to-square"></i> Create post...</a>
     </div>
-    <nav>
-        <ul class="pagination pagination-sm">
-            @if (Model.HasPreviousPage)
-            {
-                <li class="page-item me-2">
-                    <a class="page-link" asp-action="NewPosts" asp-route-page="@(Model.PageNumber - 1)"
-                       asp-route-pageSize="@Model.PageSize" aria-label="Previous">
-                        <span aria-hidden="true">Prev</span>
-                    </a>
-                </li>
-            }
 
-            @for (int i = 1; i <= Model.TotalPages; i++)
-            {
-                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                    <a class="page-link" asp-action="NewPosts" asp-route-page="@i"
-                       asp-route-pageSize="@Model.PageSize">@i</a>
-                </li>
-            }
+    <form asp-action="NewPosts" method="get" class="form-inline my-2 my-lg-0">
+        <div class="d-flex gap-2 mb-3">
+            <input type="hidden" name="FilterBy" value="Title" />
+            <input name="searchTerm" class="form-control mr-sm-2 w-25" style="background-color:#eaebec"
+                type="search" placeholder="Search" aria-label="Search" value="@Context.Request.Query["searchTerm"]">
+            <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
+        </div>
+    </form>
 
-            @if (Model.HasNextPage)
-            {
-                <li class="page-item ms-2">
-                    <a class="page-link" asp-action="NewPosts" asp-route-page="@(Model.PageNumber + 1)"
-                       asp-route-pageSize="@Model.PageSize" aria-label="Next">
-                        <span aria-hidden="true">Next</span>
-                    </a>
-                </li>
-            }
-        </ul>
-    </nav>
     @{
         foreach (var post in Model.Items)
         {
@@ -47,14 +27,17 @@
                     <div class="col-12 col-md-7">
                         <div class="d-flex gap-3 align-items-center">
                             <img class="rounded-circle img-fluid ms-2"
-                                 style="width: 40px; height: 40px;"
-                                 src="@(post.User?.ProfilePhoto?.Url != null ? post.User.ProfilePhoto.Url : Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
+                            style="width: 40px; height: 40px;"
+                            src="@(post.User?.ProfilePhoto?.Url != null ? post.User.ProfilePhoto.Url : Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
                             <div>
-                                <a class="post-title" href="#">@post.Title</a>
+                                @{
+                                    var latestTime = DateFormatHelper.GetDateFormat(post.CreatedAt);
+                                }
+                                <a class="post-title" asp-action="Detail" asp-route-id="@post.Id">@post.Title</a>
                                 <p class="post-info">
                                     <a class="post-author" href="#">@post.User?.UserName - </a>
-                                    <a class="post-date" href="#">@post.CreatedAt - </a>
-                                    <a class="post-cat" href="#">Category name</a>
+                                    <a class="post-date" href="#">@latestTime - </a>
+                                    <a class="post-cat" href="#">@post.Category?.Name</a>
                                 </p>
                             </div>
                         </div>
@@ -62,54 +45,81 @@
 
                     <div class="col-6 col-md-1 post-stat">
                         <p>Replies: </p>
-                        <p>Views: </p>
+                        <p>Upvotes: </p>
                     </div>
 
                     <div class="col-6 col-md-2">
                         <p>@post.Comments.Count</p>
-                        <p>@post.Views</p>
+                        <p>@post.Votes.Where(v => v.IsUpvote).Count()</p>
                     </div>
 
-                    <div class="col-12 col-md-2">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="time-container flex-grow-1 ms-3" style="min-width: 80px;">
-                                @{
-                                    var timeDifference = DateTime.Now.Subtract(post.CreatedAt);
-                                    string timeAgo;
+                    @{
+                        var latestComment = post.Comments.OrderByDescending(c => c.CreatedAt).FirstOrDefault();
+                        if (latestComment != null)
+                        {
+                            var latestCommentTime = DateFormatHelper.GetDateFormat(post.CreatedAt);
+                            <div class="col-12 col-md-2">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="time-container flex-grow-1 ms-3" style="min-width: 80px;">
+                                        <p class="mb-0">@latestCommentTime</p>
+                                        <div class="">
+                                            <a href="#" style="color: rgb(140, 145, 151); font-size: 12px;">
+                                                @latestComment.User.UserName
+                                            </a>
+                                        </div>
+                                    </div>
 
-                                    if (timeDifference.TotalDays >= 1)
-                                    {
-                                        timeAgo = $"{(int)timeDifference.TotalDays} days ago";
-                                    }
-                                    else if (timeDifference.TotalHours >= 1)
-                                    {
-                                        timeAgo = $"{(int)timeDifference.TotalHours} hours ago";
-                                    }
-                                    else if (timeDifference.TotalMinutes >= 1)
-                                    {
-                                        timeAgo = $"{(int)timeDifference.TotalMinutes} minutes ago";
-                                    }
-                                    else
-                                    {
-                                        timeAgo = "Just now";
-                                    }
-                                }
-                                <p class="mb-0">@timeAgo</p>
-                                <div class="">
-                                    <a href="#" style="color: rgb(140, 145, 151); font-size: 12px;">
-                                        @post.User?.UserName
-                                    </a>
+                                    <img class="rounded-circle img-fluid me-4"
+                                         style="width: 30px; height: 30px;"
+                                         src="@(latestComment.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
                                 </div>
                             </div>
-
-                            <img class="rounded-circle img-fluid me-4"
-                                 style="width: 30px; height: 30px;"
-                                 src="@(post.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
-                        </div>
-                    </div>
-
+                        }
+                    }
                 </div>
             </div>
         }
     }
+    <nav>
+        <ul class="pagination pagination-sm">
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item me-2">
+                    <a class="page-link" asp-action="NewPosts"
+                       asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, v => (string)v.Value))"
+                       asp-route-page="@(Model.PageNumber - 1)"
+                       asp-route-pageSize="@Model.PageSize"
+                       aria-label="Previous">
+                        <span aria-hidden="true">Prev</span>
+                    </a>
+                </li>
+            }
+
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                    <a class="page-link" asp-action="NewPosts"
+                       asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, v => (string)v.Value))"
+                       asp-route-page="@i"
+                       asp-route-pageSize="@Model.PageSize">
+                        @i
+                    </a>
+                </li>
+            }
+
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item ms-2">
+                    <a class="page-link" asp-action="NewPosts"
+                       asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, v => (string)v.Value))"
+                       asp-route-page="@(Model.PageNumber + 1)"
+                       asp-route-pageSize="@Model.PageSize"
+                       aria-label="Next">
+                        <span aria-hidden="true">Next</span>
+                    </a>
+                </li>
+            }
+        </ul>
+
+    </nav>
 </div>

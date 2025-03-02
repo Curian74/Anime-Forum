@@ -14,7 +14,6 @@ namespace WibuBlog.Controllers
             return View();
         }
 
-
         [HttpGet]
         public async Task<IActionResult> UserProfile(Guid id)
         {
