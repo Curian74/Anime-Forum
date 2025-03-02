@@ -1,9 +1,11 @@
 ﻿using WibuBlog.Services;
 using Microsoft.AspNetCore.Mvc;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WibuBlog.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     public class UserController(UserServices userServices) : Controller
     {
         private readonly UserServices _userServices = userServices;
@@ -27,6 +29,7 @@ namespace WibuBlog.Controllers
         [HttpGet]
         public async Task<IActionResult> UserList(int page = 1, int pageSize = 10)
         {
+
             var result = await _userServices.GetPagedUsersAsync(page, pageSize);
             return View(result);
         }

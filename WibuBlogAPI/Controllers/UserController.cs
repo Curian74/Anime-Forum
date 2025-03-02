@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Application.Services;
 using Application.DTO;
+using Infrastructure.Extensions;
+using Microsoft.Extensions.Options;
+using Infrastructure.Configurations;
+using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Infrastructure.External;
@@ -9,7 +13,7 @@ using Infrastructure.External;
 
 namespace WibuBlogAPI.Controllers
 {
-    [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
+   // [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class UserController(UserService userService, TicketService ticketService, EmailService emailServices) : ControllerBase
@@ -99,6 +103,17 @@ namespace WibuBlogAPI.Controllers
                      return new JsonResult(NotFound());
                 }
                 return new JsonResult(Ok(result));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserByEmailAsync(string email)
+        {
+            var result = await _userServices.GetUserByEmail(email);
+            if (result == null)
+            {
+                return new JsonResult(NotFound());
+            }
+            return new JsonResult(Ok(result));
         }
 
         [HttpGet]

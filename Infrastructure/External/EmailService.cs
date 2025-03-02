@@ -1,17 +1,26 @@
 ﻿using System.Net.Mail;
 using System.Net;
 using Microsoft.Extensions.Configuration;
-
+using Application.Interfaces.Email;
+using Application.Common.EmailTemplate;
+using System.Collections.Generic;
+using System.Text;
 namespace Infrastructure.External
 {
-    public class EmailService(IConfiguration configuration)
+    public class EmailService: IEmailService
     {
-        private readonly IConfiguration _configuration = configuration;
+        private readonly IConfiguration _configuration;
+        private readonly TemplateBody _templateBody;
 
-        public async Task SendEmailAsync(string toEmail, string subject, string body)
+        public EmailService(IConfiguration configuration, TemplateBody templateBody)
+        {
+            _configuration = configuration;
+            _templateBody = templateBody;
+        }
+        public async Task SendEmailAsync(string toEmail, string subject, EmailTemplate template, Dictionary<string, string> model)
         {
             var emailSettings = _configuration.GetSection("EmailSettings");
-
+            string body = _templateBody.GetEmailBody(template, model);
             var smtpClient = new SmtpClient(emailSettings["SmtpServer"])
             {
                 Port = int.Parse(emailSettings["Port"]),
@@ -26,10 +35,8 @@ namespace Infrastructure.External
                 Body = body,
                 IsBodyHtml = true
             };
-
             mailMessage.To.Add(toEmail);
-
             await smtpClient.SendMailAsync(mailMessage);
-        }
+        }  
     }
 }

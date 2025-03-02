@@ -2,7 +2,7 @@ namespace Application.Common.MessageOperations
 {
     public static class MessageConstants
     {
-        //message chinh thuc trong srs
+        //message chinh thuc trong srs (message nghiep vu)
         public const string ME001 = "Invalid username/ password. Please try again";
         public const string ME002 = "Required field";
         public const string ME003 = "We've sent an email with the link to reset your password.";
@@ -32,9 +32,17 @@ namespace Application.Common.MessageOperations
         public const string ME027 = "Member has been unbanned";
         public const string ME028 = "Ticket verify successful";
 
-        //message chua co (da phan la validation thi them chu 'M' vao)
+        //message chua co (da phan la validation thi them chu 'M' vao) (cai nay khong co trong BR nhung no thuoc nghiep vu)
         public const string MEN001 = "Username must not exceed 50 characters";
         public const string MEN002 = "Username must have at least 5 characters";
         public const string MEN003 = "Successfully registered, please login again.";
+        public const string MEN004 = "This email have already been used";
+        public const string MEN005 = "OTP must length must be 6";
+        public const string MEN006 = "Invalid OTP";
+        public const string MEN007 = "OTP expired";
+
+        //message nay dung de debug chu khong lien quan gi den BR hay nghiep vu
+        public const string MEO001 = "Error reading expiry date";
+        public const string MEO002 = "Missing session data";
     }
 }

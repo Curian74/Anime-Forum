@@ -13,6 +13,8 @@ using Infrastructure.Extensions;
 using Infrastructure.Configurations;
 using System.Text.Json.Serialization;
 using Infrastructure.External;
+using Application.Interfaces.Email;
+using Application.Common.EmailTemplate;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,10 +43,10 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<PostService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AdminService>();
-builder.Services.AddScoped<TicketService>();
-builder.Services.AddScoped<EmailService>();
-builder.Services.AddScoped<PostCategoryService>();
-builder.Services.AddScoped<CommentSerivces>();
+builder.Services.AddScoped<TicketServices>();
+builder.Services.AddScoped<TemplateBody>();
+builder.Services.AddScoped<IEmailService,EmailService>();
+builder.Services.AddScoped<PostCategoryServices>();
 
 // AutoMapper service
 // Quet project, tim tat ca file MappingProfile roi gop lai thanh 1
@@ -79,7 +81,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     // User settings
     options.User.AllowedUserNameCharacters =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.User.RequireUniqueEmail = false;
+    options.User.RequireUniqueEmail = true;
 });
 
 builder.Services.AddIdentity<User, IdentityRole<Guid>>()

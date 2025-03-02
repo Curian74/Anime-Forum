@@ -1,6 +1,10 @@
+using Application.Common.EmailTemplate;
+using Application.Common.Session;
+using Application.Interfaces.Email;
 using Domain.Common.Roles;
 using Domain.Interfaces;
 using Infrastructure.Configurations;
+using Infrastructure.External;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -33,9 +37,19 @@ namespace WibuBlog
             builder.Services.AddScoped<PostCategoryServices>();
             builder.Services.AddScoped<TicketServices>();
             builder.Services.AddScoped<UserServices>();
-            builder.Services.AddScoped<AuthenticationServices>();
-            builder.Services.AddScoped<CommentServices>();
-
+			builder.Services.AddScoped<TemplateBody>();
+			builder.Services.AddScoped<AuthenticationServices>();
+			builder.Services.AddScoped<OTPValidation>();
+            builder.Services.AddScoped<IEmailService,EmailService>();
+            //
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30); 
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true; 
+            });
+            //
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -97,10 +111,11 @@ namespace WibuBlog
             }
 
             app.UseStatusCodePagesWithReExecute("/Error/NotFound");
-
             app.UseHttpsRedirection();
             
             app.UseStaticFiles();
+
+            app.UseSession(); //use session
 
             app.UseRouting();
 
