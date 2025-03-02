@@ -1,6 +1,7 @@
 ﻿using System.Net.Mail;
 using System.Net;
 using Microsoft.Extensions.Configuration;
+<<<<<<< HEAD
 using Application.Interfaces.Email;
 using Application.Common.EmailTemplate;
 using System.Collections.Generic;
@@ -17,7 +18,17 @@ namespace Infrastructure.External
             _configuration = configuration;
             _templateBody = templateBody;
         }
-        public async Task SendEmailAsync(string toEmail, string subject, EmailTemplateEnum template, Dictionary<string, string> model)
+        public async Task SendEmailAsync(string toEmail, string subject, EmailTemplate template, Dictionary<string, string> model)
+=======
+
+namespace Infrastructure.External
+{
+    public class EmailService(IConfiguration configuration)
+    {
+        private readonly IConfiguration _configuration = configuration;
+
+        public async Task SendEmailAsync(string toEmail, string subject, string body)
+>>>>>>> main
         {
             var emailSettings = _configuration.GetSection("EmailSettings");
             string body = _templateBody.GetEmailBody(template, model);

@@ -1,24 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace Application.Common.EmailTemplate
 {
     public class TemplateBody
     {
-        public string GetEmailBody(EmailTemplate template, Dictionary<string,string> model)
+        public string GetEmailBody(EmailTemplateEnum template, Dictionary<string,string> model)
         {
             string body = GenerateEmailBody(template);
             body = LoadEmailBody(body,model);
             return body;
         }
-        private string GenerateEmailBody(EmailTemplate template)
+        private string GenerateEmailBody(EmailTemplateEnum template)
         {
             switch (template)
             {
-                case EmailTemplate.Registration:
+                case EmailTemplateEnum.Registration:
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("<html>");
                     sb.AppendLine("<head>");
@@ -43,7 +39,7 @@ namespace Application.Common.EmailTemplate
                     sb.AppendLine("</html>");
                     return sb.ToString();
 
-                case EmailTemplate.ForgotPassword:
+                case EmailTemplateEnum.ForgotPassword:
                     StringBuilder sb2 = new StringBuilder();
                     sb2.AppendLine("<html>");
                     sb2.AppendLine("<head>");

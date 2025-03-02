@@ -12,6 +12,6 @@ namespace Application.Interfaces.Email
 {
     public interface IEmailService
     {
-         Task SendEmailAsync(string toEmail, string subject, EmailTemplate template, Dictionary<string, string> model);
+         Task SendEmailAsync(string toEmail, string subject, EmailTemplateEnum template, Dictionary<string, string> model);
     }
 }
