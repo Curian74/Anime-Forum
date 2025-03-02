@@ -12,9 +12,9 @@ namespace WibuBlogAPI.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class CommentController(CommentSerivces commentSerivces) : ControllerBase
+    public class CommentController(CommentSerivce commentSerivces) : ControllerBase
     {
-        private readonly CommentSerivces _commentSerivce = commentSerivces;
+        private readonly CommentSerivce _commentSerivce = commentSerivces;
 
         [AllowAnonymous]
         [HttpGet]

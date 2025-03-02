@@ -4,9 +4,9 @@ using WibuBlog.ViewModels.Comment;
 
 namespace WibuBlog.Controllers
 {
-    public class CommentController(CommentServices commentServices) : Controller
+    public class CommentController(CommentService commentService) : Controller
     {
-        private readonly CommentServices _commentService = commentServices;
+        private readonly CommentService _commentService = commentService;
 
         [HttpPost]
         public async Task<IActionResult> PostComment(PostCommentVM commentVM)

@@ -1,4 +1,5 @@
 using Application.Common.EmailTemplate;
+using Application.Common.Session;
 using Application.Interfaces.Email;
 using Domain.Common.Roles;
 using Domain.Interfaces;
@@ -31,14 +32,15 @@ namespace WibuBlog
             //Dependency injections
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<Domain.Interfaces.IConfigurationManager, Infrastructure.Configurations.ConfigurationManager>();
-            builder.Services.AddScoped<IApiService, ApiService>();
-            builder.Services.AddScoped<PostService>();
-            builder.Services.AddScoped<PostCategoryService>();
-            builder.Services.AddScoped<TicketService>();
-            builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<IApiServices, ApiServices>();
+            builder.Services.AddScoped<PostServices>();
+            builder.Services.AddScoped<PostCategoryServices>();
+            builder.Services.AddScoped<TicketServices>();
+            builder.Services.AddScoped<UserServices>();
+<<<<<<< HEAD
 			builder.Services.AddScoped<TemplateBody>();
-			builder.Services.AddScoped<AuthService>();
-			builder.Services.AddScoped<OtpService>();
+			builder.Services.AddScoped<AuthenticationServices>();
+			builder.Services.AddScoped<OTPValidation>();
             builder.Services.AddScoped<IEmailService,EmailService>();
             //
             builder.Services.AddDistributedMemoryCache();
@@ -49,6 +51,11 @@ namespace WibuBlog
                 options.Cookie.IsEssential = true; 
             });
             //
+=======
+            builder.Services.AddScoped<AuthenticationServices>();
+            builder.Services.AddScoped<CommentServices>();
+
+>>>>>>> main
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -109,7 +116,12 @@ namespace WibuBlog
                 app.UseHsts();
             }
 
+<<<<<<< HEAD
+           // app.UseStatusCodePagesWithReExecute("/Error/NotFound");
+=======
             app.UseStatusCodePagesWithReExecute("/Error/NotFound");
+
+>>>>>>> main
             app.UseHttpsRedirection();
             
             app.UseStaticFiles();

@@ -4,9 +4,9 @@ using WibuBlog.Interfaces.Api;
 
 namespace WibuBlog.Services
 {
-    public class PostCategoryServices(IApiServices apiService)
+    public class PostCategoryService(IApiService apiService)
     {
-        private readonly IApiServices _apiService = apiService;
+        private readonly IApiService _apiService = apiService;
 
         public async Task<List<PostCategory>> GetAllCategories(string? filterBy, string? searchTerm, bool? isDesc)
         {

@@ -7,9 +7,9 @@ using WibuBlog.ViewModels.Ticket;
 
 namespace WibuBlog.Services
 {
-    public class TicketServices(IApiServices apiService)
+    public class TicketService(IApiService apiService)
     {
-        private readonly IApiServices _apiService = apiService;
+        private readonly IApiService _apiService = apiService;
 
         public async Task<PagedResult<Ticket>> GetPagedTicketAsync(int? page, int? pageSize)
         {

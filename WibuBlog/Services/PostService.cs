@@ -6,9 +6,9 @@ using WibuBlog.ViewModels.Post;
 
 namespace WibuBlog.Services
 {
-    public class PostServices(IApiServices apiService)
+    public class PostService(IApiService apiService)
     {
-        private readonly IApiServices _apiService = apiService;
+        private readonly IApiService _apiService = apiService;
 
         public async Task<List<Post>> GetAllPostAsync(string? filterBy, string? searchTerm, bool? isDesc)
         {

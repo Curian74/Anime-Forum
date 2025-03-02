@@ -9,10 +9,10 @@ using System.Security.Claims;
 namespace WibuBlog.Controllers
 {
     [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
-    public class PostController(PostServices postService, CommentServices commentServices) : Controller
+    public class PostController(PostService postService, CommentService commentService) : Controller
     {
-        private readonly PostServices _postService = postService;
-        private readonly CommentServices _commentServices = commentServices;
+        private readonly PostService _postService = postService;
+        private readonly CommentService _commentService = commentService;
 
         [AllowAnonymous]
         public async Task<IActionResult> Index(int? page = 1, int? pageSize = 5)
@@ -34,7 +34,7 @@ namespace WibuBlog.Controllers
         public async Task<IActionResult> Detail(Guid id, int? page = 1, int? pageSize = 10)
         {
             var post = await _postService.GetPostByIdAsync(id);
-            var comments = await _commentServices
+            var comments = await _commentService
                 .GetPagedComments(page, pageSize, "postId", id.ToString());
 
             //var postComments = comments.Items.Where(x => x.PostId == post.Id).ToList();
