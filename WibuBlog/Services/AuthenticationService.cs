@@ -9,12 +9,12 @@ using WibuBlog.Common.ApiResponse;
 
 namespace WibuBlog.Services
 {
-    public class AuthenticationServices(IApiServices apiService, IHttpContextAccessor httpContextAccessor, IOptions<AuthTokenOptions> authTokenOptions)
+    public class AuthenticationService(IApiService apiService, IHttpContextAccessor httpContextAccessor, IOptions<AuthTokenOptions> authTokenOptions)
     {
-        private readonly IApiServices _apiService = apiService;
+        private readonly IApiService _apiService = apiService;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
-        private readonly HttpClient _httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7186/api/Auth/") };
+        private readonly HttpClient _httpClient = new() { BaseAddress = new Uri("https://localhost:7186/api/Auth/") };
 
         public async Task<bool> AuthorizeLogin(LoginVM loginVM)
         {

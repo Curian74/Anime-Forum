@@ -1,30 +1,24 @@
 using Application.Common.EmailTemplate;
 using Application.Common.MessageOperations;
-using Application.Common.OTPGenerator;
-using Application.Common.Session;
-using Application.DTO;
-using Application.Interfaces.Email;
-using Infrastructure.Configurations;
 using Infrastructure.Extensions;
+using Application.Common.Session;
+using Application.Interfaces.Email;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System.Net;
 using WibuBlog.Services;
 using WibuBlog.ViewModels.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WibuBlog.Controllers
 {
-    public class AuthenticationController(AuthenticationServices authenticationService,IOptions<AuthTokenOptions> authTokenOptions,
-        IHttpClientFactory httpClientFactory, IEmailService emailService, UserServices userServices, OTPValidation OTPValidation) : Controller
-     {
-        private readonly AuthenticationServices _authenticationService = authenticationService;
-        private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
+    public class AuthController(AuthenticationService authenticationService, IEmailService emailService, UserService userService, OTPValidation OTPValidation) : Controller
+    {
+        private readonly AuthenticationService _authenticationService = authenticationService;
         private readonly IEmailService _emailService = emailService;
-        private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
-        private readonly UserServices _userServices = userServices;
+        private readonly UserService _userService = userService;
         private readonly OTPValidation _OTPValidation = OTPValidation;
-		public IActionResult Index()
+
+        public IActionResult Index()
         {
             return View();
         }
@@ -59,39 +53,12 @@ namespace WibuBlog.Controllers
             return View();
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> LoginAuthentication([FromBody] LoginVM loginVM)
-        //{
-        //    _ = await _authenticationService.AuthorizeLogin(loginVM);
-        //    Request.Cookies.TryGetValue(_authTokenOptions.Name, out string? authToken);
-        //    if (authToken is null)
-        //    {
-        //        return RedirectToAction("Login", "Authentication");
-        //    }
-
-        //    Response.Cookies.Append("AuthToken", token, cookieOptions);
-
-        //    return RedirectToAction("Index", "Home");
-        //}
-
         [HttpPost]
         public async Task<IActionResult> LoginAuthentication(LoginVM loginVM)
         {
-          //  var response = await _authenticationService.AuthorizeLogin(loginVM);
-            var handler = new HttpClientHandler();
-            handler.UseCookies = true;
-            handler.CookieContainer = new CookieContainer();
+            var result = await _authenticationService.AuthorizeLogin(loginVM);
 
-            var client = new HttpClient(handler);
-            client.BaseAddress = new Uri("https://localhost:7186/api/");
-
-            var loginDTO = new LoginDto
-            {
-                Login = "admin",
-                Password = "admin"
-            };
-            var response = await client.PostAsJsonAsync($"Auth/Login", loginDTO);
-            if (!response.IsSuccessStatusCode)
+            if (!result)
             {
                 return RedirectToAction(nameof(Login));
             }
@@ -99,13 +66,21 @@ namespace WibuBlog.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await _authenticationService.AuthorizeLogout();
+
+            return RedirectToAction("Index", "Home");
+        }
 
         [HttpPost]
         public async Task<ActionResult> RegisterAuthentication(RegisterVM registerVM)
         {
             if (!ModelState.IsValid) return View(nameof(Register), registerVM);
-            
-            if (await _userServices.GetUserByEmailAsync(registerVM.email) != null)
+
+            if (await _userService.GetUserByEmailAsync(registerVM.email) != null)
             {
                 ModelState.AddModelError("email", MessageConstants.MEN004);
                 return View(nameof(Register), registerVM);
@@ -120,7 +95,7 @@ namespace WibuBlog.Controllers
                     { "Name", registerVM.username },
                     { "OTP", otp  }
                 };
-            _emailService.SendEmailAsync(registerVM.email, "Registration OTP",EmailTemplateEnum.Registration, model);
+            _emailService.SendEmailAsync(registerVM.email, "Registration OTP", EmailTemplateEnum.Registration, model);
 
             return View(nameof(OTPAuthentication));
         }
@@ -129,24 +104,30 @@ namespace WibuBlog.Controllers
         [HttpPost]
         public async Task<ActionResult> OTPAuthentication(string OTP)
         {
-            if (!ModelState.IsValid) return View(nameof(OTPAuthentication));
+            if (!ModelState.IsValid) 
+            { 
+                return View(nameof(OTPAuthentication)); 
+            }
+
             string savedOtp = HttpContext.Session.GetString("OTP");
             string expiryTimeStr = HttpContext.Session.GetString("OTP_Expiry");
             string registerData = HttpContext.Session.GetString("RegisterVM");
-			Dictionary<string, string> errors = _OTPValidation.ValidateOTP(savedOtp, OTP, expiryTimeStr);
-			if (errors.Count == 0)
+
+            Dictionary<string, string> errors = _OTPValidation.ValidateOTP(savedOtp, OTP, expiryTimeStr);
+
+            if (errors.Count == 0)
             {
-				RegisterVM registerVM = JsonConvert.DeserializeObject<RegisterVM>(registerData);
-				HttpContext.Session.Clear();
-				var result = await _authenticationService.AuthorizeRegister(registerVM);
+                RegisterVM registerVM = JsonConvert.DeserializeObject<RegisterVM>(registerData);
+                HttpContext.Session.Clear();
+                var result = await _authenticationService.AuthorizeRegister(registerVM);
                 TempData["SuccessRegistrationMessage"] = MessageConstants.MEN003;
                 return RedirectToAction(nameof(Login));
-			}
+            }
             foreach (var x in errors)
             {
                 ModelState.AddModelError(x.Key, x.Value);
             }
-            return View(nameof(OTPAuthentication));                   
+            return View(nameof(OTPAuthentication));
         }
 
 

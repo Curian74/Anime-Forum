@@ -5,7 +5,7 @@ using WibuBlog.Interfaces.Api;
 
 namespace WibuBlog.Services.Api
 {
-    public class ApiServices(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, IOptions<AuthTokenOptions> authTokenOptions) : IApiServices
+    public class ApiService(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, IOptions<AuthTokenOptions> authTokenOptions) : IApiService
     {
         private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;

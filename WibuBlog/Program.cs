@@ -32,13 +32,13 @@ namespace WibuBlog
             //Dependency injections
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<Domain.Interfaces.IConfigurationManager, Infrastructure.Configurations.ConfigurationManager>();
-            builder.Services.AddScoped<IApiServices, ApiServices>();
-            builder.Services.AddScoped<PostServices>();
-            builder.Services.AddScoped<PostCategoryServices>();
-            builder.Services.AddScoped<TicketServices>();
-            builder.Services.AddScoped<UserServices>();
+            builder.Services.AddScoped<IApiService, ApiService>();
+            builder.Services.AddScoped<PostService>();
+            builder.Services.AddScoped<PostCategoryService>();
+            builder.Services.AddScoped<TicketService>();
+            builder.Services.AddScoped<UserService>();
 			builder.Services.AddScoped<TemplateBody>();
-			builder.Services.AddScoped<AuthenticationServices>();
+			builder.Services.AddScoped<AuthenticationService>();
 			builder.Services.AddScoped<OTPValidation>();
             builder.Services.AddScoped<IEmailService,EmailService>();
             //

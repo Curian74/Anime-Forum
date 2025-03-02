@@ -6,9 +6,10 @@ using Microsoft.AspNetCore.Authorization;
 namespace WibuBlog.Controllers
 {
     [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
-    public class UserController(UserServices userServices) : Controller
+    public class UserController(UserService userService) : Controller
     {
-        private readonly UserServices _userServices = userServices;
+        private readonly UserService _userService = userService;
+
         public IActionResult Index()
         {
             return View();
@@ -17,7 +18,7 @@ namespace WibuBlog.Controllers
         [HttpGet]
         public async Task<IActionResult> UserProfile(Guid id)
         {
-            var result = await _userServices.GetUserByIdAsync(id);
+            var result = await _userService.GetUserByIdAsync(id);
             if (result is null)
             {
                 return NotFound();
@@ -30,7 +31,7 @@ namespace WibuBlog.Controllers
         public async Task<IActionResult> UserList(int page = 1, int pageSize = 10)
         {
 
-            var result = await _userServices.GetPagedUsersAsync(page, pageSize);
+            var result = await _userService.GetPagedUsersAsync(page, pageSize);
             return View(result);
         }
 
@@ -43,7 +44,7 @@ namespace WibuBlog.Controllers
             }
             try
             {
-                await _userServices.UpdateUserAsync(userId, user); 
+                await _userService.UpdateUserAsync(userId, user); 
                 return Json(new { success = true, message = "Updated!" });
             }
             catch (Exception ex)

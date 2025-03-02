@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Application.Services;
 using Application.DTO;
-using Infrastructure.Extensions;
-using Microsoft.Extensions.Options;
-using Infrastructure.Configurations;
-using Domain.Entities;
-using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Infrastructure.External;
 
