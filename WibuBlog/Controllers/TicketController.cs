@@ -62,13 +62,11 @@ namespace WibuBlog.Controllers
             return RedirectToAction(nameof(Add));
         }
 
-
-
         [HttpGet]
-        public async Task<IActionResult> Update(Guid id)
+        public async Task<IActionResult> Detail(Guid id)
         {
             var ticket = await _ticketService.GetTicketByIdAsync(id);
-            if (ticket is null)
+            if (ticket == null)
             {
                 return NotFound();
             }
@@ -79,10 +77,10 @@ namespace WibuBlog.Controllers
                 Email = ticket.Email,
                 Content = ticket.Content,
                 Tag = ticket.Tag,
-                IsApproved = ticket.IsApproved
+                IsApproved = ticket.IsApproved ?? false
             };
 
-            return View("Detail", model);
+            return View(model);
         }
 
         [HttpPost]
@@ -95,47 +93,29 @@ namespace WibuBlog.Controllers
 
             try
             {
-                var ticket = await _ticketService.GetTicketByIdAsync(id);
-                if (ticket is null)
+                var success = await _ticketService.UpdateTicketAsync(id, model);
+
+                if (success)
                 {
-                    return NotFound();
+                    TempData["SuccessMessage"] = "Ticket updated successfully!";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Failed to update ticket.";
                 }
 
-                // Cập nhật thông tin ticket
-                ticket.Email = model.Email;
-                ticket.Content = model.Content;
-                ticket.Tag = model.Tag;
-                ticket.IsApproved = model.IsApproved;
-
-                await _ticketService.UpdateTicketAsync(id, ticket);
-
-                TempData["SuccessMessage"] = "Ticket updated successfully!";
-                return RedirectToAction(nameof(Update), new { id });
+                return RedirectToAction("Detail", new { id });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 ModelState.AddModelError(string.Empty, "An error occurred while updating the ticket.");
                 return View("Detail", model);
             }
         }
 
 
-        [HttpPost]
-        public async Task<IActionResult> Cancel(Guid id)
-        {
-            var ticket = await _ticketService.GetTicketByIdAsync(id);
-            if (ticket == null || ticket.IsApproved != null)
-            {
-                TempData["ErrorMessage"] = "Ticket cannot be canceled.";
-                return RedirectToAction(nameof(Update), new { id });
-            }
 
-            ticket.IsApproved = false; 
-            await _ticketService.UpdateTicketAsync(id, ticket);
-
-            TempData["SuccessMessage"] = "Ticket has been canceled.";
-            return RedirectToAction(nameof(Update), new { id });
-        }
 
         [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetById(Guid id)
