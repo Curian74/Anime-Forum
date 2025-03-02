@@ -47,14 +47,12 @@ namespace WibuBlogAPI.Controllers
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             dto.UserId = userId;
 
-            // Kiểm tra xem email có thuộc user không
             var user = await _userService.FindByIdAsync(userId);
             if (user == null || user.Email != dto.Email)
             {
                 return new JsonResult(BadRequest("Email không hợp lệ"));
             }
 
-            // Danh sách tag hợp lệ
             var validTags = new HashSet<string> { "#BannedAccount", "#HelpCreatePost", "#TechnicalIssue" };
             if (!validTags.Contains(dto.Tag))
             {
@@ -71,11 +69,13 @@ namespace WibuBlogAPI.Controllers
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             var result = await _ticketService.UpdateTicket(dto, userId);
+
             if (!result)
             {
-                return new JsonResult(NotFound("Ticket not found or unauthorized"));
+                return NotFound(new { success = false, message = "Ticket not found or unauthorized" });
             }
-            return new JsonResult(Ok("Ticket updated successfully"));
+
+            return Ok(new { success = true, message = "Ticket updated successfully" });
         }
 
         [HttpDelete("{id}")]

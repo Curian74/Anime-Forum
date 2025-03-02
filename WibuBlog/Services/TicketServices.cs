@@ -1,4 +1,5 @@
 ﻿using Application.Common.Pagination;
+using Application.DTO;
 using Domain.Entities;
 using WibuBlog.Common.ApiResponse;
 using WibuBlog.Interfaces.Api;
@@ -19,9 +20,22 @@ namespace WibuBlog.Services
 
         public async Task<Ticket> GetTicketByIdAsync<T>(T id)
         {
-            var response = await _apiService.GetAsync<ApiResponse<Ticket>>($"Ticket/Get/{id}");
-            return response.Value!;
+            try
+            {
+                var guidId = Guid.Parse(id.ToString());
+                var response = await _apiService.GetAsync<ApiResponse<IEnumerable<Ticket>>>("User/GetUserTickets");
+                if (response?.Value != null)
+                {
+                    return response.Value.FirstOrDefault(t => Guid.Parse(t.Id.ToString()) == guidId);
+                }
+                return null;
+            }
+            catch (HttpRequestException)
+            {
+                return null;
+            }
         }
+
 
         public async Task<bool> AddNewTicketAsync(AddTicketVM data)
         {
@@ -30,10 +44,28 @@ namespace WibuBlog.Services
             return response != null;
         }
 
-        public async Task<Ticket> UpdateTicketAsync<T>(T id, Ticket data)
+        public async Task<bool> UpdateTicketAsync(Guid id, TicketDetailVM model)
         {
-            var response = await _apiService.PutAsync<ApiResponse<Ticket>>($"Ticket/Update/{id}", data);
-            return response.Value!;
+            try
+            {
+                var updateDto = new UpdateTicketDto
+                {
+                    Id = id,
+                    Content = model.Content,
+                    Email = model.Email,
+                    Tag = model.Tag,
+                    IsApproved = model.IsApproved
+                };
+
+                var response = await _apiService.PutAsync<ApiResponse<bool>>("User/UpdateTicket", updateDto);
+                Console.WriteLine($"API response: {response != null}");
+                return response != null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating ticket: {ex.Message}");
+                return false;
+            }
         }
 
         public async Task<bool> DeleteTicketAsync<T>(T id)
