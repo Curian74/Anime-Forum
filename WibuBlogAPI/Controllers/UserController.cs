@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Application.Services;
 using Application.DTO;
+using Infrastructure.Extensions;
+using Microsoft.Extensions.Options;
+using Infrastructure.Configurations;
+using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Infrastructure.External;
@@ -9,7 +13,7 @@ using Infrastructure.External;
 
 namespace WibuBlogAPI.Controllers
 {
-    [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
+   // [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class UserController(UserService userService, TicketService ticketService, EmailService emailServices) : ControllerBase
@@ -47,14 +51,12 @@ namespace WibuBlogAPI.Controllers
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             dto.UserId = userId;
 
-            // Kiểm tra xem email có thuộc user không
             var user = await _userService.FindByIdAsync(userId);
             if (user == null || user.Email != dto.Email)
             {
                 return new JsonResult(BadRequest("Email không hợp lệ"));
             }
 
-            // Danh sách tag hợp lệ
             var validTags = new HashSet<string> { "#BannedAccount", "#HelpCreatePost", "#TechnicalIssue" };
             if (!validTags.Contains(dto.Tag))
             {
@@ -71,11 +73,13 @@ namespace WibuBlogAPI.Controllers
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             var result = await _ticketService.UpdateTicket(dto, userId);
+
             if (!result)
             {
-                return new JsonResult(NotFound("Ticket not found or unauthorized"));
+                return NotFound(new { success = false, message = "Ticket not found or unauthorized" });
             }
-            return new JsonResult(Ok("Ticket updated successfully"));
+
+            return Ok(new { success = true, message = "Ticket updated successfully" });
         }
 
         [HttpDelete("{id}")]
@@ -99,6 +103,17 @@ namespace WibuBlogAPI.Controllers
                      return new JsonResult(NotFound());
                 }
                 return new JsonResult(Ok(result));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserByEmailAsync(string email)
+        {
+            var result = await _userServices.GetUserByEmail(email);
+            if (result == null)
+            {
+                return new JsonResult(NotFound());
+            }
+            return new JsonResult(Ok(result));
         }
 
         [HttpGet]

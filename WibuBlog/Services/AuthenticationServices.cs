@@ -74,7 +74,7 @@ namespace WibuBlog.Services
                 Password = registerVM.password
 
             };
-            var response = await _apiService.PostAsync<ApiResponse<IdentityResult>>($"User/Register", RegisterDTO);
+            var response = await _apiService.PostAsync<ApiResponse<IdentityResult>>($"Auth/Register", RegisterDTO);
             return response.Value!;
         }
 
