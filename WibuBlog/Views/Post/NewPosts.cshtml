@@ -1,5 +1,6 @@
 ﻿@using WibuBlog.Helpers
-@model Application.Common.Pagination.PagedResult<Post>
+@using WibuBlog.ViewModels.Post
+@model NewPostsVM
 
 <link rel="stylesheet" href="~/css/newPosts.css" />
 <link rel="stylesheet" href="~/fontawesome/css/all.css" />
@@ -14,21 +15,26 @@
         <div class="d-flex gap-2 mb-3">
             <input type="hidden" name="FilterBy" value="Title" />
             <input name="searchTerm" class="form-control mr-sm-2 w-25" style="background-color:#eaebec"
-                type="search" placeholder="Search" aria-label="Search" value="@Context.Request.Query["searchTerm"]">
-            <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
+                   type="search" placeholder="Search" aria-label="Search" value="@Context.Request.Query["searchTerm"]">
+            <select class="form-select" style="width:10%" asp-items="@Model.CategoryList" asp-for="@Model.CategoryId">
+                <option value="">--Select a category--</option>
+            </select>
+            <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Filter</button>
         </div>
     </form>
 
     @{
-        foreach (var post in Model.Items)
+        @foreach (var post in (Model.CategoryId.HasValue
+            ? Model.Posts.Items.Where(x => x.PostCategoryId == Model.CategoryId)
+            : Model.Posts.Items))
         {
             <div class="post-list">
                 <div class="row mt-2 mb-2">
                     <div class="col-12 col-md-7">
                         <div class="d-flex gap-3 align-items-center">
                             <img class="rounded-circle img-fluid ms-2"
-                            style="width: 40px; height: 40px;"
-                            src="@(post.User?.ProfilePhoto?.Url != null ? post.User.ProfilePhoto.Url : Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
+                                 style="width: 40px; height: 40px;"
+                                 src="@(post.User?.ProfilePhoto?.Url != null ? post.User.ProfilePhoto.Url : Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
                             <div>
                                 @{
                                     var latestTime = DateFormatHelper.GetDateFormat(post.CreatedAt);
@@ -82,38 +88,38 @@
     }
     <nav>
         <ul class="pagination pagination-sm">
-            @if (Model.HasPreviousPage)
+            @if (Model.Posts.HasPreviousPage)
             {
                 <li class="page-item me-2">
                     <a class="page-link" asp-action="NewPosts"
                        asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, v => (string)v.Value))"
-                       asp-route-page="@(Model.PageNumber - 1)"
-                       asp-route-pageSize="@Model.PageSize"
+                       asp-route-page="@(Model.Posts.PageNumber - 1)"
+                       asp-route-pageSize="@Model.Posts.PageSize"
                        aria-label="Previous">
                         <span aria-hidden="true">Prev</span>
                     </a>
                 </li>
             }
 
-            @for (int i = 1; i <= Model.TotalPages; i++)
+            @for (int i = 1; i <= Model.Posts.TotalPages; i++)
             {
-                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                <li class="page-item @(i == Model.Posts.PageNumber ? "active" : "")">
                     <a class="page-link" asp-action="NewPosts"
                        asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, v => (string)v.Value))"
                        asp-route-page="@i"
-                       asp-route-pageSize="@Model.PageSize">
+                       asp-route-pageSize="@Model.Posts.PageSize">
                         @i
                     </a>
                 </li>
             }
 
-            @if (Model.HasNextPage)
+            @if (Model.Posts.HasNextPage)
             {
                 <li class="page-item ms-2">
                     <a class="page-link" asp-action="NewPosts"
                        asp-all-route-data="@(Context.Request.Query.ToDictionary(k => k.Key, v => (string)v.Value))"
-                       asp-route-page="@(Model.PageNumber + 1)"
-                       asp-route-pageSize="@Model.PageSize"
+                       asp-route-page="@(Model.Posts.PageNumber + 1)"
+                       asp-route-pageSize="@Model.Posts.PageSize"
                        aria-label="Next">
                         <span aria-hidden="true">Next</span>
                     </a>

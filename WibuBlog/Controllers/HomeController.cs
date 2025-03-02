@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using WibuBlog.Models;
 using WibuBlog.Services;
 using WibuBlog.ViewModels.Home;
 
@@ -21,7 +20,7 @@ namespace WibuBlog.Controllers
         {
             var restrictedCategories = await _postCategoryServices.GetAllCategories("isRestricted", "true" , false);
             var nonrestrictedCategories = await _postCategoryServices.GetAllCategories("isRestricted", "false" , false);
-            var recentPosts = await _postService.GetPagedPostAsync(1, 5, "CreatedAt", "", "", true);
+            var recentPosts = await _postService.GetPagedPostAsync(1, 5, "", "", "", true);
             var postList = await _postService.GetAllPostAsync("", "", false);
 
             HomeVM homeVM = new HomeVM
@@ -33,17 +32,6 @@ namespace WibuBlog.Controllers
             };
 
             return View(homeVM);
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

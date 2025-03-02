@@ -5,14 +5,17 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using WibuBlog.Helpers;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace WibuBlog.Controllers
 {
     [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
-    public class PostController(PostServices postService, CommentServices commentServices) : Controller
+    public class PostController(PostServices postService, CommentServices commentServices,
+        PostCategoryServices postCategoryService) : Controller
     {
         private readonly PostServices _postService = postService;
-        private readonly CommentServices _commentServices = commentServices;
+        private readonly CommentServices _commentService = commentServices;
+        private readonly PostCategoryServices _postCategoryService = postCategoryService;
 
         [AllowAnonymous]
         public async Task<IActionResult> Index(int? page = 1, int? pageSize = 5)
@@ -22,19 +25,33 @@ namespace WibuBlog.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> NewPosts([FromQuery] QueryObject queryObject)
+        public async Task<IActionResult> NewPosts([FromQuery] QueryObject queryObject, Guid? categoryId)
         {
-            var value = await _postService.GetPagedPostAsync(queryObject.Page, queryObject.Size,
+            var postList = await _postService.GetPagedPostAsync(queryObject.Page, queryObject.Size,
                 queryObject.FilterBy, queryObject.SearchTerm, queryObject.OrderBy, queryObject.Descending);
 
-            return View(value);
+            var categoryList = await _postCategoryService.GetAllCategories("" , "" , false);
+
+            var data = new NewPostsVM
+            {
+                CategoryList = categoryList.OrderBy(x => x.Name).Select(c => new SelectListItem
+                {
+                    Text = c.Name,
+                    Value = c.Id.ToString()
+                })
+                .ToList(),
+                Posts = postList,
+                CategoryId = categoryId
+            };
+
+            return View(data);
         }
 
         [AllowAnonymous]
         public async Task<IActionResult> Detail(Guid id, int? page = 1, int? pageSize = 10)
         {
             var post = await _postService.GetPostByIdAsync(id);
-            var comments = await _commentServices
+            var comments = await _commentService
                 .GetPagedComments(page, pageSize, "postId", id.ToString());
 
             //var postComments = comments.Items.Where(x => x.PostId == post.Id).ToList();

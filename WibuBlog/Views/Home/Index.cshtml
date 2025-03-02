@@ -131,17 +131,19 @@
                 @{
                     @if (Model?.Posts != null && Model.Posts.Any())
                     {
-                        //Lay ra posts nhieu view nhat trong 7 ngay tro lai day
+                        var postSize = 5;
+                        //Lay ra posts nhieu comments nhat trong 7 ngay tro lai day
                         foreach (var p in Model.Posts
-                            .Where(p => !p.Category.IsRestricted)
+                            .Where(p => p.Category?.IsRestricted == false)
                             .Where(p => (DateTime.Now - p.CreatedAt).TotalDays <= 7)
-                            .OrderByDescending(x => x.Views))
+                            .Take(postSize)
+                            .OrderByDescending(x => x.Comments.Count))
                         {
                             var latestTime = DateFormatHelper.GetDateFormat(p.CreatedAt);
                             <div class="d-flex">
                                 <img class="rounded-circle" src="@(p?.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
                                 <div class="trending-content-detail">
-                                    <a href="#" id="trending-content-title">@p?.Title</a>
+                                    <a asp-action="Detail" asp-controller="Post" asp-route-id="@p.Id" id="trending-content-title">@p?.Title</a>
                                     <p>@p.User?.UserName - @latestTime</p>
                                     <p>Replies: @p.Comments.Count()</p>
                                 </div>
