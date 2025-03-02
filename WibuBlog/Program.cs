@@ -1,5 +1,4 @@
 using Application.Common.EmailTemplate;
-using Application.Common.Session;
 using Application.Interfaces.Email;
 using Domain.Common.Roles;
 using Domain.Interfaces;
@@ -39,7 +38,7 @@ namespace WibuBlog
             builder.Services.AddScoped<UserService>();
 			builder.Services.AddScoped<TemplateBody>();
 			builder.Services.AddScoped<AuthService>();
-			builder.Services.AddScoped<OTPValidation>();
+			builder.Services.AddScoped<OtpService>();
             builder.Services.AddScoped<IEmailService,EmailService>();
             //
             builder.Services.AddDistributedMemoryCache();

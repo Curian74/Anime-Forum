@@ -8,7 +8,7 @@ using Application.Interfaces.Email;
 
 namespace Application.Services
 {
-    public class UserServices(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork, IEmailService emailService)
+    public class UserService(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork, IEmailService emailService)
     {
         private readonly UserManager<User> _userManager = userManager;
         private readonly IMapper _mapper = mapper;

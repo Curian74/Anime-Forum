@@ -1,7 +1,4 @@
-using Application.Common.EmailTemplate;
 using Application.Common.MessageOperations;
-using Infrastructure.Extensions;
-using Application.Common.Session;
 using Application.Interfaces.Email;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -11,12 +8,12 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace WibuBlog.Controllers
 {
-    public class AuthController(AuthService authenticationService, IEmailService emailService, UserService userService, OTPValidation OTPValidation) : Controller
+    public class AuthController(AuthService authenticationService, IEmailService emailService, UserService userService, OtpService otpService) : Controller
     {
         private readonly AuthService _authenticationService = authenticationService;
         private readonly IEmailService _emailService = emailService;
         private readonly UserService _userService = userService;
-        private readonly OTPValidation _OTPValidation = OTPValidation;
+        private readonly OtpService _otpService = otpService;
 
         public IActionResult Index()
         {
@@ -78,24 +75,18 @@ namespace WibuBlog.Controllers
         [HttpPost]
         public async Task<ActionResult> RegisterAuthentication(RegisterVM registerVM)
         {
-            if (!ModelState.IsValid) return View(nameof(Register), registerVM);
+            if (!ModelState.IsValid) 
+            { 
+                return View(nameof(Register), registerVM); 
+            }
 
             if (await _userService.GetUserByEmailAsync(registerVM.email) != null)
             {
                 ModelState.AddModelError("email", MessageConstants.MEN004);
                 return View(nameof(Register), registerVM);
             }
-            string otp = OTPGenerator.GenerateOTP();
-            HttpContext.Session.SetString("OTP", otp);
-            HttpContext.Session.SetString("OTP_Expiry", DateTime.UtcNow.AddMinutes(5).ToString());
-            string registerData = JsonConvert.SerializeObject(registerVM);
-            HttpContext.Session.SetString("RegisterVM", registerData);
-            var model = new Dictionary<string, string>
-                {
-                    { "Name", registerVM.username },
-                    { "OTP", otp  }
-                };
-            _emailService.SendEmailAsync(registerVM.email, "Registration OTP", EmailTemplateEnum.Registration, model);
+
+            await _otpService.SendOtp(registerVM);
 
             return View(nameof(OTPAuthentication));
         }
@@ -113,7 +104,7 @@ namespace WibuBlog.Controllers
             string expiryTimeStr = HttpContext.Session.GetString("OTP_Expiry");
             string registerData = HttpContext.Session.GetString("RegisterVM");
 
-            Dictionary<string, string> errors = _OTPValidation.ValidateOTP(savedOtp, OTP, expiryTimeStr);
+            var errors = _otpService.ValidateOTP(savedOtp, OTP, expiryTimeStr);
 
             if (errors.Count == 0)
             {

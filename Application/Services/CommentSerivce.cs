@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 
 namespace Application.Services
 {
-    public class CommentSerivces(IUnitOfWork unitOfWork, IMapper mapper)
+    public class CommentSerivce(IUnitOfWork unitOfWork, IMapper mapper)
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IGenericRepository<Comment> _commentGenericRepository = unitOfWork.GetRepository<Comment>();
