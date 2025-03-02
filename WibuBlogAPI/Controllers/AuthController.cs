@@ -10,9 +10,9 @@ namespace WibuBlogAPI.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class AuthController(UserService userService, JwtHelper jwtHelper, IOptions<AuthTokenOptions> authTokenOptions) : ControllerBase
+    public class AuthController(UserServices userService, JwtHelper jwtHelper, IOptions<AuthTokenOptions> authTokenOptions) : ControllerBase
     {
-        private readonly UserService _userService = userService;
+        private readonly UserServices _userService = userService;
         private readonly JwtHelper _jwtHelper = jwtHelper;
         private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
 

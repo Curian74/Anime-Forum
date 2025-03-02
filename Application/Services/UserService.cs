@@ -32,6 +32,12 @@ namespace Application.Services
             return user;
         }
 
+        public async Task<User?> GetUserByUsername(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            return user;
+        }
+
         public async Task<IdentityResult> Register(RegisterDto dto) 
         {
             var user = new User { UserName = dto.UserName, Email = dto.Email };

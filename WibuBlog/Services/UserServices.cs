@@ -20,6 +20,11 @@ namespace WibuBlog.Services
             return response.Value!;
         }
 
+        public async Task<User> GetUserByUsernameAsync(string username)
+        {
+            var response = await _apiService.GetAsync<ApiResponse<User>>($"User/GetUserByUsername?username={username}");
+            return response.Value!;
+        }
         public async Task<PagedResult<User>> GetPagedUsersAsync(int page, int size)
         {
             var response = await _apiService.GetAsync<ApiResponse<PagedResult<User>>>($"User/GetPagedUsers?page={page}&size={size}");

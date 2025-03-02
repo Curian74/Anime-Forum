@@ -110,7 +110,7 @@ namespace WibuBlog
                 app.UseHsts();
             }
 
-            app.UseStatusCodePagesWithReExecute("/Error/NotFound");
+            //app.UseStatusCodePagesWithReExecute("/Error/NotFound");
             app.UseHttpsRedirection();
             
             app.UseStaticFiles();
@@ -130,6 +130,10 @@ namespace WibuBlog
                 else if (response.StatusCode == 403)
                 {
                     response.Redirect("/Authentication/AccessDenied");
+                }
+                else if (response.StatusCode == 404)
+                {
+                    response.Redirect("/Error/NotFound");
                 }
 
                 return Task.CompletedTask;

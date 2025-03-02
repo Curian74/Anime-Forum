@@ -41,12 +41,12 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Service classes
 builder.Services.AddScoped<PostService>();
-builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<UserServices>();
 builder.Services.AddScoped<AdminService>();
-builder.Services.AddScoped<TicketServices>();
+builder.Services.AddScoped<TicketService>();
 builder.Services.AddScoped<TemplateBody>();
 builder.Services.AddScoped<IEmailService,EmailService>();
-builder.Services.AddScoped<PostCategoryServices>();
+builder.Services.AddScoped<PostCategoryService>();
 
 // AutoMapper service
 // Quet project, tim tat ca file MappingProfile roi gop lai thanh 1

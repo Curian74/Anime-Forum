@@ -8,6 +8,7 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Infrastructure.External;
+using Application.Interfaces.Email;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,11 +17,10 @@ namespace WibuBlogAPI.Controllers
    // [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class UserController(UserService userService, TicketService ticketService, EmailService emailServices) : ControllerBase
+    public class UserController(UserServices userService, TicketService ticketService) : ControllerBase
     {
-        private readonly UserService _userService = userService;
+        private readonly UserServices _userService = userService;
         private readonly TicketService _ticketService = ticketService;
-        private readonly EmailService _emailService = emailServices;
 
         [HttpGet]
         public async Task<IActionResult> GetAccountDetails()
@@ -108,7 +108,18 @@ namespace WibuBlogAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUserByEmailAsync(string email)
         {
-            var result = await _userServices.GetUserByEmail(email);
+            var result = await _userService.GetUserByEmail(email);
+            if (result == null)
+            {
+                return new JsonResult(NotFound());
+            }
+            return new JsonResult(Ok(result));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserByUsernameAsync(string username)
+        {
+            var result = await _userService.GetUserByUsername(username);
             if (result == null)
             {
                 return new JsonResult(NotFound());
@@ -121,13 +132,6 @@ namespace WibuBlogAPI.Controllers
         {
             var result = await _userService.GetPagedUsersAsync(page, size);
             return new JsonResult(Ok(result));
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> SendTestEmail()
-        {
-            await _emailService.SendEmailAsync("phathnhe187251@fpt.edu.vn", "Test Email", "Memaybeo!");
-            return Ok("Email sent successfully!");
         }
     }
 }

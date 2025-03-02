@@ -40,6 +40,8 @@ namespace Application.Common.MessageOperations
         public const string MEN005 = "OTP must length must be 6";
         public const string MEN006 = "Invalid OTP";
         public const string MEN007 = "OTP expired";
+        public const string MEN008 = "Username taken";
+
 
         //message nay dung de debug chu khong lien quan gi den BR hay nghiep vu
         public const string MEO001 = "Error reading expiry date";

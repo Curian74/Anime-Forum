@@ -23,6 +23,13 @@
                                     <div class="card shadow-lg">
                                         <div class="card-body">
                                             <h2 class="m-b-0">Sign In</h2>
+                                            @if (TempData["RegistrationSuccess"] != null)
+                                            {
+                                                <div class="alert alert-success">
+                                                    @TempData["RegistrationSuccess"]
+                                                </div>
+                                            }
+
                                             <form asp-action="LoginAuthentication" asp-controller="Authentication" method="post">
                                                 <div class="form-group">
                                                     <label class="font-weight-semibold" for="userName">Username:</label>
