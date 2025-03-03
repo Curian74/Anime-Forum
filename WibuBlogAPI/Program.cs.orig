@@ -13,8 +13,11 @@ using Infrastructure.Extensions;
 using Infrastructure.Configurations;
 using System.Text.Json.Serialization;
 using Infrastructure.External;
+<<<<<<< HEAD
 using Application.Interfaces.Email;
 using Application.Common.EmailTemplate;
+=======
+>>>>>>> main
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,10 +46,17 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<PostService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AdminService>();
-builder.Services.AddScoped<TicketService>();
+<<<<<<< HEAD
+builder.Services.AddScoped<TicketServices>();
 builder.Services.AddScoped<TemplateBody>();
 builder.Services.AddScoped<IEmailService,EmailService>();
+builder.Services.AddScoped<PostCategoryServices>();
+=======
+builder.Services.AddScoped<TicketService>();
+builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<PostCategoryService>();
+builder.Services.AddScoped<CommentSerivces>();
+>>>>>>> main
 
 // AutoMapper service
 // Quet project, tim tat ca file MappingProfile roi gop lai thanh 1
@@ -131,6 +141,8 @@ builder.Services.Configure<AuthTokenOptions>(
     builder.Configuration.GetSection("AuthTokenOptions")
 );
 
+<<<<<<< HEAD
+=======
 
 // Cookie configuration + CORS
 builder.Services.Configure<CookiePolicyOptions>(options =>
@@ -140,16 +152,30 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
     options.MinimumSameSitePolicy = SameSiteMode.None;
 });
 
+>>>>>>> main
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
         builder => builder
+<<<<<<< HEAD
+            .WithOrigins("https://localhost:7139")
+=======
             .SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost") // Allow any localhost port
+>>>>>>> main
             .AllowCredentials()
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
 
+<<<<<<< HEAD
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+    options.CheckConsentNeeded = context => false;
+    options.MinimumSameSitePolicy = SameSiteMode.None;
+});
+=======
+>>>>>>> main
 
 var app = builder.Build();
 

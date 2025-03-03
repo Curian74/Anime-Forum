@@ -8,9 +8,9 @@ using WibuBlog.ViewModels.Post;
 
 namespace WibuBlog.Services
 {
-    public class CommentServices(IApiServices apiService)
+    public class CommentService(IApiService apiService)
     {
-        private readonly IApiServices _apiService = apiService;
+        private readonly IApiService _apiService = apiService;
 
         public async Task<PagedResult<Comment>> GetPagedComments(int? page, int? pageSize, string? filterBy, string? searchTerm)
         {

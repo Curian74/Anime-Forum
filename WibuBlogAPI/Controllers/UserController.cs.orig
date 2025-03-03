@@ -1,6 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Application.Services;
 using Application.DTO;
+<<<<<<< HEAD
+using Infrastructure.Extensions;
+using Microsoft.Extensions.Options;
+using Infrastructure.Configurations;
+using Domain.Entities;
+=======
+>>>>>>> main
+using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Infrastructure.External;
 
@@ -11,11 +19,22 @@ namespace WibuBlogAPI.Controllers
    // [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class UserController(UserService userService, TicketService ticketService, EmailService emailService) : ControllerBase
+<<<<<<< HEAD
+    public class UserController(UserServices userServices, TicketServices ticketServices, JwtHelper jwtHelper,
+        IOptions<AuthTokenOptions> authTokenOptions) : ControllerBase
+    {
+        private readonly UserServices _userServices = userServices;
+        private readonly TicketServices _ticketServices = ticketServices;
+        private readonly JwtHelper _jwtHelper = jwtHelper;
+       
+        private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
+=======
+    public class UserController(UserService userService, TicketService ticketService, EmailService emailServices) : ControllerBase
     {
         private readonly UserService _userService = userService;
         private readonly TicketService _ticketService = ticketService;
-        private readonly EmailService _emailService = emailService;
+        private readonly EmailService _emailService = emailServices;
+>>>>>>> main
 
         [HttpGet]
         public async Task<IActionResult> GetAccountDetails()
@@ -103,7 +122,7 @@ namespace WibuBlogAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUserByEmailAsync(string email)
         {
-            var result = await _userService.GetUserByEmail(email);
+            var result = await _userServices.GetUserByEmail(email);
             if (result == null)
             {
                 return new JsonResult(NotFound());
@@ -117,5 +136,7 @@ namespace WibuBlogAPI.Controllers
             var result = await _userService.GetPagedUsersAsync(page, size);
             return new JsonResult(Ok(result));
         }
+
+      
     }
 }

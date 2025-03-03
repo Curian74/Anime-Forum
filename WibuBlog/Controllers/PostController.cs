@@ -10,12 +10,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace WibuBlog.Controllers
 {
     [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
-    public class PostController(PostServices postService, CommentServices commentServices,
-        PostCategoryServices postCategoryService) : Controller
+    public class PostController(PostService postService, CommentService commentServices,
+        PostCategoryService postCategoryService) : Controller
     {
-        private readonly PostServices _postService = postService;
-        private readonly CommentServices _commentService = commentServices;
-        private readonly PostCategoryServices _postCategoryService = postCategoryService;
+        private readonly PostService _postService = postService;
+        private readonly CommentService _commentService = commentServices;
+        private readonly PostCategoryService _postCategoryService = postCategoryService;
 
         [AllowAnonymous]
         public async Task<IActionResult> Index(int? page = 1, int? pageSize = 5)

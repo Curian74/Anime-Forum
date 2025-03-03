@@ -8,9 +8,9 @@ using Microsoft.EntityFrameworkCore;
 namespace WibuBlog.Controllers
 {
     [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
-    public class TicketController(TicketServices ticketService) : Controller
+    public class TicketController(TicketService ticketService) : Controller
     {
-        private readonly TicketServices _ticketService = ticketService;
+        private readonly TicketService _ticketService = ticketService;
 
         public async Task<IActionResult> Index(int? page = 1, int? pageSize = 5)
         {

@@ -1,6 +1,6 @@
 ﻿namespace WibuBlog.Interfaces.Api
 {
-    public interface IApiServices
+    public interface IApiService
     {
         Task<T> GetAsync<T>(string endpoint);
         Task<T> PostAsync<T>(string endpoint, object data);

@@ -1,23 +1,34 @@
-using Application.Common.EmailTemplate;
+<<<<<<< HEAD
+﻿using Application.Common.EmailTemplate;
 using Application.Common.MessageOperations;
 using Application.Common.OTPGenerator;
 using Application.Common.Session;
 using Application.DTO;
 using Application.Interfaces.Email;
 using Infrastructure.Configurations;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System.Net;
+=======
+﻿using Infrastructure.Configurations;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+>>>>>>> main
 using WibuBlog.Services;
 using WibuBlog.ViewModels.Authentication;
 namespace WibuBlog.Controllers
 {
+<<<<<<< HEAD
     public class AuthenticationController(AuthenticationServices authenticationService,IOptions<AuthTokenOptions> authTokenOptions,
         IHttpClientFactory httpClientFactory, IEmailService emailService, UserServices userServices, OTPValidation OTPValidation) : Controller
      {
+=======
+    public class AuthenticationController(AuthenticationServices authenticationService, IOptions<AuthTokenOptions> authTokenOptions) : Controller
+    {
+>>>>>>> main
         private readonly AuthenticationServices _authenticationService = authenticationService;
         private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
         private readonly IEmailService _emailService = emailService;
@@ -59,21 +70,31 @@ namespace WibuBlog.Controllers
             return View();
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> LoginAuthentication([FromBody] LoginVM loginVM)
-        //{
-        //    _ = await _authenticationService.AuthorizeLogin(loginVM);
-        //    Request.Cookies.TryGetValue(_authTokenOptions.Name, out string? authToken);
-        //    if (authToken is null)
-        //    {
-        //        return RedirectToAction("Login", "Authentication");
-        //    }
+<<<<<<< HEAD
+=======
+        [HttpPost]
+        public async Task<IActionResult> LoginAuthentication(LoginVM loginVM)
+        {
+            var result = await _authenticationService.AuthorizeLogin(loginVM);
 
-        //    Response.Cookies.Append("AuthToken", token, cookieOptions);
+            if (!result)
+            {
+                return RedirectToAction(nameof(Login));
+            }
 
-        //    return RedirectToAction("Index", "Home");
-        //}
+            return RedirectToAction("Index", "Home");
+        }
 
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await _authenticationService.AuthorizeLogout();
+
+            return RedirectToAction("Index", "Home");
+        }
+
+>>>>>>> main
         [HttpPost]
         public async Task<IActionResult> LoginAuthentication(LoginVM loginVM)
         {
