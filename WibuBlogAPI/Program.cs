@@ -46,6 +46,7 @@ builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<TicketService>();
 builder.Services.AddScoped<TemplateBody>();
 builder.Services.AddScoped<IEmailService,EmailService>();
+builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<PostCategoryService>();
 builder.Services.AddScoped<CommentSerivce>();
 
