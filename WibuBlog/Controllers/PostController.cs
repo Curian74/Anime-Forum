@@ -53,18 +53,15 @@ namespace WibuBlog.Controllers
         {
             var post = await _postService.GetPostByIdAsync(id);
             var comments = await _commentService
-                .GetPagedComments(page, pageSize, "postId", id.ToString());
-
-            //var postComments = comments.Items.Where(x => x.PostId == post.Id).ToList();
+                .GetPagedComments(page, pageSize, "postId", id.ToString(), "createdAt", true);
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var user = await _userService.GetUserByIdAsync(userId);
 
             PostDetailVM postDetailVM;
 
             if (userId != null)
             {
+                var user = await _userService.GetUserByIdAsync(userId);
                 postDetailVM = new PostDetailVM
                 {
                     Comments = comments,

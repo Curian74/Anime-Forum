@@ -10,7 +10,7 @@ namespace WibuBlog.Services
         private readonly IApiService _apiService = apiService;
         public async Task<User> GetUserByIdAsync<T>(T userId)
         {
-            var response = await _apiService.GetAsync<ApiResponse<User>>($"User/GetUserById/{userId}");
+            var response = await _apiService.GetAsync<ApiResponse<User>>($"Admin/GetUserById/{userId}");
             return response.Value!;
         }
 
