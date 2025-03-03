@@ -64,12 +64,12 @@ namespace WibuBlogAPI.Controllers
 
 
         [HttpPut]
-        public async Task<IActionResult> UpdateTicket(UpdateTicketDto dto)
+        public async Task<IActionResult> UpdateTicket(Guid ticketId, UpdateTicketDto dto)
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            var result = await _ticketService.UpdateTicket(dto, userId);
+            var result = await _ticketService.UpdateTicket(ticketId, dto);
 
-            if (!result)
+            if (result <= 0)
             {
                 return NotFound(new { success = false, message = "Ticket not found or unauthorized" });
             }
@@ -81,8 +81,8 @@ namespace WibuBlogAPI.Controllers
         public async Task<IActionResult> DeleteTicket(Guid id)
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            var result = await _ticketService.DeleteTicket(id, userId);
-            if (!result)
+            var result = await _ticketService.DeleteTicket(id);
+            if (result <= 0)
             {
                 return new JsonResult(NotFound("Ticket not found or unauthorized"));
             }
