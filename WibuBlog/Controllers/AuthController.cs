@@ -1,5 +1,4 @@
 using Application.Common.MessageOperations;
-using Application.Interfaces.Email;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using WibuBlog.Services;
@@ -8,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace WibuBlog.Controllers
 {
-    public class AuthenticationController(AuthService authenticationService, UserService userService, OtpService otpService) : Controller
+    public class AuthController(AuthService authenticationService, UserService userService, OtpService otpService) : Controller
     {
         private readonly AuthService _authenticationService = authenticationService;
         private readonly UserService _userService = userService;
