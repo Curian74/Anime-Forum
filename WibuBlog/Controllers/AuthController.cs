@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace WibuBlog.Controllers
 {
-    public class AuthenticationController(AuthService authenticationService, IEmailService emailService, UserService userService, OtpService otpService) : Controller
+    public class AuthController(AuthService authenticationService, IEmailService emailService, UserService userService, OtpService otpService) : Controller
     {
         private readonly AuthService _authenticationService = authenticationService;
         private readonly IEmailService _emailService = emailService;
@@ -111,7 +111,7 @@ namespace WibuBlog.Controllers
                 RegisterVM registerVM = JsonConvert.DeserializeObject<RegisterVM>(registerData);
                 HttpContext.Session.Clear();
                 var result = await _authenticationService.AuthorizeRegister(registerVM);
-                TempData["SuccessRegistrationMessage"] = MessageConstants.MEN003;
+                TempData["RegistrationSuccess"] = MessageConstants.MEN003;
                 return RedirectToAction(nameof(Login));
             }
             foreach (var x in errors)

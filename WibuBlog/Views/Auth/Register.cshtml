@@ -22,7 +22,7 @@
                             <div class="card shadow-lg">
                                 <div class="card-body">
                                     <h2 class="text-center">Register</h2>
-                                    <form asp-action="RegisterAuthentication" asp-controller="Authentication" method="post" class="form-signup">
+                                    <form asp-action="RegisterAuthentication" asp-controller="Auth" method="post" class="form-signup">
                                         <div class="form-group">
                                             <label class="font-weight-semibold" for="userName">Username:</label>
                                             <input asp-for="username" class="form-control" id="userName" placeholder="Username">
@@ -46,7 +46,7 @@
                                             </div>
                                         </div>
                                     </form>
-                                    <a asp-action="Login" asp-controller="Authentication" id="cancel_register">
+                                    <a asp-action="Login" asp-controller="Auth" id="cancel_register">
                                         <i class="fas fa-angle-left"></i> Back To Login
                                     </a>
                                 </div>

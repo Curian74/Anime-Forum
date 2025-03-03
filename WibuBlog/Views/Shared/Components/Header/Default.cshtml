@@ -53,7 +53,7 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li><a class="dropdown-item" href="/User/UserProfile">Profile</a></li>
-                                <li><a class="dropdown-item" href="/User/Ticket">Ticket</a></li>
+                                <li><a class="dropdown-item" href="/Ticket/Add">Ticket</a></li>
                                 <li><button class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</button></li>
                             </ul>
                         </div>
@@ -70,7 +70,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <form id="logoutForm" action="/Authentication/Logout" method="POST">
+                                <form id="logoutForm" action="/Auth/Logout" method="POST">
                                     <button type="submit" class="btn btn-danger">Logout</button>
                                 </form>
                             </div>
@@ -81,8 +81,8 @@
                 else
                 {
                 <div class="auth-buttons">
-                    <a href="/Authentication/Login">Log in</a>
-                    <a href="/Authentication/Register">Register</a>                   
+                    <a href="/Auth/Login">Log in</a>
+                    <a href="/Auth/Register">Register</a>                   
                 </div>
                 }
 
