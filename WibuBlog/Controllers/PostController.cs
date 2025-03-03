@@ -78,7 +78,7 @@ namespace WibuBlog.Controllers
 
             if (userId != null)
             {
-                var user = await _userService.GetUserByIdAsync(userId);
+                var user = await _userService.GetUserById(Guid.Parse(userId));
                 postDetailVM = new PostDetailVM
                 {
                     Comments = comments,
