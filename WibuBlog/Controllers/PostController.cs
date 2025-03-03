@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using WibuBlog.Helpers;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.IdentityModel.Tokens;
+using System.Linq;
+using Application.Common.Pagination;
 
 namespace WibuBlog.Controllers
 {
@@ -26,12 +29,26 @@ namespace WibuBlog.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> NewPosts([FromQuery] QueryObject queryObject, Guid? categoryId)
+        public async Task<IActionResult> NewPosts([FromQuery] QueryObject queryObject, Guid? postCategoryId)
         {
-            var postList = await _postService.GetPagedPostAsync(queryObject.Page, queryObject.Size,
-                queryObject.FilterBy, queryObject.SearchTerm, queryObject.OrderBy, queryObject.Descending);
+            var postList = await _postService.GetAllPostAsync("", "", false);
 
-            var categoryList = await _postCategoryService.GetAllCategories("" , "" , false);
+            var filteredPosts = postCategoryId.HasValue
+                ? postList.Where(x => x.PostCategoryId == postCategoryId)
+                : postList;
+
+            if (!string.IsNullOrEmpty(queryObject.SearchTerm))
+            {
+                filteredPosts = filteredPosts.Where(x => x.Title.Contains(queryObject.SearchTerm, StringComparison.OrdinalIgnoreCase));
+            }
+
+            int totalItems = filteredPosts.Count();
+            int totalPages = (int)Math.Ceiling(totalItems / (double)queryObject.Size);
+            int skip = (queryObject.Page - 1) * queryObject.Size;
+
+            var pagedPosts = filteredPosts.Skip(skip).Take(queryObject.Size).ToList();
+
+            var categoryList = await _postCategoryService.GetAllCategories("", "", false);
 
             var data = new NewPostsVM
             {
@@ -39,14 +56,14 @@ namespace WibuBlog.Controllers
                 {
                     Text = c.Name,
                     Value = c.Id.ToString()
-                })
-                .ToList(),
-                Posts = postList,
-                CategoryId = categoryId
+                }).ToList(),
+                Posts = new PagedResult<Post>(pagedPosts, totalItems, queryObject.Page, queryObject.Size),
+                PostCategoryId = postCategoryId
             };
 
             return View(data);
         }
+
 
         [AllowAnonymous]
         public async Task<IActionResult> Detail(Guid id, int? page = 1, int? pageSize = 10)
