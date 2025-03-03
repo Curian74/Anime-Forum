@@ -137,7 +137,8 @@
                             .Where(p => p.Category?.IsRestricted == false)
                             .Where(p => (DateTime.Now - p.CreatedAt).TotalDays <= 7)
                             .Take(postSize)
-                            .OrderByDescending(x => x.Comments.Count))
+                            .OrderByDescending(x => x.Comments.Count)
+                            .ThenByDescending(p => p.CreatedAt))
                         {
                             var latestTime = DateFormatHelper.GetDateFormat(p.CreatedAt);
                             <div class="d-flex">
