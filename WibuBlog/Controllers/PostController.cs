@@ -11,11 +11,12 @@ namespace WibuBlog.Controllers
 {
     [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     public class PostController(PostService postService, CommentService commentServices,
-        PostCategoryService postCategoryService) : Controller
+        PostCategoryService postCategoryService, UserService userService) : Controller
     {
         private readonly PostService _postService = postService;
         private readonly CommentService _commentService = commentServices;
         private readonly PostCategoryService _postCategoryService = postCategoryService;
+        private readonly UserService _userService = userService;
 
         [AllowAnonymous]
         public async Task<IActionResult> Index(int? page = 1, int? pageSize = 5)
@@ -58,6 +59,8 @@ namespace WibuBlog.Controllers
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            var user = await _userService.GetUserByIdAsync(userId);
+
             PostDetailVM postDetailVM;
 
             if (userId != null)
@@ -66,7 +69,7 @@ namespace WibuBlog.Controllers
                 {
                     Comments = comments,
                     Post = post,
-                    UserId = Guid.Parse(userId),
+                    User = user,
                 };
             }
 
