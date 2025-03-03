@@ -6,22 +6,15 @@ using Infrastructure.Configurations;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Identity;
 using WibuBlog.Common.ApiResponse;
-using Application.Common.Session;
-using static System.Net.WebRequestMethods;
-using Application.Common.MessageOperations;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
-using Newtonsoft.Json;
-using Application.Common.OTPGenerator;
 
 namespace WibuBlog.Services
 {
-    public class AuthenticationServices(IApiServices apiService, IHttpContextAccessor httpContextAccessor, IOptions<AuthTokenOptions> authTokenOptions, OTPValidation OTPValidation)
+    public class AuthService(IApiService apiService, IHttpContextAccessor httpContextAccessor, IOptions<AuthTokenOptions> authTokenOptions)
     {
-        private readonly IApiServices _apiService = apiService;
+        private readonly IApiService _apiService = apiService;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-        private readonly OTPValidation _OTPValidation = OTPValidation;
         private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
-        private readonly HttpClient _httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7186/api/Auth/") };
+        private readonly HttpClient _httpClient = new() { BaseAddress = new Uri("https://localhost:7186/api/Auth/") };
 
         public async Task<bool> AuthorizeLogin(LoginVM loginVM)
         {
@@ -72,50 +65,19 @@ namespace WibuBlog.Services
             return true;
         }
 
-        public async Task<Dictionary<string, string>> AuthorizeRegister(string OTP)
+        public async Task<IdentityResult> AuthorizeRegister(RegisterVM registerVM)
         {
-
-            string savedOtp = _httpContextAccessor.HttpContext?.Session.GetString("OTP");
-            string expiryTimeStr = _httpContextAccessor.HttpContext?.Session.GetString("OTP_Expiry");
-            string registerData = _httpContextAccessor.HttpContext?.Session.GetString("RegisterVM");
-            Dictionary<string, string> errors = _OTPValidation.ValidateOTP(savedOtp, OTP, expiryTimeStr);
-            if (errors.Count == 0)
+            var RegisterDTO = new RegisterDto
             {
-                RegisterVM registerVM = JsonConvert.DeserializeObject<RegisterVM>(registerData);
-                _httpContextAccessor.HttpContext?.Session.Clear();
-                var RegisterDTO = new RegisterDto
-                {
-                    UserName = registerVM.username,
-                    Email = registerVM.email,
-                    Password = registerVM.password
+                UserName = registerVM.username,
+                Email = registerVM.email,
+                Password = registerVM.password
 
-                };
-                var response = await _apiService.PostAsync<ApiResponse<IdentityResult>>($"Auth/Register", RegisterDTO);
-                return errors!;
-            }
-            else
-            {
-                return errors;
-            }
-           
-            
+            };
+            var response = await _apiService.PostAsync<ApiResponse<IdentityResult>>($"Auth/Register", RegisterDTO);
+            return response.Value!;
         }
 
-        public Dictionary<string,string> ProcessSessionData(RegisterVM registerVM)
-        {
-
-            string otp = OTPGenerator.GenerateOTP();
-            _httpContextAccessor.HttpContext?.Session.SetString("OTP", otp);
-            _httpContextAccessor.HttpContext?.Session.SetString("OTP_Expiry", DateTime.UtcNow.AddMinutes(5).ToString());
-            string registerData = JsonConvert.SerializeObject(registerVM);
-            _httpContextAccessor.HttpContext?.Session.SetString("RegisterVM", registerData);
-            var model = new Dictionary<string, string>
-                {
-                    { "Name", registerVM.username },
-                    { "OTP", otp  }
-                };
-            return model;
-        }
         public async Task<bool> AuthorizeLogout()
         {
             var authToken = _httpContextAccessor.HttpContext?.Request.Cookies[_authTokenOptions.Name];
@@ -135,7 +97,5 @@ namespace WibuBlog.Services
             _httpContextAccessor.HttpContext?.Response.Cookies.Delete(_authTokenOptions.Name);
             return true;
         }
-
-        
     }
 }

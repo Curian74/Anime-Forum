@@ -1,11 +1,10 @@
-using Application.Common.EmailTemplate;
+﻿using Application.Common.EmailTemplate;
 using Application.Common.MessageOperations;
 using Application.Common.OTPGenerator;
 using Application.Common.Session;
 using Application.DTO;
 using Application.Interfaces.Email;
 using Infrastructure.Configurations;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -63,27 +62,25 @@ namespace WibuBlog.Controllers
         [HttpPost]
         public async Task<IActionResult> LoginAuthentication(LoginVM loginVM)
         {
-          //  var response = await _authenticationService.AuthorizeLogin(loginVM);
-            var handler = new HttpClientHandler();
-            handler.UseCookies = true;
-            handler.CookieContainer = new CookieContainer();
+            var result = await _authenticationService.AuthorizeLogin(loginVM);
 
-            var client = new HttpClient(handler);
-            client.BaseAddress = new Uri("https://localhost:7186/api/");
-
-            var loginDTO = new LoginDto
-            {
-                Login = "admin",
-                Password = "admin"
-            };
-            var response = await client.PostAsJsonAsync($"Auth/Login", loginDTO);
-            if (!response.IsSuccessStatusCode)
+            if (!result)
             {
                 return RedirectToAction(nameof(Login));
             }
 
             return RedirectToAction("Index", "Home");
         }
+
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await _authenticationService.AuthorizeLogout();
+
+            return RedirectToAction("Index", "Home");
+        }
+
 
 
         [HttpPost]

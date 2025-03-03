@@ -5,9 +5,9 @@ using WibuBlog.Interfaces.Api;
 
 namespace WibuBlog.Services
 {
-    public class UserServices(IApiServices apiService)
+    public class UserService(IApiService apiService)
     {
-        private readonly IApiServices _apiService = apiService;
+        private readonly IApiService _apiService = apiService;
         public async Task<User> GetUserByIdAsync<T>(T userId)
         {
             var response = await _apiService.GetAsync<ApiResponse<User>>($"User/GetUserById/{userId}");

@@ -4,17 +4,14 @@ using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Application.Interfaces.Email;
 
 namespace Application.Services
 {
-    public class UserServices(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork, IEmailService emailService)
+    public class UserService(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork, IEmailService emailService)
     {
         private readonly UserManager<User> _userManager = userManager;
         private readonly IMapper _mapper = mapper;
-        private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        private readonly IEmailService _emailServices = emailService;
         private readonly IGenericRepository<User> _userGenericRepository = unitOfWork.GetRepository<User>();
 
         public async Task<User?> FindByLoginAsync(LoginDto dto)

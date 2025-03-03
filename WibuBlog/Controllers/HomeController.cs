@@ -6,21 +6,15 @@ using WibuBlog.ViewModels.Home;
 
 namespace WibuBlog.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(PostService postService, PostCategoryService postCategoryService) : Controller
     {
-        private readonly PostServices _postService;
-        private readonly PostCategoryServices _postCategoryServices;
-
-        public HomeController(PostServices postService, PostCategoryServices postCategoryServices)
-        {
-            _postService = postService;
-            _postCategoryServices = postCategoryServices;
-        }
+        private readonly PostService _postService = postService;
+        private readonly PostCategoryService _postCategoryService = postCategoryService;
 
         public async Task<IActionResult> Index()
         {
-            var restrictedCategories = await _postCategoryServices.GetAllCategories("isRestricted", "true" , false);
-            var nonrestrictedCategories = await _postCategoryServices.GetAllCategories("isRestricted", "false" , false);
+            var restrictedCategories = await _postCategoryService.GetAllCategories("isRestricted", "true" , false);
+            var nonrestrictedCategories = await _postCategoryService.GetAllCategories("isRestricted", "false" , false);
             var recentPosts = await _postService.GetPagedPostAsync(1, 5, "CreatedAt", "", "", true);
             var postList = await _postService.GetAllPostAsync("", "", false);
 
