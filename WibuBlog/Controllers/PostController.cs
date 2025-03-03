@@ -5,14 +5,21 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using WibuBlog.Helpers;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.IdentityModel.Tokens;
+using System.Linq;
+using Application.Common.Pagination;
 
 namespace WibuBlog.Controllers
 {
     [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
-    public class PostController(PostService postService, CommentService commentService) : Controller
+    public class PostController(PostService postService, CommentService commentServices,
+        PostCategoryService postCategoryService, UserService userService) : Controller
     {
         private readonly PostService _postService = postService;
-        private readonly CommentService _commentService = commentService;
+        private readonly CommentService _commentService = commentServices;
+        private readonly PostCategoryService _postCategoryService = postCategoryService;
+        private readonly UserService _userService = userService;
 
         [AllowAnonymous]
         public async Task<IActionResult> Index(int? page = 1, int? pageSize = 5)
@@ -22,22 +29,48 @@ namespace WibuBlog.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> NewPosts([FromQuery] QueryObject queryObject)
+        public async Task<IActionResult> NewPosts([FromQuery] QueryObject queryObject, Guid? postCategoryId)
         {
-            var value = await _postService.GetPagedPostAsync(queryObject.Page, queryObject.Size,
-                queryObject.FilterBy, queryObject.SearchTerm, queryObject.OrderBy, queryObject.Descending);
+            var postList = await _postService.GetAllPostAsync("", "", false);
 
-            return View(value);
+            var filteredPosts = postCategoryId.HasValue
+                ? postList.Where(x => x.PostCategoryId == postCategoryId)
+                : postList;
+
+            if (!string.IsNullOrEmpty(queryObject.SearchTerm))
+            {
+                filteredPosts = filteredPosts.Where(x => x.Title.Contains(queryObject.SearchTerm, StringComparison.OrdinalIgnoreCase));
+            }
+
+            int totalItems = filteredPosts.Count();
+            int totalPages = (int)Math.Ceiling(totalItems / (double)queryObject.Size);
+            int skip = (queryObject.Page - 1) * queryObject.Size;
+
+            var pagedPosts = filteredPosts.Skip(skip).Take(queryObject.Size).ToList();
+
+            var categoryList = await _postCategoryService.GetAllCategories("", "", false);
+
+            var data = new NewPostsVM
+            {
+                CategoryList = categoryList.OrderBy(x => x.Name).Select(c => new SelectListItem
+                {
+                    Text = c.Name,
+                    Value = c.Id.ToString()
+                }).ToList(),
+                Posts = new PagedResult<Post>(pagedPosts, totalItems, queryObject.Page, queryObject.Size),
+                PostCategoryId = postCategoryId
+            };
+
+            return View(data);
         }
+
 
         [AllowAnonymous]
         public async Task<IActionResult> Detail(Guid id, int? page = 1, int? pageSize = 10)
         {
             var post = await _postService.GetPostByIdAsync(id);
             var comments = await _commentService
-                .GetPagedComments(page, pageSize, "postId", id.ToString());
-
-            //var postComments = comments.Items.Where(x => x.PostId == post.Id).ToList();
+                .GetPagedComments(page, pageSize, "postId", id.ToString(), "createdAt", true);
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -45,11 +78,12 @@ namespace WibuBlog.Controllers
 
             if (userId != null)
             {
+                var user = await _userService.GetUserByIdAsync(userId);
                 postDetailVM = new PostDetailVM
                 {
                     Comments = comments,
                     Post = post,
-                    UserId = Guid.Parse(userId),
+                    User = user,
                 };
             }
 

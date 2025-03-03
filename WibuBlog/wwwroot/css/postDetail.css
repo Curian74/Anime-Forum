@@ -1,4 +1,12 @@
-﻿.post-container {
+﻿p {
+    font-family: "Be Vietnam Pro", sans-serif;
+}
+
+a {
+    font-family: "Be Vietnam Pro", sans-serif;
+}
+
+.post-container {
     background: white;
     padding: 20px;
     border-radius: 8px;

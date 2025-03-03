@@ -12,6 +12,8 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="wwwroot\css\profile.css" />
+    <None Remove="Views\Auth\Login.cshtml.orig" />
+    <None Remove="Views\Auth\Register.cshtml.orig" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,7 +4,6 @@ using Domain.Entities;
 using WibuBlog.Common.ApiResponse;
 using WibuBlog.Interfaces.Api;
 using WibuBlog.ViewModels.Comment;
-using WibuBlog.ViewModels.Post;
 
 namespace WibuBlog.Services
 {
@@ -12,10 +11,11 @@ namespace WibuBlog.Services
     {
         private readonly IApiService _apiService = apiService;
 
-        public async Task<PagedResult<Comment>> GetPagedComments(int? page, int? pageSize, string? filterBy, string? searchTerm)
+        public async Task<PagedResult<Comment>> GetPagedComments(int? page, int? pageSize, string? filterBy, string? searchTerm, string? orderBy, bool? descending)
         {
             var response = await _apiService.GetAsync<ApiResponse<PagedResult<Comment>>>
-                ($"Comment/GetPaged?page={page}&size={pageSize}&filterBy={filterBy}&searchTerm={searchTerm}");
+                ($"Comment/GetPaged?page={page}&size={pageSize}" +
+                $"&filterBy={filterBy}&searchTerm={searchTerm}&orderBy={orderBy}&descending={descending}");
 
             return response.Value!;
         }
