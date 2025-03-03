@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\js\header.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\css\profile.css" />
     <None Remove="Views\Auth\Login.cshtml.orig" />
     <None Remove="Views\Auth\Register.cshtml.orig" />
   </ItemGroup>
@@ -46,6 +51,7 @@
 
   <ItemGroup>
     <None Include="wwwroot\css\app.min.css" />
+    <None Include="wwwroot\js\header.js" />
   </ItemGroup>
 
 </Project>

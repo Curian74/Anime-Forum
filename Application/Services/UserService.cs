@@ -8,7 +8,7 @@ using Application.Interfaces.Email;
 
 namespace Application.Services
 {
-    public class UserService(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork, IEmailService emailService)
+    public class UserService(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork)
     {
         private readonly UserManager<User> _userManager = userManager;
         private readonly IMapper _mapper = mapper;
@@ -26,6 +26,12 @@ namespace Application.Services
         public async Task<User?> GetUserByEmail(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
+            return user;
+        }
+
+        public async Task<User?> GetUserByUsername(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
             return user;
         }
 

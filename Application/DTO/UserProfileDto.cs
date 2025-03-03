@@ -12,6 +12,9 @@ namespace Application.DTO
         public string? Email { get; set; }
         public bool? EmailConfirmed { get; set; }
         public string? PhoneNumber { get; set; }
+
+        [MinLength(0, ErrorMessage = MessageConstants.MEO003)]
+        public string? Bio { get; set; }
         public bool? PhoneNumberConfirmed { get; set; }
         public bool? TwoFactorEnabled { get; set; }
         public IList<string>? Roles { get; set; }

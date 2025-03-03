@@ -46,9 +46,9 @@
     color: rgb(140, 176, 222);
 }
 
-.auth-buttons a:hover {
-    background-color: #172c44;
-}
+    .auth-buttons a:hover {
+        background-color: #172c44;
+    }
 
 .auth-buttons {
     cursor: pointer;
@@ -56,4 +56,8 @@
     background-color: rgba(29, 31, 32, 0.15);
     border-left-color: rgb(140, 176, 222);
     border-top-left-radius: 4px;
+}
+
+.modal-backdrop {
+    display: none !important;
 }
