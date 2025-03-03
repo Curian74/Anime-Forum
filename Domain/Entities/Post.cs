@@ -10,10 +10,10 @@ namespace Domain.Entities
         public string Content { get; set; } = string.Empty;
 
         [ForeignKey(nameof(User))]
-        public Guid? UserId { get; set; }
+        public Guid UserId { get; set; }
 
         [ForeignKey(nameof(PostCategory))]
-        public Guid? PostCategoryId { get; set; }
+        public Guid PostCategoryId { get; set; }
 
         public bool IsHidden { get; set; } = false;
 

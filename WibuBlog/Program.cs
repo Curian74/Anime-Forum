@@ -39,7 +39,7 @@ namespace WibuBlog
 			builder.Services.AddScoped<TemplateBody>();
 			builder.Services.AddScoped<AuthService>();
 			builder.Services.AddScoped<OtpService>();
-            builder.Services.AddScoped<CommentService>();
+			builder.Services.AddScoped<CommentService>();
             builder.Services.AddScoped<IEmailService,EmailService>();
             //
             builder.Services.AddDistributedMemoryCache();
