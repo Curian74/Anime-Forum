@@ -36,7 +36,6 @@ builder.Services.AddSwaggerGen();
 // Persistence classes
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddScoped<ApplicationDbContext>();
-builder.Services.AddScoped<DbContext, ApplicationDbContext>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
