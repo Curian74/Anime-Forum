@@ -6,6 +6,7 @@ using Domain.Entities;
 using System.Linq.Expressions;
 using Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -69,6 +70,10 @@ namespace WibuBlogAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreatePostDto dto)
         {
+            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            dto.UserId = userId;
+
             try
             {
                 await _postService.CreatePostAsync(dto);

@@ -1,12 +1,11 @@
 ﻿using Domain.Interfaces;
 using Infrastructure.Persistence.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence
 {
-    public class UnitOfWork(DbContext context) : IUnitOfWork
+    public class UnitOfWork(ApplicationDbContext context) : IUnitOfWork
     {
-        private readonly DbContext _context = context;
+        private readonly ApplicationDbContext _context = context;
 
         private bool disposed = false;
 
