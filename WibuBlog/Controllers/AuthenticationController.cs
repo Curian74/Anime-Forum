@@ -110,7 +110,7 @@ namespace WibuBlog.Controllers
                 RegisterVM registerVM = JsonConvert.DeserializeObject<RegisterVM>(registerData);
                 HttpContext.Session.Clear();
                 var result = await _authenticationService.AuthorizeRegister(registerVM);
-                TempData["SuccessRegistrationMessage"] = MessageConstants.MEN003;
+                TempData["RegistrationSuccess"] = MessageConstants.MEN003;
                 return RedirectToAction(nameof(Login));
             }
             foreach (var x in errors)

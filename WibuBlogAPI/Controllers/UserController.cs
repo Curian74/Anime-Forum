@@ -3,19 +3,19 @@ using Application.Services;
 using Application.DTO;
 using System.Security.Claims;
 using Infrastructure.External;
+using Application.Interfaces.Email;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace WibuBlogAPI.Controllers
 {
-   // [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
+    // [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class UserController(UserService userService, TicketService ticketService, EmailService emailService) : ControllerBase
+    public class UserController(UserService userService, TicketService ticketService) : ControllerBase
     {
         private readonly UserService _userService = userService;
         private readonly TicketService _ticketService = ticketService;
-        private readonly EmailService _emailService = emailService;
 
         [HttpGet]
         public async Task<IActionResult> GetAccountDetails()
@@ -29,7 +29,7 @@ namespace WibuBlogAPI.Controllers
                 return new JsonResult(NotFound());
             }
 
-            return new JsonResult(result);
+            return new JsonResult(Ok(result));
         }
 
         [HttpGet]
@@ -38,6 +38,17 @@ namespace WibuBlogAPI.Controllers
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             var tickets = await _ticketService.GetUserTickets(userId);
             return new JsonResult(Ok(tickets));
+        }
+
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetUserById(Guid userId)
+        {
+            var user = await _userService.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return new JsonResult(NotFound());
+            }
+            return new JsonResult(Ok(user));
         }
 
         [HttpPost]
@@ -89,21 +100,21 @@ namespace WibuBlogAPI.Controllers
             return new JsonResult(Ok("Ticket deleted successfully"));
         }
 
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> GetUserByIdAsync(Guid userId)
-        {
-                var result = await _userService.GetProfileDetails(userId);
-                if(result == null)
-                {
-                     return new JsonResult(NotFound());
-                }
-                return new JsonResult(Ok(result));
-        }
-
         [HttpGet]
         public async Task<IActionResult> GetUserByEmailAsync(string email)
         {
             var result = await _userService.GetUserByEmail(email);
+            if (result == null)
+            {
+                return new JsonResult(NotFound());
+            }
+            return new JsonResult(Ok(result));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserByUsernameAsync(string username)
+        {
+            var result = await _userService.GetUserByUsername(username);
             if (result == null)
             {
                 return new JsonResult(NotFound());

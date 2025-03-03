@@ -37,6 +37,7 @@ namespace WibuBlog
             builder.Services.AddScoped<TicketService>();
             builder.Services.AddScoped<UserService>();
 			builder.Services.AddScoped<TemplateBody>();
+			builder.Services.AddScoped<CommentService>();
 			builder.Services.AddScoped<AuthService>();
 			builder.Services.AddScoped<OtpService>();
 			builder.Services.AddScoped<CommentService>();
@@ -110,7 +111,7 @@ namespace WibuBlog
                 app.UseHsts();
             }
 
-            app.UseStatusCodePagesWithReExecute("/Error/NotFound");
+            //app.UseStatusCodePagesWithReExecute("/Error/NotFound");
             app.UseHttpsRedirection();
             
             app.UseStaticFiles();
@@ -130,6 +131,10 @@ namespace WibuBlog
                 else if (response.StatusCode == 403)
                 {
                     response.Redirect("/Authentication/AccessDenied");
+                }
+                else if (response.StatusCode == 404)
+                {
+                    response.Redirect("/Error/NotFound");
                 }
 
                 return Task.CompletedTask;
