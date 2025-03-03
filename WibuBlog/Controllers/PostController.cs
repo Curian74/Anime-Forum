@@ -5,14 +5,17 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using WibuBlog.Helpers;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace WibuBlog.Controllers
 {
     [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
-    public class PostController(PostService postService, CommentService commentService) : Controller
+    public class PostController(PostService postService, CommentService commentServices,
+        PostCategoryService postCategoryService) : Controller
     {
         private readonly PostService _postService = postService;
-        private readonly CommentService _commentService = commentService;
+        private readonly CommentService _commentService = commentServices;
+        private readonly PostCategoryService _postCategoryService = postCategoryService;
 
         [AllowAnonymous]
         public async Task<IActionResult> Index(int? page = 1, int? pageSize = 5)
@@ -22,12 +25,26 @@ namespace WibuBlog.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> NewPosts([FromQuery] QueryObject queryObject)
+        public async Task<IActionResult> NewPosts([FromQuery] QueryObject queryObject, Guid? categoryId)
         {
-            var value = await _postService.GetPagedPostAsync(queryObject.Page, queryObject.Size,
+            var postList = await _postService.GetPagedPostAsync(queryObject.Page, queryObject.Size,
                 queryObject.FilterBy, queryObject.SearchTerm, queryObject.OrderBy, queryObject.Descending);
 
-            return View(value);
+            var categoryList = await _postCategoryService.GetAllCategories("" , "" , false);
+
+            var data = new NewPostsVM
+            {
+                CategoryList = categoryList.OrderBy(x => x.Name).Select(c => new SelectListItem
+                {
+                    Text = c.Name,
+                    Value = c.Id.ToString()
+                })
+                .ToList(),
+                Posts = postList,
+                CategoryId = categoryId
+            };
+
+            return View(data);
         }
 
         [AllowAnonymous]
