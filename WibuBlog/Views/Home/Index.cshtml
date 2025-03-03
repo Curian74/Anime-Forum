@@ -30,7 +30,7 @@
                             <div class="row-content row">
                                 <div class="row-content-content mt-2 col-6">
                                     <i class="fa-regular fa-comments fs-3"></i>
-                                    <a href="#" class="m-2">@c.Name</a>
+                                    <a asp-action="NewPosts" asp-controller="Post" asp-route-PostCategoryId="@c.Id" class="m-2">@c.Name</a>
                                 </div>
                                 <div class="row-content-stat col-2">
                                     <div class="row-content-stat-tit text-center">
@@ -83,7 +83,7 @@
                             <div class="row-content row">
                                 <div class="row-content-content mt-2 col-6">
                                     <i class="fa-regular fa-comments fs-3"></i>
-                                    <a href="#" class="m-2">@c.Name</a>
+                                    <a asp-action="NewPosts" asp-controller="Post" asp-route-PostCategoryId="@c.Id" class="m-2">@c.Name</a>
                                 </div>
                                 <div class="row-content-stat col-2">
                                     <div class="row-content-stat-tit text-center">
