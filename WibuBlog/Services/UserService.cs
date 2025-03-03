@@ -1,4 +1,5 @@
 ﻿using Application.Common.Pagination;
+using Application.DTO;
 using Domain.Entities;
 using WibuBlog.Common.ApiResponse;
 using WibuBlog.Interfaces.Api;
@@ -8,9 +9,9 @@ namespace WibuBlog.Services
     public class UserService(IApiService apiService)
     {
         private readonly IApiService _apiService = apiService;
-        public async Task<User> GetUserByIdAsync<T>(T userId)
+        public async Task<UserProfileDto> GetUserProfile()
         {
-            var response = await _apiService.GetAsync<ApiResponse<User>>($"User/GetUserById/{userId}");
+            var response = await _apiService.GetAsync<ApiResponse<UserProfileDto>>($"User/GetAccountDetails/");
             return response.Value!;
         }
 

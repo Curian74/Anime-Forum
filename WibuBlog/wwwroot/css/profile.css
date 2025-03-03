@@ -1,0 +1,95 @@
+﻿.avatar-container {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.profile-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    transition: filter 0.3s ease-in-out;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.avatar-container:hover .profile-img {
+    filter: brightness(70%);
+}
+
+.avatar-container:hover .overlay {
+    opacity: 1;
+}
+
+cover-photo {
+    height: 250px;
+    background: gray;
+    position: relative;
+}
+
+.profile-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 4px solid white;
+    position: absolute;
+    bottom: -60px;
+    left: 20px;
+}
+
+.tabs button {
+    border: none;
+    background: none;
+    padding: 10px;
+    font-weight: bold;
+}
+
+.tabs .active {
+    border-bottom: 2px solid black;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.info-item {
+    font-size: 16px;
+    padding: 10px 0;
+}
+
+.edit-btn {
+    color: #007bff;
+    border: none;
+    background: none;
+}
+
+    .edit-btn:hover {
+        color: #0056b3;
+    }
+
+.small-form {
+    width: 350px; /* Điều chỉnh kích thước mong muốn */
+    margin: auto; /* Căn giữa */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background: white;
+}

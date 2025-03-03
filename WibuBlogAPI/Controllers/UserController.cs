@@ -12,9 +12,9 @@ namespace WibuBlogAPI.Controllers
    // [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class UserController(UserServices userService, TicketService ticketService) : ControllerBase
+    public class UserController(UserService userService, TicketService ticketService) : ControllerBase
     {
-        private readonly UserServices _userService = userService;
+        private readonly UserService _userService = userService;
         private readonly TicketService _ticketService = ticketService;
 
         [HttpGet]
@@ -29,7 +29,7 @@ namespace WibuBlogAPI.Controllers
                 return new JsonResult(NotFound());
             }
 
-            return new JsonResult(result);
+            return new JsonResult(Ok(result));
         }
 
         [HttpGet]

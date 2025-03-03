@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace WibuBlog.Controllers
 {
-    public class AuthController(AuthService authenticationService, IEmailService emailService, UserService userService, OtpService otpService) : Controller
+    public class AuthenticationController(AuthService authenticationService, IEmailService emailService, UserService userService, OtpService otpService) : Controller
     {
         private readonly AuthService _authenticationService = authenticationService;
         private readonly IEmailService _emailService = emailService;

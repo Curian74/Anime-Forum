@@ -41,8 +41,9 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Service classes
 builder.Services.AddScoped<PostService>();
-builder.Services.AddScoped<UserServices>();
+builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AdminService>();
+builder.Services.AddScoped<CommentSerivce>();
 builder.Services.AddScoped<TicketService>();
 builder.Services.AddScoped<TemplateBody>();
 builder.Services.AddScoped<IEmailService,EmailService>();
