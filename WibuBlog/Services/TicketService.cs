@@ -23,10 +23,10 @@ namespace WibuBlog.Services
             try
             {
                 var guidId = Guid.Parse(id.ToString());
-                var response = await _apiService.GetAsync<ApiResponse<IEnumerable<Ticket>>>("Ticket/GetUserTickets");
+                var response = await _apiService.GetAsync<ApiResponse<Ticket>>($"Ticket/GetTicketDetail/{guidId}");
                 if (response?.Value != null)
                 {
-                    return response.Value.FirstOrDefault(t => Guid.Parse(t.Id.ToString()) == guidId);
+                    return response.Value;
                 }
                 return null;
             }

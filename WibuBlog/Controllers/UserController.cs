@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace WibuBlog.Controllers
 {
-    [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
+   // [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     public class UserController(UserService userService) : Controller
     {
         private readonly UserService _userService = userService;
@@ -16,14 +16,13 @@ namespace WibuBlog.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> UserProfile(Guid id)
+        public async Task<IActionResult> UserProfile()
         {
-            var result = await _userService.GetUserByIdAsync(id);
-            if (result is null)
+            var result = await _userService.GetUserProfile();
+            if (result == null)
             {
                 return NotFound();
             }
-            
             return View(result);
         }
 

@@ -10,7 +10,7 @@ namespace WibuBlogAPI.Controllers
     [Authorize(AuthenticationSchemes = "Bearer", Policy = "AdminPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class AdminController(AdminService adminServices, TicketService ticketServices) : ControllerBase
+    public class AdminController(AdminService adminServices) : ControllerBase
     {
         private readonly AdminService _adminService = adminServices;
         [HttpGet]
@@ -65,6 +65,7 @@ namespace WibuBlogAPI.Controllers
 
             return new JsonResult(NoContent());
         }
+
 
     }
 }
