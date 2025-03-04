@@ -53,7 +53,7 @@ namespace WibuBlogAPI.Controllers
             if (ticket == null)
                 return NotFound("Ticket not found");
 
-            return Ok(ticket);
+            return new JsonResult(Ok(ticket));
         }
 
         [HttpPut("{ticketId}")]

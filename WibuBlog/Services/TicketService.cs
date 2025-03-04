@@ -24,7 +24,7 @@ namespace WibuBlog.Services
             {
                 var guidId = Guid.Parse(id.ToString());
                 var response = await _apiService.GetAsync<ApiResponse<Ticket>>($"Ticket/GetTicketDetail/{guidId}");
-                if (response?.Value != null)
+                if (response != null)
                 {
                     return response.Value;
                 }
