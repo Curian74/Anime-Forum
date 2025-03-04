@@ -11,19 +11,19 @@ namespace Application.Services
         private readonly IGenericRepository<Ticket> _ticketRepository = unitOfWork.GetRepository<Ticket>();
         private readonly IMapper _mapper = mapper;
 
-        public async Task<(IEnumerable<Ticket>, int)> GetUserTickets(Guid userId)
+        public async Task<(IEnumerable<Ticket>, int)> GetUserTicketsAsync(Guid userId)
         {
             var result = await _ticketRepository.GetAllAsync(t => t.UserId.Equals(userId), t => t.OrderByDescending(t => t.CreatedAt));
 
             return result;
         }
 
-        public async Task<Ticket?> GetTicketById(Guid ticketId)
+        public async Task<Ticket?> GetTicketByIdAsync(Guid ticketId)
         {
             return await _ticketRepository.GetByIdAsync(ticketId);
         }
 
-        public async Task<int> CreateTicket(CreateTicketDto dto)
+        public async Task<int> CreateTicketAsync(CreateTicketDto dto)
         {
             var ticket = _mapper.Map<Ticket>(dto);
 
@@ -32,25 +32,32 @@ namespace Application.Services
             return await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task<int> UpdateTicket(Guid ticketId, UpdateTicketDto dto)
+        public async Task<int> UpdateTicketAsync(Guid ticketId, UpdateTicketDto dto)
         {
-            var ticket = _mapper.Map<Ticket>(dto);
+            var existingTicket = await _ticketRepository.GetByIdAsync(ticketId);
 
-            ticket.Id = ticketId;
+            if (existingTicket == null)
+                return 0;
 
-            await _ticketRepository.UpdateAsync(ticket);
+            if (!string.IsNullOrEmpty(dto.Content))
+                existingTicket.Content = dto.Content;
+
+            if (!string.IsNullOrEmpty(dto.Tag))
+                existingTicket.Tag = dto.Tag;
+
+            await _ticketRepository.UpdateAsync(existingTicket);
 
             return await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task<int> DeleteTicket(Guid ticketId)
+        public async Task<int> DeleteTicketAsync(Guid ticketId)
         {
             await _ticketRepository.DeleteAsync(ticketId);
 
             return await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task<int> ApproveTicket(Guid ticketId, bool approval, string? note = null)
+        public async Task<int> ApproveTicketAsync(Guid ticketId, bool approval, string? note = null)
         {
             var ticket = await _ticketRepository.GetByIdAsync(ticketId);
 

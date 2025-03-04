@@ -10,11 +10,8 @@ namespace WibuBlogAPI.Controllers
     [Authorize(AuthenticationSchemes = "Bearer", Policy = "AdminPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class AdminController(AdminService adminServices, TicketService ticketServices) : ControllerBase
+    public class AdminController(AdminService adminServices) : ControllerBase
     {
-        private readonly AdminService _adminServices = adminServices;
-        private readonly TicketService _ticketServices = ticketServices;
-
         private readonly AdminService _adminService = adminServices;
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
@@ -69,44 +66,6 @@ namespace WibuBlogAPI.Controllers
             return new JsonResult(NoContent());
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllTickets()
-        {
-            var tickets = await _ticketServices.GetAllTicketsAsync();
-            return new JsonResult(Ok(tickets));
-        }
 
-        [HttpGet("{ticketId}")]
-        public async Task<IActionResult> GetTicketDetail(Guid ticketId)
-        {
-            var ticket = _ticketServices.GetTicketById(ticketId);
-            if (ticket == null)
-            {
-                return new JsonResult(NotFound("Ticket not found"));
-            }
-            return new JsonResult(Ok(ticket));
-        }
-
-        [HttpPut("Approve/{ticketId}")]
-        public async Task<IActionResult> ApproveTicket(Guid ticketId, bool approval, [FromBody] string? note)
-        {
-            var result = await _ticketServices.ApproveTicket(ticketId, approval, note);
-            if (result <= 0)
-            {
-                return NotFound("Ticket not found");
-            }
-            return new JsonResult(Ok("Ticket approved"));
-        }
-
-        [HttpPut("Reject/{ticketId}")]
-        public async Task<IActionResult> RejectTicket(Guid ticketId, bool approval, [FromBody] string? note)
-        {
-            var result = await _ticketServices.ApproveTicket(ticketId, approval, note);
-            if (result <= 0)
-            {
-                return NotFound("Ticket not found");
-            }
-            return new JsonResult(Ok("Ticket rejected"));
-        }
     }
 }
