@@ -15,7 +15,7 @@
                     <img src="@Model.User?.ProfilePhoto?.Url" alt="Avatar" class="avatar">
                     <div>
                         <h5 class="m-0">@Model.Post?.User?.UserName</h5>
-                        <small class="text-muted">Posted on @Model.Post?.CreatedAt</small>
+                        <small class="text-muted">Posted on @DateFormatHelper.GetDateFormat(Model.Post.CreatedAt)</small>
                     </div>
                 </div>
                 <div class="dropdown">
@@ -161,7 +161,7 @@
                                 </ul>
                             </nav>
 
-                        </div>                      
+                        </div>
                         @{
                             foreach (var c in Model.Comments.Items.Where(c => c.IsHidden == false))
                             {

@@ -7,18 +7,24 @@
             var timeDifference = DateTime.Now.Subtract(date);
             string timeAgo;
 
-            if (timeDifference.TotalDays >= 1)
+            if (timeDifference.TotalDays >= 1 && timeDifference.TotalDays < 3)
             {
                 timeAgo = $"{(int)timeDifference.TotalDays} days ago";
             }
-            else if (timeDifference.TotalHours >= 1)
+            else if (timeDifference.TotalHours >= 1 && timeDifference.TotalDays < 3)
             {
                 timeAgo = $"{(int)timeDifference.TotalHours} hours ago";
             }
-            else if (timeDifference.TotalMinutes >= 1)
+            else if (timeDifference.TotalMinutes >= 1 && timeDifference.TotalDays < 3)
             {
                 timeAgo = $"{(int)timeDifference.TotalMinutes} minutes ago";
             }
+
+            else if(timeDifference.TotalDays >= 3)
+            {
+                timeAgo = date.ToString();
+            }
+
             else
             {
                 timeAgo = "Just now";
