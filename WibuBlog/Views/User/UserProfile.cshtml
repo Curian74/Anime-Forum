@@ -27,7 +27,7 @@
         }
         <div class="mt-5 ps-3">
             <h2 style="color: red">@Model.UserName</h2>
-            <p class="text-muted">Role: @role</p>
+            <p class="text-muted">Role: @Model.Roles.FirstOrDefault();</p>
         </div>
         <div class="tabs d-flex border-bottom mt-3">
             <button class="active" onclick="showTab('posts')">Posts</button>
