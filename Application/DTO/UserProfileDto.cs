@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Application.Common.MessageOperations;
+using Domain.Entities;
 namespace Application.DTO
 {
     public class UserProfileDto
@@ -12,6 +13,8 @@ namespace Application.DTO
         public string? Email { get; set; }
         public bool? EmailConfirmed { get; set; }
         public string? PhoneNumber { get; set; }
+
+        public Media? ProfilePhoto { get; set; }
 
         [MinLength(0, ErrorMessage = MessageConstants.MEO003)]
         public string? Bio { get; set; }
