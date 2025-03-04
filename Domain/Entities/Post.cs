@@ -13,7 +13,7 @@ namespace Domain.Entities
         public Guid UserId { get; set; }
 
         [ForeignKey(nameof(PostCategory))]
-        public Guid PostCategoryId { get; set; }
+        public Guid? PostCategoryId { get; set; }
 
         public bool IsHidden { get; set; } = false;
 
