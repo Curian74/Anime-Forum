@@ -1,115 +1,72 @@
 ﻿using Application.DTO;
 using AutoMapper;
 using Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+using Domain.Interfaces;
 
 namespace Application.Services
 {
-    public class TicketService
+    public class TicketService(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        private readonly DbContext _context;
-        private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IGenericRepository<Ticket> _ticketRepository = unitOfWork.GetRepository<Ticket>();
+        private readonly IMapper _mapper = mapper;
 
-        public TicketService(DbContext context, IMapper mapper)
+        public async Task<(IEnumerable<Ticket>, int)> GetUserTickets(Guid userId)
         {
-            _context = context;
-            _mapper = mapper;
+            var result = await _ticketRepository.GetAllAsync(t => t.UserId.Equals(userId), t => t.OrderByDescending(t => t.CreatedAt));
+
+            return result;
         }
 
-        public async Task<IEnumerable<TicketDto>> GetUserTickets(Guid userId)
+        public async Task<Ticket?> GetTicketById(Guid ticketId)
         {
-            var tickets = await _context.Set<Ticket>()
-                .Where(t => t.UserId == userId)
-                .OrderByDescending(t => t.CreatedAt)
-                .ToListAsync();
-
-            return _mapper.Map<IEnumerable<TicketDto>>(tickets);
+            return await _ticketRepository.GetByIdAsync(ticketId);
         }
 
-        public async Task<TicketDto?> CreateTicket(CreateTicketDto dto)
+        public async Task<int> CreateTicket(CreateTicketDto dto)
         {
             var ticket = _mapper.Map<Ticket>(dto);
-            ticket.CreatedAt = DateTime.Now;
-            ticket.LastModifiedAt = DateTime.Now;
 
-            await _context.Set<Ticket>().AddAsync(ticket);
-            await _context.SaveChangesAsync();
+            await _ticketRepository.AddAsync(ticket);
 
-            return _mapper.Map<TicketDto>(ticket);
+            return await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task<bool> UpdateTicket(UpdateTicketDto dto, Guid userId)
+        public async Task<int> UpdateTicket(Guid ticketId, UpdateTicketDto dto)
         {
-            var ticket = await _context.Set<Ticket>()
-                .FirstOrDefaultAsync(t => t.Id == dto.Id && t.UserId == userId);
+            var ticket = _mapper.Map<Ticket>(dto);
 
-            if (ticket == null)
+            ticket.Id = ticketId;
+
+            await _ticketRepository.UpdateAsync(ticket);
+
+            return await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteTicket(Guid ticketId)
+        {
+            await _ticketRepository.DeleteAsync(ticketId);
+
+            return await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task<int> ApproveTicket(Guid ticketId, bool approval, string? note = null)
+        {
+            var ticket = await _ticketRepository.GetByIdAsync(ticketId);
+
+            if (ticket != null)
             {
-                return false;
+                ticket.IsApproved = approval;
+                ticket.Note = note;
+                await _ticketRepository.UpdateAsync(ticket);
             }
 
-            _mapper.Map(dto, ticket);
-            ticket.LastModifiedAt = DateTime.Now;
-
-            await _context.SaveChangesAsync();
-            return true;
+            return await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task<bool> DeleteTicket(Guid id, Guid userId)
+        public async Task<(IEnumerable<Ticket>, int)> GetAllTicketsAsync()
         {
-            var ticket = await _context.Set<Ticket>()
-                .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
-
-            if (ticket == null)
-            {
-                return false;
-            }
-
-            _context.Set<Ticket>().Remove(ticket);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<bool> ApproveTicket(Guid id, string? note = null)
-        {
-            var ticket = await _context.Set<Ticket>()
-                .FirstOrDefaultAsync(t => t.Id == id);
-
-            if (ticket == null)
-            {
-                return false;
-            }
-
-            ticket.IsApproved = true;
-            ticket.Note = note;
-            ticket.LastModifiedAt = DateTime.Now;
-
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<bool> RejectTicket(Guid id, string? note = null)
-        {
-            var ticket = await _context.Set<Ticket>()
-                .FirstOrDefaultAsync(t => t.Id == id);
-
-            if (ticket == null)
-            {
-                return false;
-            }
-
-            ticket.IsApproved = false;
-            ticket.Note = note;
-            ticket.LastModifiedAt = DateTime.Now;
-
-            await _context.SaveChangesAsync();
-            return true;
-        }
-        public async Task<List<TicketDto>> GetAllTicketsAsync()
-        {
-            var tickets = await _context.Set<Ticket>().ToListAsync();
-            return _mapper.Map<List<TicketDto>>(tickets);
-
+            return await _ticketRepository.GetAllAsync();
         }
 
     }
