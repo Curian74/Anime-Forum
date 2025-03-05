@@ -8,10 +8,15 @@
 <div class="d-flex flex-column">
     <div class="d-flex justify-content-between">
         <h1 class="title">New posts</h1>
-        <a asp-action="Create" asp-controller="Post"
-           class="create-post btn btn-danger mt-1">
-            <i class="fa-regular fa-pen-to-square"></i> Create post...
-        </a>
+        @{
+            if (User.Identity.IsAuthenticated)
+            {
+                <a asp-action="Create" asp-controller="Post"
+                   class="create-post btn btn-danger mt-1">
+                    <i class="fa-regular fa-pen-to-square"></i> Create post...
+                </a>
+            }
+        }
     </div>
 
     <form asp-action="NewPosts" method="get" class="form-inline my-2 my-lg-0">

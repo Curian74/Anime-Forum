@@ -103,7 +103,6 @@ namespace WibuBlog.Controllers
             return View(postDetailVM);
         }
 
-        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -130,7 +129,6 @@ namespace WibuBlog.Controllers
             return View(data);
         }
 
-        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Create(CreatePostVM createPostVM)
         {
