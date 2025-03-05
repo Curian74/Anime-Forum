@@ -56,7 +56,7 @@
                                     </div>
                                     var latestTime = DateFormatHelper.GetDateFormat(latestPost.CreatedAt);
                                     <div class="post-info col-3">
-                                        <a href="#">@latestPost.Title</a>
+                                        <a asp-action="Detail" asp-controller="Post" asp-route-id="@latestPost.Id">@latestPost.Title</a>
                                         <p>
                                             @latestTime -
                                             <a href="#">@latestPost.User?.UserName</a>
@@ -107,7 +107,7 @@
                                     </div>
                                     var latestTime = DateFormatHelper.GetDateFormat(latestPost.CreatedAt);
                                     <div class="post-info col-3">
-                                        <a href="#">@latestPost.Title</a>
+                                        <a asp-action="Detail" asp-controller="Post" asp-route-id="@latestPost.Id">@latestPost.Title</a>
                                         <p>
                                             @latestTime -
                                             <a href="#">@latestPost.User?.UserName</a>
@@ -167,7 +167,7 @@
                             <div class="d-flex">
                                 <img class="rounded-circle" src="@(p?.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
                                 <div class="trending-content-detail">
-                                    <a href="#" id="trending-content-title">@p?.Title</a>
+                                    <a asp-action="Detail" asp-controller="Post" asp-route-id="@p.Id" id="trending-content-title">@p?.Title</a>
                                     <p>@p.User?.UserName - @latestTime</p>
                                     <p>Replies: @p.Comments.Count()</p>
                                 </div>

@@ -8,14 +8,17 @@
 <div class="d-flex flex-column">
     <div class="d-flex justify-content-between">
         <h1 class="title">New posts</h1>
-        <a class="create-post btn btn-danger mt-1"> <i class="fa-regular fa-pen-to-square"></i> Create post...</a>
+        <a asp-action="Create" asp-controller="Post"
+           class="create-post btn btn-danger mt-1">
+            <i class="fa-regular fa-pen-to-square"></i> Create post...
+        </a>
     </div>
 
     <form asp-action="NewPosts" method="get" class="form-inline my-2 my-lg-0">
         <div class="d-flex gap-2 mb-3">
             <input type="hidden" name="FilterBy" value="Title" />
             <input name="searchTerm" class="form-control mr-sm-2 w-25" style="background-color:#eaebec"
-            type="search" placeholder="Search" aria-label="Search" value="@Context.Request.Query["searchTerm"]">
+                   type="search" placeholder="Search" aria-label="Search" value="@Context.Request.Query["searchTerm"]">
             <select class="form-select" style="width:20%" asp-items="@Model.CategoryList" asp-for="@Model.PostCategoryId">
                 <option value="">--Select a category--</option>
             </select>
@@ -24,7 +27,7 @@
     </form>
 
     @{
-        if(Model.Posts.Items != null && Model.Posts.Items.Any())
+        if (Model.Posts.Items != null && Model.Posts.Items.Any())
         {
             @foreach (var post in Model.Posts.Items)
             {
@@ -33,8 +36,8 @@
                         <div class="col-12 col-md-7">
                             <div class="d-flex gap-3 align-items-center">
                                 <img class="rounded-circle img-fluid ms-2"
-                                style="width: 40px; height: 40px;"
-                                src="@(post.User?.ProfilePhoto?.Url != null ? post.User.ProfilePhoto.Url : Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
+                                     style="width: 40px; height: 40px;"
+                                     src="@(post.User?.ProfilePhoto?.Url != null ? post.User.ProfilePhoto.Url : Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
                                 <div>
                                     @{
                                         var latestTime = DateFormatHelper.GetDateFormat(post.CreatedAt);
@@ -76,8 +79,8 @@
                                         </div>
 
                                         <img class="rounded-circle img-fluid me-4"
-                                        style="width: 30px; height: 30px;"
-                                        src="@(latestComment.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
+                                             style="width: 30px; height: 30px;"
+                                             src="@(latestComment.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
                                     </div>
                                 </div>
                             }

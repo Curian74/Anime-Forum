@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq;
 using Application.Common.Pagination;
+using System.Threading.Tasks;
 
 namespace WibuBlog.Controllers
 {
@@ -20,6 +21,17 @@ namespace WibuBlog.Controllers
         private readonly CommentService _commentService = commentServices;
         private readonly PostCategoryService _postCategoryService = postCategoryService;
         private readonly UserService _userService = userService;
+
+        private async Task<List<SelectListItem>> GetCategoryListAsync()
+        {
+            var categories = await _postCategoryService.GetAllCategories("", "", false);
+            return categories.OrderBy(c => c.Name)
+                             .Select(c => new SelectListItem
+                             {
+                                 Text = c.Name,
+                                 Value = c.Id.ToString()
+                             }).ToList();
+        }
 
         [AllowAnonymous]
         public async Task<IActionResult> Index(int? page = 1, int? pageSize = 5)
@@ -48,22 +60,17 @@ namespace WibuBlog.Controllers
 
             var pagedPosts = filteredPosts.Skip(skip).Take(queryObject.Size).ToList();
 
-            var categoryList = await _postCategoryService.GetAllCategories("", "", false);
+            var categoryList = await GetCategoryListAsync();
 
             var data = new NewPostsVM
             {
-                CategoryList = categoryList.OrderBy(x => x.Name).Select(c => new SelectListItem
-                {
-                    Text = c.Name,
-                    Value = c.Id.ToString()
-                }).ToList(),
+                CategoryList = categoryList,
                 Posts = new PagedResult<Post>(pagedPosts, totalItems, queryObject.Page, queryObject.Size),
                 PostCategoryId = postCategoryId
             };
 
             return View(data);
         }
-
 
         [AllowAnonymous]
         public async Task<IActionResult> Detail(Guid id, int? page = 1, int? pageSize = 10)
@@ -73,28 +80,20 @@ namespace WibuBlog.Controllers
                 .GetPagedComments(page, pageSize, "postId", id.ToString(), "createdAt", true);
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
+            User? user = null;
             PostDetailVM postDetailVM;
 
             if (userId != null)
             {
-                var user = await _userService.GetUserById(Guid.Parse(userId));
-                postDetailVM = new PostDetailVM
-                {
-                    Comments = comments,
-                    Post = post,
-                    User = user,
-                };
+                user = await _userService.GetUserById(Guid.Parse(userId));
             }
 
-            else
+            postDetailVM = new PostDetailVM
             {
-                postDetailVM = new PostDetailVM
-                {
-                    Comments = comments,
-                    Post = post,
-                };
-            }
+                Comments = comments,
+                Post = post,
+                User = user,
+            };
 
             if (post is null)
             {
@@ -104,6 +103,63 @@ namespace WibuBlog.Controllers
             return View(postDetailVM);
         }
 
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> Create()
+        {
+            var postCategories = await _postCategoryService.GetAllCategories("isRestricted", "false", false);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User? user = null;
+
+            if (userId != null)
+            {
+                user = await _userService.GetUserById(Guid.Parse(userId));
+            }
+
+            var data = new CreatePostVM
+            {
+                CategoryList = postCategories.OrderBy(p => p.Name).Select(p => new SelectListItem
+                {
+                    Text = p.Name,
+                    Value = p.Id.ToString()
+                }).ToList(),
+                User = user
+            };
+
+            return View(data);
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> Create(CreatePostVM createPostVM)
+        {
+            var postCategoryList = await _postCategoryService.GetAllCategories("isRestricted", "false", false);
+            if (!ModelState.IsValid)
+            {
+                createPostVM.CategoryList = postCategoryList.OrderBy(p => p.Name).Select(p => new SelectListItem
+                {
+                    Text = p.Name,
+                    Value = p.Id.ToString()
+                }).ToList();
+                return View(createPostVM);
+            }
+
+            try
+            {
+                await _postService.CreatePostAsync(createPostVM);
+                TempData["successMessage"] = "Post created successfully.";
+                return RedirectToAction(nameof(Create));
+            }
+
+            catch (Exception ex)
+            {
+                TempData["successMessage"] = $"Failed to create post. Error: {ex.Message}";
+                return View(createPostVM);
+            }
+        }
+
+        #region TestRoutes
         [HttpGet]
         public IActionResult Add()
         {
@@ -173,5 +229,6 @@ namespace WibuBlog.Controllers
             _ = await _postService.DeletePostAsync(id);
             return RedirectToAction(nameof(Index));
         }
+        #endregion
     }
 }
