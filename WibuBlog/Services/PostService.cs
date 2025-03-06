@@ -33,6 +33,13 @@ namespace WibuBlog.Services
             return response.Value!;
         }
 
+        public async Task<bool> CreatePostAsync(CreatePostVM data)
+        {
+            var response = await _apiService.PostAsync<ApiResponse<Post>>("Post/Create", data);
+            Console.WriteLine(response.Value);
+            return response != null;
+        }
+
         public async Task<bool> AddNewPostAsync(AddPostVM data)
         {
             var response = await _apiService.PostAsync<ApiResponse<Post>>("Post/Create", data);
