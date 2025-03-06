@@ -81,7 +81,7 @@ namespace WibuBlogAPI.Controllers
             try
             {
                 var currentUserId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-                await _userService.UpdateByFieldAsync(editUserDto, currentUserId);          
+                await _userService.UpdateByFieldAsync(editUserDto, currentUserId);
             }
             catch (KeyNotFoundException ex)
             {

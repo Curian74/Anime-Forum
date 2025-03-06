@@ -15,15 +15,13 @@ namespace Application.Common.Validations
         private readonly HashSet<string> allowedFieldsForUser = new HashSet<string> { "Bio", "PhoneNumber", "Password" };
         private readonly HashSet<string> allowedFieldsForAdmin = new HashSet<string> { "Status", "Role" };
 
-        public bool IsAllowed(string field,string role)
+        public bool IsAllowed(EditUserDto targetUser,string role, Guid currentUserId)
         {
-            Console.WriteLine("==================================="); 
-            Console.WriteLine(field + " " +  role); 
-            if (role.Equals("Member") && allowedFieldsForUser.Contains(field))
+            if (role.Equals("Member") && allowedFieldsForUser.Contains(targetUser.field) && currentUserId == targetUser.userId)
             {
                 return true;
             }
-            else if (role.Equals("Admin") && allowedFieldsForAdmin.Contains(field))
+            else if (role.Equals("Admin") && allowedFieldsForAdmin.Contains(targetUser.field))
             {
                 return true;
             }

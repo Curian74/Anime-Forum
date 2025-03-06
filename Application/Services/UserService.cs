@@ -96,13 +96,8 @@ namespace Application.Services
         {          
             var targetUser = await _userGenericRepository.GetByIdAsync(targetEditUser.userId);
             var currentUser = await _userGenericRepository.GetByIdAsync(currrentUserId);
-            var currentRole = (await _userManager.GetRolesAsync(currentUser)).FirstOrDefault().ToString();
-            Console.WriteLine("=====================");
-            Console.WriteLine("Current user:" + currentUser.UserName);
-            Console.WriteLine("Current Uid: " + currentUser.Id);
-            Console.WriteLine("Target user: " + targetUser.UserName);
-            
-            if (_userEditFieldValidations.IsAllowed(targetEditUser.field,currentRole))
+            var currentRole = (await _userManager.GetRolesAsync(currentUser)).FirstOrDefault().ToString();        
+            if (_userEditFieldValidations.IsAllowed(targetEditUser,currentRole,currentUser.Id))
             {
                 PropertyInfo property = targetUser.GetType().GetProperty(targetEditUser.field);
                 if (property == null || !property.CanWrite) throw new ArgumentException($"Field '{targetEditUser.field}' does not exist or cannot be written.");
@@ -110,10 +105,6 @@ namespace Application.Services
                 property.SetValue(targetUser, convertedValue);
                 await _userGenericRepository.UpdateAsync(targetUser);
                 await _unitOfWork.SaveChangesAsync();
-            }
-            else
-            {
-
             }
         }
 
