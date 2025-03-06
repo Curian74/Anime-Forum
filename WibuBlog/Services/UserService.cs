@@ -1,8 +1,10 @@
 ﻿using Application.Common.Pagination;
 using Application.DTO;
 using Domain.Entities;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using WibuBlog.Common.ApiResponse;
 using WibuBlog.Interfaces.Api;
+using WibuBlog.ViewModels.Users;
 
 namespace WibuBlog.Services
 {
@@ -37,9 +39,15 @@ namespace WibuBlog.Services
             return response.Value!;
         }
 
-        public async Task<User> UpdateUserAsync<T>(T userId, User data)
+        public async Task<EditUserDto> UpdateUserAsync(EditUserVM targetEditUserVM)
         {
-            var response = await _apiService.PutAsync<ApiResponse<User>>($"User/UpdateUser/{userId}", data);
+            EditUserDto editUserDto = new EditUserDto()
+            {
+                userId = targetEditUserVM.userId,
+                field = targetEditUserVM.field,
+                value = targetEditUserVM.value,
+            };
+            var response = await _apiService.PutAsync<ApiResponse<EditUserDto>>($"User/EditUser/",editUserDto);
             return response.Value!;
         }
 

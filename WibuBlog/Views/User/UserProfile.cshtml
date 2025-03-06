@@ -8,13 +8,22 @@
     <title>Profile</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="~/css/profile.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 </head>
 <body>
     <div class="container mt-4">
         <div class="cover-photo w-100">
             <button class="btn btn-dark position-absolute top-0 end-0 m-2">Edit</button>
             <div class="avatar-container">
-                <img id="avatarImage" src="~/images/defaults/user/default_avatar.jpg" alt="Profile" class="profile-img">
+                @if (Model.ProfilePhoto == null || String.IsNullOrEmpty(Model.ProfilePhoto.Url))
+                {
+                    <img id="avatarImage" src="~/images/defaults/user/default_avatar.jpg" alt="Profile" class="profile-img">
+                }
+                else
+                {
+                         <img id="avatarImage" src="@Model.ProfilePhoto.Url" alt="Profile" class="profile-img">
+                }
+
                 <div class="overlay">
                     <span>Change avatar</span>
                 </div>
@@ -27,7 +36,7 @@
         }
         <div class="mt-5 ps-3">
             <h2 style="color: red">@Model.UserName</h2>
-            <p class="text-muted">Role: @Model.Roles.FirstOrDefault();</p>
+            <p class="text-muted">Role: @Model.Roles.FirstOrDefault()</p>
         </div>
         <div class="tabs d-flex border-bottom mt-3">
             <button class="active" onclick="showTab('posts')">Posts</button>
@@ -79,43 +88,95 @@
     <div class="card p-3">
         <h4 class="mb-3">Personal Information</h4>
 
-        <div class="info-item d-flex justify-content-between align-items-center">
-            <span><strong>Bio:</strong> @Model.Bio</span>
-             <button class="btn btn-light btn-sm edit-btn">Edit</button>
-        </div>
-        <hr>
-
+        
         <div class="info-item d-flex justify-content-between align-items-center">
             <span><strong>Name:</strong> @Model.UserName</span>
-             <button class="btn btn-light btn-sm edit-btn">Edit</button>
+             <i class="bi bi-lock"></i>
         </div>
         <hr>
-
+        
         <div class="info-item d-flex justify-content-between align-items-center">
             <span><strong>Email:</strong> @Model.Email</span>
-             <button class="btn btn-light btn-sm edit-btn">Edit</button>
+             <i class="bi bi-lock"></i>
         </div>
         <hr>
+        <div class="info-item d-flex justify-content-between align-items-center">
+            <span><strong>Role:</strong> @role</span>
+             <i class="bi bi-lock"></i>
+        </div>
+        <hr>
+        <div class="info-item d-flex justify-content-between align-items-center">
+            <span><strong>Bio:</strong> @Model.Bio</span>
+            <button onclick="openEditModal('@Model.Bio', 'Bio', 'bio')" class="btn btn-light btn-sm edit-btn">
+                Edit
+            </button>
+        </div>
+        <hr>
+        
 
         <div class="info-item d-flex justify-content-between align-items-center">
             <span><strong>Phone:</strong> @Model.PhoneNumber</span>
-             <button class="btn btn-light btn-sm edit-btn">Edit</button>
+             <button onclick="openEditModal('@Model.PhoneNumber', 'Phone Number')" class="btn btn-light btn-sm edit-btn">
+                 Edit
+                 </button>
         </div>
         <hr>
 
         <div class="info-item d-flex justify-content-between align-items-center">
             <span><strong>Password:</strong> ********</span>
-            <button class="btn btn-light btn-sm edit-btn">Edit</button>
+              <button class="btn btn-light btn-sm edit-btn" data-bs-toggle="modal" data-bs-target="#editPasswordModal">
+                Edit
+            </button>
         </div>
         <hr>
 
-        <div class="info-item d-flex justify-content-between align-items-center">
-            <span><strong>Role:</strong> @role</span>
-             <button class="btn btn-light btn-sm edit-btn">Edit</button>
+    </div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" asp-controller="User" asp-action="UpdateUser" method="post">
+                    <input type="hidden" id="editField" name="field">
+                    <div class="mb-3">
+                        <label for="editInput" class="form-label" id="editLabel">Edit Value</label>
+                        <input type="text" class="form-control" id="editInput" name="value">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 
+<div class="modal fade" id="editPasswordModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <div class="mb-3">
+                        <label for="editInput" class="form-label" id="editLabel">Old password</label>
+                        <input type="text" class="form-control" id="editInput" name="editInput">
+                        <label for="editInput2" class="form-label" id="editLabel2">New password</label>
+                        <input type="text" class="form-control" id="editInput2" name="editInput2">
+                        <label for="editInput3" class="form-label" id="editLabel3">Comfirm new password</label>
+                        <input type="text" class="form-control" id="editInput3" name="editInput3">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
         <div id="inventory" class="tab-content mt-3 d-none">
             <p>Frame: </p>
@@ -125,3 +186,15 @@
     <script src="/js/profile.js"></script>
 </body>
 </html>
+
+<script>
+    function openEditModal(value, label, field) {
+        document.getElementById("editModalLabel").innerText = "Edit " + label;
+        document.getElementById("editLabel").innerText = label;
+        document.getElementById("editInput").value = value;
+        document.getElementById("editField").value = field; // Truyền field cần sửa
+
+        var editModal = new bootstrap.Modal(document.getElementById("editModal"));
+        editModal.show();
+    }
+</script>

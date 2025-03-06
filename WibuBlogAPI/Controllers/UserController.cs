@@ -4,6 +4,8 @@ using Application.DTO;
 using System.Security.Claims;
 using Infrastructure.External;
 using Application.Interfaces.Email;
+using Domain.Entities;
+using Application.Common.Validations;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,7 +17,7 @@ namespace WibuBlogAPI.Controllers
     public class UserController(UserService userService, TicketService ticketService) : ControllerBase
     {
         private readonly UserService _userService = userService;
-        private readonly TicketService _ticketService = ticketService;
+        private readonly TicketService _ticketService = ticketService;      
 
         [HttpGet]
         public async Task<IActionResult> GetAccountDetails()
@@ -73,7 +75,21 @@ namespace WibuBlogAPI.Controllers
             return new JsonResult(Ok(result));
         }
 
+        [HttpPut]
+        public async Task<IActionResult> EditUser(EditUserDto editUserDto)
+        {
+            try
+            {
+                var currentUserId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                await _userService.UpdateByFieldAsync(editUserDto, currentUserId);          
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new JsonResult(NotFound($"{ex.GetType().Name}: {ex.Message}"));
+            }
+            return new JsonResult(Accepted(editUserDto));
 
+        }
         [HttpPut]
         public async Task<IActionResult> UpdateTicket(UpdateTicketDto dto)
         {

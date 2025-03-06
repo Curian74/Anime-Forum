@@ -46,7 +46,14 @@
                                     <p class="mb-0 fw-bold">@Model.UserName</p>
                                     <p class="mb-0 text-secondary" style="font-size: 0.85rem;">@Model.Roles.FirstOrDefault()</p>
                                 </div>
-                                <img src="~/images/defaults/user/default_avatar.jpg" class="rounded-circle" width="40" height="40" alt="User Avatar">
+                            @if (Model.ProfilePhoto == null || String.IsNullOrEmpty(Model.ProfilePhoto.Url))
+                            {
+                                            <img id="avatarImage" src="~/images/defaults/user/default_avatar.jpg" class="rounded-circle" width="40" height="40" alt="User Avatar">
+                            }
+                            else
+                            {
+                                                 <img id="avatarImage" src="@Model.ProfilePhoto.Url" class="rounded-circle" width="40" height="40" alt="User Avatar">
+                            }
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li><a class="dropdown-item" href="/User/UserProfile">Profile</a></li>

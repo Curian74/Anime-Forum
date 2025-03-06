@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
+using WibuBlog.ViewModels.Users;
 
 namespace WibuBlog.Controllers
 {
@@ -33,25 +35,18 @@ namespace WibuBlog.Controllers
             var result = await _userService.GetPagedUsersAsync(page, pageSize);
             return View(result);
         }
-
         [HttpPost]
-        public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] User user)
+        public async Task<IActionResult> UpdateUser(EditUserVM editUserVM)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState); 
+            if (!ModelState.IsValid) {
+               RedirectToAction(nameof(UserProfile));
             }
-            try
-            {
-                await _userService.UpdateUserAsync(userId, user); 
-                return Json(new { success = true, message = "Updated!" });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = "Exception: " + ex.Message });
-            }
+            var user = await _userService.UpdateUserAsync(editUserVM);
+        
+            return RedirectToAction(nameof(UserProfile));
         }
 
-      
+
+
     }
 }
