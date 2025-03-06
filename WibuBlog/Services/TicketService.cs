@@ -23,10 +23,10 @@ namespace WibuBlog.Services
             try
             {
                 var guidId = Guid.Parse(id.ToString());
-                var response = await _apiService.GetAsync<ApiResponse<IEnumerable<Ticket>>>("User/GetUserTickets");
-                if (response?.Value != null)
+                var response = await _apiService.GetAsync<ApiResponse<Ticket>>($"Ticket/GetTicketDetail/{guidId}");
+                if (response != null)
                 {
-                    return response.Value.FirstOrDefault(t => Guid.Parse(t.Id.ToString()) == guidId);
+                    return response.Value;
                 }
                 return null;
             }
@@ -39,7 +39,7 @@ namespace WibuBlog.Services
 
         public async Task<bool> AddNewTicketAsync(AddTicketVM data)
         {
-            var response = await _apiService.PostAsync<ApiResponse<Ticket>>("User/CreateTicket", data);
+            var response = await _apiService.PostAsync<ApiResponse<Ticket>>("Ticket/CreateTicket", data);
             Console.WriteLine(response.Value);
             return response != null;
         }
@@ -57,7 +57,7 @@ namespace WibuBlog.Services
                     IsApproved = model.IsApproved
                 };
 
-                var response = await _apiService.PutAsync<ApiResponse<bool>>("User/UpdateTicket", updateDto);
+                var response = await _apiService.PutAsync<ApiResponse<bool>>("Ticket/UpdateTicket", updateDto);
                 Console.WriteLine($"API response: {response != null}");
                 return response != null;
             }

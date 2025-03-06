@@ -11,7 +11,7 @@ namespace Infrastructure.Extensions
 
             var parameter = Expression.Parameter(typeof(T), "p");
 
-            // Xu ly nested Props
+            // Handle nested properties
             Expression? propertyAccess = parameter;
             foreach (var propertyName in filterBy.Split('.'))
             {
@@ -24,27 +24,31 @@ namespace Infrastructure.Extensions
 
             var propertyType = propertyAccess.Type;
 
-            // Check Guid type truoc
+            // Handle nullable types by getting the underlying type
+            var underlyingType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
+
+            // Try to convert the search term
             object convertedSearchTerm;
             try
             {
-                if (propertyType == typeof(Guid))
+                if (underlyingType == typeof(Guid))
                 {
                     convertedSearchTerm = Guid.Parse(searchTerm);
                 }
                 else
                 {
-                    convertedSearchTerm = Convert.ChangeType(searchTerm, propertyType);
+                    convertedSearchTerm = Convert.ChangeType(searchTerm, underlyingType);
                 }
             }
             catch
             {
-                return null; // Null neu k convert duoc
+                return null; // If conversion fails
             }
 
-            var searchExpression = Expression.Constant(convertedSearchTerm);
+            var searchExpression = Expression.Constant(convertedSearchTerm, propertyType);
 
-            Expression comparison = propertyType == typeof(string)
+            // Build comparison expression
+            Expression comparison = underlyingType == typeof(string)
                 ? Expression.Call(propertyAccess, nameof(string.Contains), Type.EmptyTypes, searchExpression)
                 : Expression.Equal(propertyAccess, searchExpression);
 
@@ -65,7 +69,7 @@ namespace Infrastructure.Extensions
             var lambda = Expression.Lambda<Func<T, object>>(Expression.Convert(property, typeof(object)), parameter);
 
             return descending
-                ? (Func<IQueryable<T>, IOrderedQueryable<T>>)(q => q.OrderByDescending(lambda))
+                ? q => q.OrderByDescending(lambda)
                 : q => q.OrderBy(lambda);
         }
     }

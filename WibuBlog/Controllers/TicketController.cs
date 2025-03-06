@@ -113,18 +113,6 @@ namespace WibuBlog.Controllers
             }
         }
 
-        [HttpGet("GetById/{id}")]
-        public async Task<IActionResult> GetById(Guid id)
-        {
-            var ticket = await _ticketService.GetTicketByIdAsync(id);
-
-            if (ticket == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(ticket);
-        }
         [HttpGet]
         public async Task<IActionResult> Delete(Guid id)
         {

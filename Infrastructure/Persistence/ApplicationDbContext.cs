@@ -4,12 +4,15 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Domain.Common.BaseEntities;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace Infrastructure.Persistence
 {
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration) : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration, IHttpContextAccessor httpContextAccessor) : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
     {
         private readonly IConfiguration _configuration = configuration;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         public DbSet<Post> Posts { get; set; }
         public DbSet<PostCategory> PostCategories { get; set; }
@@ -71,20 +74,20 @@ namespace Infrastructure.Persistence
 
         public override int SaveChanges()
         {
-            //var userId = Guid.Parse(_httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            _ = Guid.TryParse(_httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId);
 
             foreach (var entry in ChangeTracker.Entries<BaseAuditableEntity>())
             {
                 if (entry.State == EntityState.Added)
                 {
                     entry.Entity.CreatedAt = DateTime.Now;
-                    //entry.Entity.CreatedBy = userId;
+                    entry.Entity.CreatedBy = userId;
                 }
 
                 if (entry.State == EntityState.Modified)
                 {
                     entry.Entity.LastModifiedAt = DateTime.Now;
-                    //entry.Entity.LastModifiedBy = userId;
+                    entry.Entity.LastModifiedBy = userId;
                 }
             }
 
@@ -93,20 +96,20 @@ namespace Infrastructure.Persistence
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            // Guid.TryParse(_httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId);
+            _ = Guid.TryParse(_httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId);
 
             foreach (var entry in ChangeTracker.Entries<BaseAuditableEntity>())
             {
                 if (entry.State == EntityState.Added)
                 {
                     entry.Entity.CreatedAt = DateTime.Now;
-                    //entry.Entity.CreatedBy = userId;
+                    entry.Entity.CreatedBy = userId;
                 }
 
                 if (entry.State == EntityState.Modified)
                 {
                     entry.Entity.LastModifiedAt = DateTime.Now;
-                    //entry.Entity.LastModifiedBy = userId;
+                    entry.Entity.LastModifiedBy = userId;
                 }
             }
 

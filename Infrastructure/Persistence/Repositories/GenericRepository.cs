@@ -13,7 +13,7 @@ namespace Infrastructure.Persistence.Repositories
             return await _dbSet.FindAsync(id);
         }
 
-        // Example usage: _repository.GetPagedAsync(x => x.Name.Contains("Memaybeo"), x => x.OrderByDescending(x.DateCreated)); 
+        // Example usage: _repository.GetPagedAsync(x => x.Name.Contains("Memaybeo"), q => q.OrderByDescending(x => x.DateCreated)); 
         public async Task<(IEnumerable<T> Items, int TotalCount)> GetAllAsync(
             Expression<Func<T, bool>>? filter = null, 
             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null)
@@ -38,7 +38,7 @@ namespace Infrastructure.Persistence.Repositories
             return (items, totalCount);
         }
 
-        // Example usage: _repository.GetPagedAsync(1, 10, x => x.Name.Contains("Memaybeo"), x => x.OrderByDescending(x.DateCreated)); 
+        // Example usage: _repository.GetPagedAsync(1, 10, x => x.Name.Contains("Memaybeo"), e => e.OrderByDescending(x => x.DateCreated)); 
         public async Task<(IEnumerable<T> Items, int TotalCount)> GetPagedAsync(
             int page = 1 ,
             int size = 10, 
