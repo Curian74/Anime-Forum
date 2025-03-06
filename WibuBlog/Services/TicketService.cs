@@ -56,10 +56,10 @@ namespace WibuBlog.Services
                     Tag = model.Tag,
                     IsApproved = model.IsApproved
                 };
-
-                var response = await _apiService.PutAsync<ApiResponse<bool>>("Ticket/UpdateTicket", updateDto);
+                // Change this line to match your API endpoint structure
+                var response = await _apiService.PutAsync<ApiResponse<bool>>($"Ticket/UpdateTicket/{id}", updateDto);
                 Console.WriteLine($"API response: {response != null}");
-                return response != null;
+                return response != null && response.Value;
             }
             catch (Exception ex)
             {
