@@ -17,7 +17,7 @@ namespace WibuBlog.Services
 
         public async Task<User> GetUserById(Guid userId)
         {
-            var response = await _apiService.GetAsync<ApiResponse<User>>($"User/GetUserById?userId={userId}");
+            var response = await _apiService.GetAsync<ApiResponse<User>>($"User/GetUserById/{userId}");
             return response.Value!;
         }
         public async Task<User> GetUserByEmailAsync(string email)
