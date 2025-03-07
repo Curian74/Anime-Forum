@@ -26,26 +26,29 @@
                         <small class="text-muted">Posted on @DateFormatHelper.GetDateFormat(Model.Post.CreatedAt)</small>
                     </div>
                 </div>
-                <div class="dropdown">
-                    <button class="btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fa-solid fa-ellipsis fs-5"></i>
-                    </button>
-                    <ul style="background-color:#eaebec" class="dropdown-menu">
-                        @{
-                            if (Model.User?.Id == Model.Post.UserId)
-                            {
-                                <li><a class="dropdown-item" href="#">Edit</a></li>
-                                <li><hr class="dropdown-divider border-top border-secondary"></li>
-                                <li><a class="dropdown-item text-danger" href="#">Delete</a></li>
-                            }
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <div class="dropdown">
+                        <button class="btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-ellipsis fs-5"></i>
+                        </button>
+                        <ul style="background-color:#eaebec" class="dropdown-menu">
+                            @{
+                                if (Model.User?.Id == Model.Post.UserId)
+                                {
+                                    <li><a class="dropdown-item" href="#">Edit</a></li>
+                                    <li><hr class="dropdown-divider border-top border-secondary"></li>
+                                    <li><a class="dropdown-item text-danger" href="#">Delete</a></li>
+                                }
 
-                            else
-                            {
-                                <li><a class="dropdown-item text-warning" href="#">Report</a></li>
+                                else
+                                {
+                                    <li><a class="dropdown-item text-warning" href="#">Report</a></li>
+                                }
                             }
-                        }
-                    </ul>
-                </div>
+                        </ul>
+                    </div>
+                }
             </div>
             <div class="post-content mt-2">
                 <h3 class="mb-3">@Model.Post?.Title</h3>
