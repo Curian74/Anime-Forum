@@ -6,10 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using WibuBlog.Helpers;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.IdentityModel.Tokens;
-using System.Linq;
 using Application.Common.Pagination;
-using System.Threading.Tasks;
 
 namespace WibuBlog.Controllers
 {
@@ -73,35 +70,35 @@ namespace WibuBlog.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> Detail(Guid id, int? page = 1, int? pageSize = 10)
+        public async Task<IActionResult> Detail(Guid id, int page = 1, int pageSize = 10)
         {
             var post = await _postService.GetPostByIdAsync(id);
+            if (post == null)
+            {
+                return NotFound();
+            }
+
             var comments = await _commentService
                 .GetPagedComments(page, pageSize, "postId", id.ToString(), "createdAt", true);
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             User? user = null;
-            PostDetailVM postDetailVM;
 
-            if (userId != null)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!string.IsNullOrEmpty(userId))
             {
                 user = await _userService.GetUserById(Guid.Parse(userId));
             }
 
-            postDetailVM = new PostDetailVM
+            var postDetailVM = new PostDetailVM
             {
                 Comments = comments,
                 Post = post,
                 User = user,
             };
 
-            if (post is null)
-            {
-                return NotFound();
-            }
-
             return View(postDetailVM);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> Create()
