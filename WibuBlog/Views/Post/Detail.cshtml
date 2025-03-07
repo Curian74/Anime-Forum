@@ -36,7 +36,12 @@
                             @{
                                 if (Model.User?.Id == Model.Post.UserId)
                                 {
-                                    <li><a class="dropdown-item" href="#">Edit</a></li>
+                                    <li>
+                                        <a asp-route-id="@Model.Post.Id"
+                                           class="dropdown-item" asp-action="Edit" asp-controller="Post">
+                                            Edit
+                                        </a>
+                                    </li>
                                     <li><hr class="dropdown-divider border-top border-secondary"></li>
                                     <li><a class="dropdown-item text-danger" href="#">Delete</a></li>
                                 }

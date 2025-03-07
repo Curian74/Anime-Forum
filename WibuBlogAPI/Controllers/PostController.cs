@@ -87,7 +87,7 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpPut("{postId}")]
-        public async Task<IActionResult> Update(Guid postId, [FromBody] PostDto dto)
+        public async Task<IActionResult> Update(Guid postId, [FromBody] CreatePostDto dto)
         {
             try
             {

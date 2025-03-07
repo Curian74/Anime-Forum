@@ -53,7 +53,7 @@ namespace Application.Services
             return await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task<int> UpdatePostAsync(Guid postId, PostDto dto)
+        public async Task<int> UpdatePostAsync(Guid postId, CreatePostDto dto)
         {
             var post = await _postRepository.GetByIdAsync(postId) ?? throw new KeyNotFoundException("Could not find requested post.");
 

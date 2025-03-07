@@ -149,9 +149,65 @@ namespace WibuBlog.Controllers
 
             catch (Exception ex)
             {
-                TempData["successMessage"] = $"Failed to create post. Error: {ex.Message}";
+                TempData["errorMessage"] = $"Failed to create post. Error: {ex.Message}";
                 return View(createPostVM);
             }
+        }
+
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var post = await _postService.GetPostByIdAsync(id);
+
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            var postCategories = await _postCategoryService.GetAllCategories("isRestricted", "false", false);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User? user = null;
+
+            if (userId != null)
+            {
+                user = await _userService.GetUserById(Guid.Parse(userId));
+            }
+
+            var data = new EditPostVM
+            {
+                CategoryList = postCategories.OrderBy(p => p.Name).Select(p => new SelectListItem
+                {
+                    Text = p.Name,
+                    Value = p.Id.ToString()
+                }).ToList(),
+                User = user,
+                Content = post.Content,
+                Title = post.Title,
+                PostId = post.Id,
+                PostCategoryId = post.PostCategoryId,
+            };
+
+            return View(data);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditPostVM editPostVM)
+        {
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction(nameof(Edit));
+            }
+            try
+            {
+                await _postService.EditPostAsync(editPostVM.PostId, editPostVM);
+                TempData["successMessage"] = "Post edited successfully.";
+            }
+
+            catch(Exception ex)
+            {
+                TempData["errorMessage"] = $"Failed to edit post. Error: {ex.Message}";
+            }
+            return RedirectToAction(nameof(Edit));
         }
 
         #region TestRoutes
