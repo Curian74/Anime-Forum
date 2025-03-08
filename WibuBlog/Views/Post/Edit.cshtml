@@ -65,9 +65,9 @@
                     Reset
                 </button>
 
-                <button type="button" class="btn btn-secondary mt-1 pt-1 pb-1" onclick="window.history.back();">
+                <a asp-action="Detail" asp-route-id="@Model.PostId" class="btn btn-secondary mt-1 pt-1 pb-1">
                     Cancel
-                </button>
+                </a>
             </div>
         </form>
     </section>

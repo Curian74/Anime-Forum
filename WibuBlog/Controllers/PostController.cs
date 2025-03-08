@@ -195,7 +195,7 @@ namespace WibuBlog.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Edit));
+                return View(editPostVM);
             }
             try
             {
