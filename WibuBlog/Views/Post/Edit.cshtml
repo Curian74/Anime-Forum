@@ -39,8 +39,12 @@
             <input type="hidden" value="@Model.PostCategoryId" name="PostCategoryId" />
             <input type="hidden" value="@Model.Title" name="Title" />
             <div class="p-2">
-                <input asp-for="@Model.Title"
-                       disabled class="title-input pt-1 pb-1 w-100 border-1 rounded-3 fs-3" type="text" placeholder="Post title" />
+                <textarea asp-for="@Model.Title"
+                          class="title-input pt-1 pb-1 w-100 border-1 rounded-3 fs-3"
+                          placeholder="Post title"
+                          disabled
+                          maxlength="255"
+                          rows="1"></textarea>
                 <span class="text-danger" asp-validation-for="@Model.Title"></span>
             </div>
 

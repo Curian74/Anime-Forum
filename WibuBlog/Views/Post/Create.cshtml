@@ -35,8 +35,11 @@
 
             <input type="hidden" value="@Model.User?.Id" name="userId" />
             <div class="p-2">
-                <input asp-for="@Model.Title"
-                       class="title-input pt-1 pb-1 w-100 border-1 rounded-3 fs-3" type="text" placeholder="Post title" />
+                <textarea asp-for="@Model.Title"
+                          class="title-input pt-1 pb-1 w-100 border-1 rounded-3 fs-3"
+                          placeholder="Post title"
+                          maxlength="255"
+                          rows="1"></textarea>
                 <span class="text-danger" asp-validation-for="@Model.Title"></span>
             </div>
 

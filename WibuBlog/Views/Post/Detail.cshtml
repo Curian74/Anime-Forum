@@ -19,11 +19,11 @@
 
 
             <div class="post-header d-flex justify-content-between">
-                <div class="d-flex">
+                <div class="d-flex gap-2">
                     <img src="@Model.User?.ProfilePhoto?.Url" alt="Avatar" class="avatar">
                     <div>
                         <h5 class="m-0">@Model.Post?.User?.UserName</h5>
-                        <small class="text-muted">Posted on @DateFormatHelper.GetDateFormat(Model.Post.CreatedAt)</small>
+                        <small class="text-muted">@DateFormatHelper.GetDateFormat(Model.Post.CreatedAt)</small>
                     </div>
                 </div>
                 @if (User.Identity.IsAuthenticated)
@@ -106,86 +106,110 @@
                 if (Model.Comments != null && Model.Comments.Items.Any())
                 {
                     <div class="comment-section">
-                        <h5>Comments (@Model.Post?.Comments.Where(c => c.IsHidden == false).Count())</h5>
+                        <h5 class="px-0">Comments (@Model.Post?.Comments.Where(c => c.IsHidden == false).Count())</h5>
                         @*Pagination*@
-                        <div class="d-flex justify-content-end">
-                            @{
-                                int currentPage = Model.Comments.PageNumber;
-                                int totalPages = Model.Comments.TotalPages;
-                                int maxPagesToShow = 3;//Max pages hien tri trai phai
-                            }
-
-                            <nav aria-label="Page navigation">
-                                <ul class="pagination">
-                                    @if (Model.Comments.HasPreviousPage)
-                                    {
-                                        <li class="page-item">
-                                            <a class="page-link" asp-action="Detail" asp-route-page="@(currentPage - 1)"
-                                               asp-route-pageSize="@Model.Comments.PageSize" aria-label="Previous">
-                                                <span aria-hidden="true">&laquo;</span>
-                                            </a>
-                                        </li>
-                                    }
-
-                                    @if (totalPages <= 5) //Page <= 5 thi display all
-                                    {
-                                        @for (int i = 1; i <= totalPages; i++)
-                                        {
-                                            <li class="page-item @(i == currentPage ? "active" : "")">
-                                                <a class="page-link" asp-action="Detail" asp-route-page="@i"
-                                                   asp-route-pageSize="@Model.Comments.PageSize">@i</a>
-                                            </li>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (currentPage > maxPagesToShow + 1)
-                                        {
-                                            <li class="page-item">
-                                                <a class="page-link" asp-action="Detail" asp-route-page="1"
-                                                   asp-route-pageSize="@Model.Comments.PageSize">1</a>
-                                            </li>
-                                            <li class="page-item disabled"><span class="page-link">...</span></li>
-                                        }
-
-                                        int startPage = Math.Max(1, currentPage - maxPagesToShow / 2);
-                                        int endPage = Math.Min(totalPages, startPage + maxPagesToShow - 1);
-
-                                        if (endPage == totalPages)
-                                        {
-                                            startPage = Math.Max(1, totalPages - maxPagesToShow + 1);
-                                        }
-
-                                        for (int i = startPage; i <= endPage; i++)
-                                        {
-                                            <li class="page-item @(i == currentPage ? "active" : "")">
-                                                <a class="page-link" asp-action="Detail" asp-route-page="@i"
-                                                   asp-route-pageSize="@Model.Comments.PageSize">@i</a>
-                                            </li>
-                                        }
-
-                                        if (currentPage < totalPages - maxPagesToShow)
-                                        {
-                                            <li class="page-item disabled"><span class="page-link">...</span></li>
-                                            <li class="page-item">
-                                                <a class="page-link" asp-action="Detail" asp-route-page="@totalPages"
-                                                   asp-route-pageSize="@Model.Comments.PageSize">@totalPages</a>
-                                            </li>
-                                        }
-                                    }
-
-                                    @if (Model.Comments.HasNextPage)
-                                    {
-                                        <li class="page-item">
-                                            <a class="page-link" asp-action="Detail" asp-route-page="@(currentPage + 1)"
-                                               asp-route-pageSize="@Model.Comments.PageSize" aria-label="Next">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </a>
-                                        </li>
-                                    }
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <button class="sort-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <small>Sort By <i class="fa-solid fa-angle-down"></i></small>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li class="mb-3 mx-3">
+                                        <p class="w-100 fw-bold" style="font-size:80%;">Sort By</p>
+                                    </li>   
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center gap-2" href="#">
+                                            <i class="fa-regular fa-sun fs-5"></i>
+                                            Latest
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center gap-2" href="#">
+                                            <i class="fa-solid fa-box-archive fs-5"></i>
+                                            Oldest
+                                        </a>
+                                    </li>
                                 </ul>
-                            </nav>
+                            </div>
+                            <div>
+                                @{
+                                    int currentPage = Model.Comments.PageNumber;
+                                    int totalPages = Model.Comments.TotalPages;
+                                    int maxPagesToShow = 3;//Max pages hien tri trai phai
+                                }
 
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination">
+                                        @if (Model.Comments.HasPreviousPage)
+                                        {
+                                            <li class="page-item">
+                                                <a class="page-link" asp-action="Detail" asp-route-page="@(currentPage - 1)"
+                                                   asp-route-pageSize="@Model.Comments.PageSize" aria-label="Previous">
+                                                    <span aria-hidden="true">&laquo;</span>
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @if (totalPages <= 5) //Page <= 5 thi display all
+                                        {
+                                            @for (int i = 1; i <= totalPages; i++)
+                                            {
+                                                <li class="page-item @(i == currentPage ? "active" : "")">
+                                                    <a class="page-link" asp-action="Detail" asp-route-page="@i"
+                                                       asp-route-pageSize="@Model.Comments.PageSize">@i</a>
+                                                </li>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (currentPage > maxPagesToShow + 1)
+                                            {
+                                                <li class="page-item">
+                                                    <a class="page-link" asp-action="Detail" asp-route-page="1"
+                                                       asp-route-pageSize="@Model.Comments.PageSize">1</a>
+                                                </li>
+                                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                                            }
+
+                                            int startPage = Math.Max(1, currentPage - maxPagesToShow / 2);
+                                            int endPage = Math.Min(totalPages, startPage + maxPagesToShow - 1);
+
+                                            if (endPage == totalPages)
+                                            {
+                                                startPage = Math.Max(1, totalPages - maxPagesToShow + 1);
+                                            }
+
+                                            for (int i = startPage; i <= endPage; i++)
+                                            {
+                                                <li class="page-item @(i == currentPage ? "active" : "")">
+                                                    <a class="page-link" asp-action="Detail" asp-route-page="@i"
+                                                       asp-route-pageSize="@Model.Comments.PageSize">@i</a>
+                                                </li>
+                                            }
+
+                                            if (currentPage < totalPages - maxPagesToShow)
+                                            {
+                                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                                                <li class="page-item">
+                                                    <a class="page-link" asp-action="Detail" asp-route-page="@totalPages"
+                                                       asp-route-pageSize="@Model.Comments.PageSize">@totalPages</a>
+                                                </li>
+                                            }
+                                        }
+
+                                        @if (Model.Comments.HasNextPage)
+                                        {
+                                            <li class="page-item">
+                                                <a class="page-link" asp-action="Detail" asp-route-page="@(currentPage + 1)"
+                                                   asp-route-pageSize="@Model.Comments.PageSize" aria-label="Next">
+                                                    <span aria-hidden="true">&raquo;</span>
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </nav>
+
+                            </div>
                         </div>
                         @{
                             foreach (var c in Model.Comments.Items.Where(c => c.IsHidden == false))
