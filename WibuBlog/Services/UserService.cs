@@ -51,14 +51,13 @@ namespace WibuBlog.Services
 
         public async Task<UpdateUserDto> UpdateUserAsync(UpdateUserVM updateUserVM)
         {
-            UpdateUserDto editUserDto = new UpdateUserDto()
+            UpdateUserDto updateUserDto = new UpdateUserDto()
             {
                userId = updateUserVM.userId,
                bio = updateUserVM.bio,
-               phone = updateUserVM.phone,
-               password = updateUserVM.password,
+               phone = updateUserVM.phone
             };
-            var response = await _apiService.PutAsync<ApiResponse<UpdateUserDto>>($"User/UpdateUser/", editUserDto);
+            var response = await _apiService.PutAsync<ApiResponse<UpdateUserDto>>($"User/UpdateUser/", updateUserDto);
             return response.Value!;
         }
     }
