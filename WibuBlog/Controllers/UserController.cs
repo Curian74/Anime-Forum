@@ -4,10 +4,11 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using WibuBlog.ViewModels.Users;
+using Application.Common.MessageOperations;
 
 namespace WibuBlog.Controllers
 {
-   // [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
+    [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     public class UserController(UserService userService) : Controller
     {
         private readonly UserService _userService = userService;
@@ -21,7 +22,7 @@ namespace WibuBlog.Controllers
         public async Task<IActionResult> UserProfile()
         {
             var result = await _userService.GetUserProfile();
-            if (result == null)
+            if (result is null)
             {
                 return NotFound();
             }
@@ -35,18 +36,15 @@ namespace WibuBlog.Controllers
             var result = await _userService.GetPagedUsersAsync(page, pageSize);
             return View(result);
         }
-        [HttpPost]
-        public async Task<IActionResult> UpdateUser(EditUserVM editUserVM)
+
+        public async Task<IActionResult> UpdateUser(UpdateUserVM updateUserVM)
         {
-            if (!ModelState.IsValid) {
-               RedirectToAction(nameof(UserProfile));
+            if (ModelState.IsValid)
+            {
+                RedirectToAction(nameof(UserProfile));
             }
-            var user = await _userService.UpdateUserAsync(editUserVM);
-        
+            var user = await _userService.UpdateUserAsync(updateUserVM);
             return RedirectToAction(nameof(UserProfile));
         }
-
-
-
     }
 }

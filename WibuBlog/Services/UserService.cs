@@ -1,6 +1,9 @@
 ﻿using Application.Common.Pagination;
 using Application.DTO;
 using Domain.Entities;
+using Infrastructure.Configurations;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using WibuBlog.Common.ApiResponse;
 using WibuBlog.Interfaces.Api;
@@ -8,11 +11,18 @@ using WibuBlog.ViewModels.Users;
 
 namespace WibuBlog.Services
 {
-    public class UserService(IApiService apiService)
+    public class UserService(IApiService apiService, IOptions<AuthTokenOptions> authTokenOptions, IHttpContextAccessor httpContextAccessor)
     {
         private readonly IApiService _apiService = apiService;
+        private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         public async Task<UserProfileDto> GetUserProfile()
         {
+            var token = _httpContextAccessor.HttpContext?.Request.Cookies[_authTokenOptions.Name];
+            if (string.IsNullOrEmpty(token))
+            {
+                return null; 
+            }
             var response = await _apiService.GetAsync<ApiResponse<UserProfileDto>>($"User/GetAccountDetails/");
             return response.Value!;
         }
@@ -39,17 +49,17 @@ namespace WibuBlog.Services
             return response.Value!;
         }
 
-        public async Task<EditUserDto> UpdateUserAsync(EditUserVM targetEditUserVM)
+        public async Task<UpdateUserDto> UpdateUserAsync(UpdateUserVM updateUserVM)
         {
-            EditUserDto editUserDto = new EditUserDto()
+            UpdateUserDto editUserDto = new UpdateUserDto()
             {
-                userId = targetEditUserVM.userId,
-                field = targetEditUserVM.field,
-                value = targetEditUserVM.value,
+               userId = updateUserVM.userId,
+               bio = updateUserVM.bio,
+               phone = updateUserVM.phone,
+               password = updateUserVM.password,
             };
-            var response = await _apiService.PutAsync<ApiResponse<EditUserDto>>($"User/EditUser/",editUserDto);
+            var response = await _apiService.PutAsync<ApiResponse<UpdateUserDto>>($"User/UpdateUser/", editUserDto);
             return response.Value!;
         }
-
     }
 }

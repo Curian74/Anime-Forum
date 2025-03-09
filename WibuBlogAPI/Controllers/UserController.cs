@@ -18,6 +18,7 @@ namespace WibuBlogAPI.Controllers
     {
         private readonly UserService _userService = userService;
 
+
         [HttpGet]
         public async Task<IActionResult> GetAccountDetails()
         {
@@ -71,6 +72,21 @@ namespace WibuBlogAPI.Controllers
         {
             var result = await _userService.GetPagedUsersAsync(page, size);
             return new JsonResult(Ok(result));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateUserAsync(UpdateUserDto updateUserDTO)
+        {
+            try
+            {
+                await _userService.UpdateUser(updateUserDTO);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new JsonResult(NotFound($"{ex.GetType().Name}: {ex.Message}"));
+            }
+
+            return new JsonResult(Accepted(updateUserDTO));
         }
     }
 }

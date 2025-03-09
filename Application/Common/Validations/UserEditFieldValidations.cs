@@ -15,7 +15,7 @@ namespace Application.Common.Validations
         private readonly HashSet<string> allowedFieldsForUser = new HashSet<string> { "Bio", "PhoneNumber", "Password" };
         private readonly HashSet<string> allowedFieldsForAdmin = new HashSet<string> { "Status", "Role" };
 
-        public bool IsAllowed(EditUserDto targetUser,string role, Guid currentUserId)
+        public bool IsAllowed(UpdateUserDto targetUser,string role, Guid currentUserId)
         {
             if (role.Equals("Member") && allowedFieldsForUser.Contains(targetUser.field) && currentUserId == targetUser.userId)
             {

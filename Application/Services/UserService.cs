@@ -92,20 +92,11 @@ namespace Application.Services
             return new PagedResult<User>(items, totalCount, page, size);
         }
 
-        public async Task UpdateByFieldAsync(EditUserDto targetEditUser, Guid currrentUserId)
-        {          
-            var targetUser = await _userGenericRepository.GetByIdAsync(targetEditUser.userId);
-            var currentUser = await _userGenericRepository.GetByIdAsync(currrentUserId);
-            var currentRole = (await _userManager.GetRolesAsync(currentUser)).FirstOrDefault().ToString();        
-            if (_userEditFieldValidations.IsAllowed(targetEditUser,currentRole,currentUser.Id))
-            {
-                PropertyInfo property = targetUser.GetType().GetProperty(targetEditUser.field);
-                if (property == null || !property.CanWrite) throw new ArgumentException($"Field '{targetEditUser.field}' does not exist or cannot be written.");
-                object convertedValue = Convert.ChangeType(targetEditUser.value, property.PropertyType);
-                property.SetValue(targetUser, convertedValue);
-                await _userGenericRepository.UpdateAsync(targetUser);
-                await _unitOfWork.SaveChangesAsync();
-            }
+        public async Task<int> UpdateUser(UpdateUserDto userUpdateDTO)
+        {
+            var updateUser = _userGenericRepository.GetByIdAsync(userUpdateDTO.userId);
+            _mapper.Map(userUpdateDTO,updateUser);          
+            return await _unitOfWork.SaveChangesAsync();
         }
 
     }
