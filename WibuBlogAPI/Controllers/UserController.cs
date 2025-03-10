@@ -5,7 +5,6 @@ using System.Security.Claims;
 using Infrastructure.External;
 using Application.Interfaces.Email;
 using Domain.Entities;
-using Application.Common.Validations;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -75,12 +74,12 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateUserAsync(UpdateUserDto updateUserDTO)
+        public async Task<IActionResult> UpdateUserAsync([FromBody]UpdateUserDto updateUserDTO)
         {
             try
             {
-                var currentUserId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-                if (currentUserId == updateUserDTO.userId) await _userService.UpdateUser(updateUserDTO);
+                var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (currentUserId == updateUserDTO.Id.ToString()) await _userService.UpdateUser(updateUserDTO);
             }
             catch (KeyNotFoundException ex)
             {

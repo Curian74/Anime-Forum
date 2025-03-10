@@ -6,16 +6,14 @@ using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Application.Interfaces.Email;
 using System.Reflection;
-using Application.Common.Validations;
 namespace Application.Services
 {
-    public class UserService(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork, UserEditFieldValidations userEditFieldValidations)
+    public class UserService(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork)
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly UserManager<User> _userManager = userManager;
         private readonly IMapper _mapper = mapper;
         private readonly IGenericRepository<User> _userGenericRepository = unitOfWork.GetRepository<User>();
-        private readonly UserEditFieldValidations _userEditFieldValidations = userEditFieldValidations;
 
         public async Task<User?> FindByLoginAsync(LoginDto dto)
         {
@@ -94,7 +92,7 @@ namespace Application.Services
 
         public async Task<int> UpdateUser(UpdateUserDto userUpdateDTO)
         {
-            var updateUser = _userGenericRepository.GetByIdAsync(userUpdateDTO.userId);
+            var updateUser = await _userManager.FindByIdAsync(userUpdateDTO.Id.ToString());
             _mapper.Map(userUpdateDTO,updateUser);          
             return await _unitOfWork.SaveChangesAsync();
         }

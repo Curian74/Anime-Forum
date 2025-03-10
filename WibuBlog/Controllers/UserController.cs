@@ -41,7 +41,7 @@ namespace WibuBlog.Controllers
         {
             if (ModelState.IsValid)
             {
-                RedirectToAction(nameof(UserProfile));
+                return RedirectToAction(nameof(UserProfile));
             }
             var user = await _userService.UpdateUserAsync(updateUserVM);
             return RedirectToAction(nameof(UserProfile));

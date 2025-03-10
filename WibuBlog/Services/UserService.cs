@@ -53,9 +53,9 @@ namespace WibuBlog.Services
         {
             UpdateUserDto updateUserDto = new UpdateUserDto()
             {
-               userId = updateUserVM.userId,
-               bio = updateUserVM.bio,
-               phone = updateUserVM.phone
+               Id = updateUserVM.userId,
+               Bio = updateUserVM.bio,
+               PhoneNumber = updateUserVM.phone
             };
             var response = await _apiService.PutAsync<ApiResponse<UpdateUserDto>>($"User/UpdateUser/", updateUserDto);
             return response.Value!;
