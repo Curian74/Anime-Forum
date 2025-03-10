@@ -3,6 +3,7 @@ using Application.Services;
 using Application.DTO;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using static Domain.ValueObjects.Enums.TicketStatusEnum;
 
 namespace WibuBlogAPI.Controllers
 {
@@ -53,6 +54,15 @@ namespace WibuBlogAPI.Controllers
             if (ticket == null)
                 return NotFound("Ticket not found");
 
+            // Check if ticket is closed and if the requester is not the creator
+            var userId = GetUserId();
+            if (ticket.Status == TicketStatus.Closed &&
+                userId != ticket.UserId &&
+                !User.IsInRole("Admin")) // Assuming you have a way to check for admin role
+            {
+                return Forbid("Closed tickets can only be viewed by their creators");
+            }
+
             return new JsonResult(Ok(ticket));
         }
 
@@ -76,11 +86,12 @@ namespace WibuBlogAPI.Controllers
         [HttpGet("AllTickets")]
         public async Task<IActionResult> GetAllTickets()
         {
-            var (tickets, count) = await _ticketService.GetAllTicketsAsync();
-            return Ok(new { tickets, count });
+            var (allTickets, count) = await _ticketService.GetAllTicketsAsync();
+
+            var tickets = allTickets.Where(t => t.Status != TicketStatus.Closed).ToList();
+
+            return Ok(new { tickets, count = tickets.Count });
         }
-
-
 
         [Authorize(AuthenticationSchemes = "Bearer", Policy = "AdminPolicy")]
         [HttpPut("Approve/{ticketId}")]
@@ -89,6 +100,24 @@ namespace WibuBlogAPI.Controllers
             var result = await _ticketService.ApproveTicketAsync(ticketId, dto.Approval, dto.Note);
             if (result == 0) return NotFound("Ticket not found");
             return Ok("Ticket approved");
+        }
+
+        [HttpPut("Close/{ticketId}")]
+        public async Task<IActionResult> CloseTicket(Guid ticketId)
+        {
+            var userId = GetUserId();
+            if (userId == null) return Unauthorized("Invalid user ID");
+
+            var ticket = await _ticketService.GetTicketByIdAsync(ticketId);
+            if (ticket == null) return NotFound("Ticket not found");
+
+            if (ticket.UserId != userId.Value)
+                return Forbid("Only the ticket creator can close this ticket");
+
+            var result = await _ticketService.CloseTicketAsync(ticketId);
+            if (result == 0) return NotFound("Ticket not found");
+
+            return Ok("Ticket closed successfully");
         }
     }
 

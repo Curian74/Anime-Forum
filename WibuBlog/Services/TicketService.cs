@@ -54,9 +54,8 @@ namespace WibuBlog.Services
                     Content = model.Content,
                     Email = model.Email,
                     Tag = model.Tag,
-                    IsApproved = model.IsApproved
+                    Status = model.Status
                 };
-                // Change this line to match your API endpoint structure
                 var response = await _apiService.PutAsync<ApiResponse<bool>>($"Ticket/UpdateTicket/{id}", updateDto);
                 Console.WriteLine($"API response: {response != null}");
                 return response != null && response.Value;
@@ -66,6 +65,11 @@ namespace WibuBlog.Services
                 Console.WriteLine($"Error updating ticket: {ex.Message}");
                 return false;
             }
+        }
+        public async Task<bool> CloseTicketAsync(Guid id)
+        {
+            var response = await _apiService.PutAsync<ApiResponse<bool>>($"Ticket/CloseTicket/Close/{id}", null);
+            return response != null && response.Value;
         }
 
         public async Task<bool> DeleteTicketAsync<T>(T id)
