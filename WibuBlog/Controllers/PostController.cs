@@ -40,7 +40,7 @@ namespace WibuBlog.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> NewPosts([FromQuery] QueryObject queryObject, Guid? postCategoryId)
         {
-            var postList = await _postService.GetAllPostAsync("", "", false);
+            var postList = await _postService.GetAllPostAsync("isHidden", "false", false); //Active posts
 
             var filteredPosts = postCategoryId.HasValue
                 ? postList.Where(x => x.PostCategoryId == postCategoryId)
@@ -73,7 +73,8 @@ namespace WibuBlog.Controllers
         public async Task<IActionResult> Detail(Guid id, int page = 1, int pageSize = 10)
         {
             var post = await _postService.GetPostByIdAsync(id);
-            if (post == null)
+
+            if (post == null || post.IsHidden) //post ma inactive hoac k tim thay thi cut ve NotFound
             {
                 return NotFound();
             }
@@ -203,7 +204,7 @@ namespace WibuBlog.Controllers
                 TempData["successMessage"] = "Post edited successfully.";
             }
 
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 TempData["errorMessage"] = $"Failed to edit post. Error: {ex.Message}";
             }
