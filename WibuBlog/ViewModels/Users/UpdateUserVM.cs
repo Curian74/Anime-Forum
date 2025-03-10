@@ -2,8 +2,8 @@
 {
     public class UpdateUserVM 
     {
-        public Guid userId { get; set; }
-        public string bio {  get; set; }
-        public string phone { get; set; }
+        public Guid UserId { get; set; }
+        public string Bio {  get; set; }
+        public string Phone { get; set; }
     }
 }

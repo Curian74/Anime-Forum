@@ -73,7 +73,7 @@ namespace WibuBlogAPI.Controllers
             return new JsonResult(Ok(result));
         }
 
-        [HttpPost]
+        [HttpPut]
         public async Task<IActionResult> UpdateUserAsync([FromBody]UpdateUserDto updateUserDTO)
         {
             try

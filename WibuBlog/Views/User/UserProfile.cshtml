@@ -111,7 +111,7 @@
 				</div>
 				<hr>				
 				<div class="info-item d-flex justify-content-between align-items-center">
-					<span><strong>Name:</strong> <span id="bioDisplay">@Model.Bio</span></span>
+					<span><strong>Bio:</strong> <span id="bioDisplay">@Model.Bio</span></span>
 					<button onclick="openEditModal('@Model.Bio', 'Bio', 'bio')"
 						class="btn btn-light btn-sm edit-btn">Edit</button>
 				</div>
@@ -126,7 +126,7 @@
 				</div>
 				<hr>	
 				<form asp-controller="User" asp-action="UpdateUser" method="post">
-					<input type="hidden" name="userId" value="@currentUserId" />
+					<input type="hidden" name="UserId" value="@currentUserId" />
 					<input type="hidden" id="bioInput" name="Bio" value="@Model.Bio" />
 					<input type="hidden" id="phoneInput" name="Phone" value="@Model.PhoneNumber" />
 					<button type="submit" class="btn btn-primary">Save Changes</button>
@@ -162,7 +162,7 @@
 						<label for="editInput" class="form-label" id="editLabel">Edit Value</label>
 						<input type="text" class="form-control" id="editInput" name="value">
 					</div>
-					<button id="editDoneBtn" class="btn btn-primary">Done</button>
+					<button id="saveEditButton" class="btn btn-primary">Done</button>
 
 				</div>
 			</div>
@@ -198,7 +198,7 @@
 		<p>Title: </p>
 	</div>
 	</div>
-	<script src="/js/userProfile.js"></script>
+	<script src="/js/profile.js"></script>
 </body>
 
 </html>

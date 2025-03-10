@@ -37,13 +37,16 @@ namespace WibuBlog.Controllers
             return View(result);
         }
 
-        public async Task<IActionResult> UpdateUser(UpdateUserVM updateUserVM)
+        [HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> UpdateUser(UpdateUserVM updateUserVM)
         {
-            if (ModelState.IsValid)
+			if (!ModelState.IsValid)
             {
                 return RedirectToAction(nameof(UserProfile));
             }
-            var user = await _userService.UpdateUserAsync(updateUserVM);
+			
+			var user = await _userService.UpdateUserAsync(updateUserVM);
             return RedirectToAction(nameof(UserProfile));
         }
     }
