@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Application.DTO.Post;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -128,6 +129,22 @@ namespace WibuBlogAPI.Controllers
             await _postService.DeletePostWhereAsync(filter);
 
             return new JsonResult(NoContent());
+        }
+
+        [HttpPut("{postId}")]
+        public async Task<IActionResult> Deactivate(Guid postId, DeactivatePostDto dto)
+        {
+            try
+            {
+                await _postService.DeactivatePostAsync(postId, dto);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new JsonResult(NotFound($"{ex.GetType().Name}: {ex.Message}"));
+            }
+
+            return new JsonResult(Accepted());
+
         }
     }
 }

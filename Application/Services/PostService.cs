@@ -1,5 +1,6 @@
 ﻿using Application.Common.Pagination;
 using Application.DTO;
+using Application.DTO.Post;
 using Application.Interfaces.Pagination;
 using AutoMapper;
 using Domain.Entities;
@@ -73,6 +74,15 @@ namespace Application.Services
         public async Task<int> DeletePostWhereAsync(Expression<Func<Post, bool>> filter)
         {
             await _postRepository.DeleteWhereAsync(filter);
+            return await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task<int> DeactivatePostAsync(Guid postId, DeactivatePostDto dto)
+        {
+            var post = await _postRepository.GetByIdAsync(postId) ?? throw new KeyNotFoundException("Could not find requested post.");
+
+            post.IsHidden = dto.IsHidden;
+
             return await _unitOfWork.SaveChangesAsync();
         }
     }
