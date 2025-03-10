@@ -6,10 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using WibuBlog.Helpers;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.IdentityModel.Tokens;
-using System.Linq;
 using Application.Common.Pagination;
-using System.Threading.Tasks;
 
 namespace WibuBlog.Controllers
 {
@@ -43,7 +40,7 @@ namespace WibuBlog.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> NewPosts([FromQuery] QueryObject queryObject, Guid? postCategoryId)
         {
-            var postList = await _postService.GetAllPostAsync("", "", false);
+            var postList = await _postService.GetAllPostAsync("isHidden", "false", false); //Active posts
 
             var filteredPosts = postCategoryId.HasValue
                 ? postList.Where(x => x.PostCategoryId == postCategoryId)
@@ -73,35 +70,36 @@ namespace WibuBlog.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> Detail(Guid id, int? page = 1, int? pageSize = 10)
+        public async Task<IActionResult> Detail(Guid id, int page = 1, int pageSize = 10)
         {
             var post = await _postService.GetPostByIdAsync(id);
+
+            if (post == null || post.IsHidden) //post ma inactive hoac k tim thay thi cut ve NotFound
+            {
+                return NotFound();
+            }
+
             var comments = await _commentService
                 .GetPagedComments(page, pageSize, "postId", id.ToString(), "createdAt", true);
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             User? user = null;
-            PostDetailVM postDetailVM;
 
-            if (userId != null)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!string.IsNullOrEmpty(userId))
             {
                 user = await _userService.GetUserById(Guid.Parse(userId));
             }
 
-            postDetailVM = new PostDetailVM
+            var postDetailVM = new PostDetailVM
             {
                 Comments = comments,
                 Post = post,
                 User = user,
             };
 
-            if (post is null)
-            {
-                return NotFound();
-            }
-
             return View(postDetailVM);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> Create()
@@ -152,9 +150,65 @@ namespace WibuBlog.Controllers
 
             catch (Exception ex)
             {
-                TempData["successMessage"] = $"Failed to create post. Error: {ex.Message}";
+                TempData["errorMessage"] = $"Failed to create post. Error: {ex.Message}";
                 return View(createPostVM);
             }
+        }
+
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var post = await _postService.GetPostByIdAsync(id);
+
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            var postCategories = await _postCategoryService.GetAllCategories("isRestricted", "false", false);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User? user = null;
+
+            if (userId != null)
+            {
+                user = await _userService.GetUserById(Guid.Parse(userId));
+            }
+
+            var data = new EditPostVM
+            {
+                CategoryList = postCategories.OrderBy(p => p.Name).Select(p => new SelectListItem
+                {
+                    Text = p.Name,
+                    Value = p.Id.ToString()
+                }).ToList(),
+                User = user,
+                Content = post.Content,
+                Title = post.Title,
+                PostId = post.Id,
+                PostCategoryId = post.PostCategoryId,
+            };
+
+            return View(data);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditPostVM editPostVM)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(editPostVM);
+            }
+            try
+            {
+                await _postService.EditPostAsync(editPostVM.PostId, editPostVM);
+                TempData["successMessage"] = "Post edited successfully.";
+            }
+
+            catch (Exception ex)
+            {
+                TempData["errorMessage"] = $"Failed to edit post. Error: {ex.Message}";
+            }
+            return RedirectToAction(nameof(Edit));
         }
 
         #region TestRoutes

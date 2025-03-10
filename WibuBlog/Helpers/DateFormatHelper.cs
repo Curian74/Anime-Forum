@@ -22,7 +22,7 @@
 
             else if(timeDifference.TotalDays >= 3)
             {
-                timeAgo = date.ToString();
+                timeAgo = $"{date.Month}/{date.Day}/{date.Year}";
             }
 
             else

@@ -47,6 +47,12 @@ namespace WibuBlog.Services
             return response != null;
         }
 
+        public async Task<Post> EditPostAsync<T>(T id, EditPostVM data)
+        {
+            var response = await _apiService.PutAsync<ApiResponse<Post>>($"Post/Update/{id}", data);
+            return response.Value!;
+        }
+
         public async Task<Post> UpdatePostAsync<T>(T id, Post data)
         {
             var response = await _apiService.PutAsync<ApiResponse<Post>>($"Post/Update/{id}", data);
