@@ -1,5 +1,4 @@
-﻿using Application.Common.Pagination;
-using Application.DTO;
+﻿using Application.DTO;
 using Domain.Entities;
 using WibuBlog.Common.ApiResponse;
 using WibuBlog.Interfaces.Api;
@@ -11,11 +10,35 @@ namespace WibuBlog.Services
     {
         private readonly IApiService _apiService = apiService;
 
-        public async Task<PagedResult<Ticket>> GetPagedTicketAsync(int? page, int? pageSize)
+        public async Task<List<Ticket>> GetUserTicketsAsync(Guid userId)
         {
-            var response = await _apiService.GetAsync<ApiResponse<PagedResult<Ticket>>>(
-                $"Ticket/GetPaged?page={page}&size={pageSize}");
-            return response.Value!;
+            try
+            {
+                var response = await _apiService.GetAsync<ApiResponse<object>>("Ticket/GetUserTickets/UserTickets");
+                // Check if we got a response
+                if (response?.Value == null)
+                    return new List<Ticket>();
+
+                // Try to extract the tickets property using reflection
+                var valueType = response.Value.GetType();
+                var ticketsProp = valueType.GetProperty("tickets");
+
+                if (ticketsProp != null)
+                {
+                    var ticketsObj = ticketsProp.GetValue(response.Value);
+                    if (ticketsObj is List<Ticket> tickets)
+                        return tickets;
+                }
+
+                // If we couldn't extract tickets property, log an error
+                Console.WriteLine("Could not extract tickets from API response");
+                return new List<Ticket>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetUserTicketsAsync: {ex.Message}");
+                return new List<Ticket>();
+            }
         }
 
         public async Task<Ticket> GetTicketByIdAsync<T>(T id)
@@ -24,11 +47,7 @@ namespace WibuBlog.Services
             {
                 var guidId = Guid.Parse(id.ToString());
                 var response = await _apiService.GetAsync<ApiResponse<Ticket>>($"Ticket/GetTicketDetail/{guidId}");
-                if (response != null)
-                {
-                    return response.Value;
-                }
-                return null;
+                return response?.Value;
             }
             catch (HttpRequestException)
             {
@@ -36,11 +55,9 @@ namespace WibuBlog.Services
             }
         }
 
-
         public async Task<bool> AddNewTicketAsync(AddTicketVM data)
         {
             var response = await _apiService.PostAsync<ApiResponse<Ticket>>("Ticket/CreateTicket", data);
-            Console.WriteLine(response.Value);
             return response != null;
         }
 
@@ -57,15 +74,14 @@ namespace WibuBlog.Services
                     Status = model.Status
                 };
                 var response = await _apiService.PutAsync<ApiResponse<bool>>($"Ticket/UpdateTicket/{id}", updateDto);
-                Console.WriteLine($"API response: {response != null}");
                 return response != null && response.Value;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine($"Error updating ticket: {ex.Message}");
                 return false;
             }
         }
+
         public async Task<bool> CloseTicketAsync(Guid id)
         {
             var response = await _apiService.PutAsync<ApiResponse<bool>>($"Ticket/CloseTicket/Close/{id}", null);

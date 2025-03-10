@@ -4,6 +4,7 @@ using WibuBlog.ViewModels.Ticket;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace WibuBlog.Controllers
 {
@@ -12,17 +13,23 @@ namespace WibuBlog.Controllers
     {
         private readonly TicketService _ticketService = ticketService;
 
-        public async Task<IActionResult> Index(int? page = 1, int? pageSize = 5)
+        public async Task<IActionResult> Index()
         {
-            var value = await _ticketService.GetPagedTicketAsync(page, pageSize);
-            return View("Index", value);
+            return View("Index");
         }
 
-        public async Task<IActionResult> NewTickets(int? page = 1, int? pageSize = 10)
+        public async Task<IActionResult> NewTickets()
         {
-            var value = await _ticketService.GetPagedTicketAsync(page, pageSize);
-            return View(value);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized("Invalid user ID");
+            }
+
+            var tickets = await _ticketService.GetUserTicketsAsync(userId);
+            return View(tickets);
         }
+
 
         [HttpGet]
         public IActionResult Add()
@@ -130,7 +137,6 @@ namespace WibuBlog.Controllers
 
                 var ticket = await _ticketService.GetTicketByIdAsync(id);
 
-                // Ensure only creator can close the ticket
                 if (ticket.UserId.ToString() != userId)
                 {
                     TempData["ErrorMessage"] = "You can only close tickets you created.";

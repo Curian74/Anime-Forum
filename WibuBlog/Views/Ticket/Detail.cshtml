@@ -4,7 +4,6 @@
 
 <link rel="stylesheet" href="~/richtexteditor/rte_theme_default.css" />
 @{
-    // Get the current user's ID
     var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     var isCreator = !string.IsNullOrEmpty(currentUserId) && Model.UserId.ToString() == currentUserId;
 }
@@ -19,8 +18,8 @@
             <div class="mb-4">
                 <strong>Status:</strong>
                 <span class="badge @(Model.Status == TicketStatusEnum.TicketStatus.Approved ? "bg-success" :
-    Model.Status == TicketStatusEnum.TicketStatus.Rejected ? "bg-danger" :
-    Model.Status == TicketStatusEnum.TicketStatus.Closed ? "bg-secondary" : "bg-warning text-dark")">
+                        Model.Status == TicketStatusEnum.TicketStatus.Rejected ? "bg-danger" :
+                         Model.Status == TicketStatusEnum.TicketStatus.Closed ? "bg-secondary" : "bg-warning text-dark")">
                     @(Model.Status == TicketStatusEnum.TicketStatus.Approved ? "Approved" :
                         Model.Status == TicketStatusEnum.TicketStatus.Rejected ? "Rejected" :
                         Model.Status == TicketStatusEnum.TicketStatus.Closed ? "Closed" : "Pending")

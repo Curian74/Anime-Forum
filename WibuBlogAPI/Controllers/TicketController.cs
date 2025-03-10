@@ -54,11 +54,10 @@ namespace WibuBlogAPI.Controllers
             if (ticket == null)
                 return NotFound("Ticket not found");
 
-            // Check if ticket is closed and if the requester is not the creator
             var userId = GetUserId();
             if (ticket.Status == TicketStatus.Closed &&
                 userId != ticket.UserId &&
-                !User.IsInRole("Admin")) // Assuming you have a way to check for admin role
+                !User.IsInRole("Admin")) 
             {
                 return Forbid("Closed tickets can only be viewed by their creators");
             }

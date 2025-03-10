@@ -1,0 +1,31 @@
+﻿@model WibuBlog.ViewModels.Ticket.TicketDetailVM
+
+<h2>New Tickets</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Ticket ID</th>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Created At</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ticket in Model)
+        {
+            <tr>
+                <td>@ticket.Id</td>
+                <td>@ticket.Title</td>
+                <td>@ticket.Status</td>
+                <td>@ticket.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@ticket.Id" class="btn btn-info">View</a>
+                    <a asp-action="Edit" asp-route-id="@ticket.Id" class="btn btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@ticket.Id" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
