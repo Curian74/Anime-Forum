@@ -1,4 +1,6 @@
-﻿@model WibuBlog.ViewModels.Post.CreatePostVM
+﻿@using WibuBlog.ViewModels.Post
+@model EditPostVM
+
 <link rel="stylesheet" href="~/css/createPost.css" />
 <link rel="stylesheet" href="~/fontawesome/css/all.css" />
 <link rel="stylesheet" href="~/richtexteditor/rte_theme_default.css" />
@@ -6,9 +8,9 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.all.min.js"></script>
 
 <main class="d-flex flex-column">
-    <h1 class="title">Create post</h1>
+    <h1 class="title">Edit post</h1>
     <section class="post-detail rounded-3">
-        <form asp-action="Create" method="post">
+        <form asp-action="Edit" method="post">
             @if (TempData["successMessage"] != null)
             {
                 <script>
@@ -32,19 +34,22 @@
                     });
                 </script>
             }
-
             <input type="hidden" value="@Model.User?.Id" name="userId" />
+            <input type="hidden" value="@Model.PostId" name="PostId" />
+            <input type="hidden" value="@Model.PostCategoryId" name="PostCategoryId" />
+            <input type="hidden" value="@Model.Title" name="Title" />
             <div class="p-2">
                 <textarea asp-for="@Model.Title"
                           class="title-input pt-1 pb-1 w-100 border-1 rounded-3 fs-3"
                           placeholder="Post title"
+                          disabled
                           maxlength="255"
                           rows="1"></textarea>
                 <span class="text-danger" asp-validation-for="@Model.Title"></span>
             </div>
 
             <div class="p-2">
-                <select asp-for="@Model.PostCategoryId" asp-items="@Model.CategoryList" id="category" class="form-select w-25">
+                <select disabled asp-for="@Model.PostCategoryId" asp-items="@Model.CategoryList" id="category" class="form-select w-25">
                     <option value="">-- Select a category --</option>
                 </select>
                 <span class="text-danger" asp-validation-for="@Model.PostCategoryId"></span>
@@ -57,22 +62,25 @@
 
             <div class="d-flex justify-content-end pb-3 pt-3 gap-2 me-3">
                 <button type="submit" class="create-post btn mt-1 pt-1 pb-1">
-                    <i class="fa-regular fa-pen-to-square"></i> Post
+                    <i class="fa-regular fa-pen-to-square"></i> Save
                 </button>
-                <button type="button" class="btn btn-secondary mt-1 pt-1 pb-1" onclick="window.history.back();">
+
+                <button type="button" onclick="confirmReset('{@Model.PostId}')" class="btn btn-success btn mt-1 pt-1 pb-1">
+                    Reset
+                </button>
+
+                <a asp-action="Detail" asp-route-id="@Model.PostId" class="btn btn-secondary mt-1 pt-1 pb-1">
                     Cancel
-                </button>
+                </a>
             </div>
-
-
         </form>
-
     </section>
 </main>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial"></partial>
     <partial name="_RichTextEditorInit"></partial>
+    <script src="~/js/editPost.js"></script>
     <script type="text/javascript">
         var editor = new RichTextEditor("#content", configs);
     </script>

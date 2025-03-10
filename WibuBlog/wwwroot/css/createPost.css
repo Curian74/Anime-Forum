@@ -17,9 +17,12 @@ a {
 }
 
 .title-input {
-    border: 1px solid #b0b3b8; 
+    border: 1px solid #b0b3b8;
     padding: 8px;
     transition: all 0.3s ease-in-out;
+    resize: none;
+    min-height: calc(1.5em + 0.75rem + 2px);
+    line-height: 1.5;
 }
 
 .title-input:focus {

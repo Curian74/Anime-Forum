@@ -5,11 +5,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WibuBlog.ViewModels.Post
 {
-    public class CreatePostVM
+    public class EditPostVM
     {
+        public Guid PostId { get; set; }
         public List<SelectListItem>? CategoryList { get; set; }
         [Required(ErrorMessage = "Please select a category.")]
-        public Guid PostCategoryId { get; set; }
+        public Guid? PostCategoryId { get; set; }
+        public Guid? UserId { get; set; }
         public User? User { get; set; }
 
         [Required]

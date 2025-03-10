@@ -5,6 +5,12 @@
 <link rel="stylesheet" href="~/css/newPosts.css" />
 <link rel="stylesheet" href="~/fontawesome/css/all.css" />
 
+@* C# codes *@
+
+@{
+    var stringLength = 80;
+}
+
 <div class="d-flex flex-column">
     <div class="d-flex justify-content-between">
         <h1 class="title">New posts</h1>
@@ -47,7 +53,7 @@
                                     @{
                                         var latestTime = DateFormatHelper.GetDateFormat(post.CreatedAt);
                                     }
-                                    <a class="post-title" asp-action="Detail" asp-route-id="@post.Id">@post.Title</a>
+                                    <a class="post-title" asp-action="Detail" asp-route-id="@post.Id">@TruncateStringHelper.Truncate(@post.Title, stringLength)</a>
                                     <p class="post-info">
                                         <a class="post-author" href="#">@post.User?.UserName - </a>
                                         <a class="post-date" href="#">@latestTime - </a>
