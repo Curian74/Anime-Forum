@@ -35,19 +35,16 @@ namespace WibuBlog.Controllers
             Console.WriteLine($"MVC Controller: PostId={addReportVM.PostId}, Reason={addReportVM.Reason}");
             if (!ModelState.IsValid || addReportVM.PostId == Guid.Empty)
             {
-                ModelState.AddModelError("PostId", "Invalid Post ID");
-                return View(addReportVM);
+                return Json(new { success = false });
             }
             try
             {
                 await _reportService.CreateReportAsync(addReportVM);
-                TempData["reportsuccessMessage"] = "Report created successfully.";
-                return RedirectToAction("Detail", "Post", new { id = addReportVM.PostId });
+                return Json(new { success = true, message = Application.Common.MessageOperations.MessageConstants.ME020 });
             }
             catch (Exception ex)
             {
-                TempData["reporterrorMessage"] = $"Failed to create report. Error: {ex.Message}";
-                return View(addReportVM);
+                return Json(new { success = false });
             }
         }
     }

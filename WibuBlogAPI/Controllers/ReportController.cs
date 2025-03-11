@@ -19,21 +19,19 @@ namespace WibuBlogAPI.Controllers
         public async Task<IActionResult> CreateReport([FromBody] CreateReportDto addReportDTO)
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-
             addReportDTO.UserId = userId;
             if (!ModelState.IsValid || addReportDTO.PostId == Guid.Empty)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new { success = false });
             }
-
             try
             {
                 await _reportService.CreateReportAsync(addReportDTO);
-                return Ok(new { message = "Report created successfully." });
+                return Ok(new { success = true, message = Application.Common.MessageOperations.MessageConstants.ME020 });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Failed to create report. Error: {ex.Message}" });
+                return StatusCode(500, new { success = false });
             }
         }
     }
