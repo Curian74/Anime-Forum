@@ -40,15 +40,15 @@
                                 {
                                     <li>
                                         <a asp-route-id="@Model.Post.Id"
-                                           class="dropdown-item" asp-action="Edit" asp-controller="Post">
+                                        class="dropdown-item" asp-action="Edit" asp-controller="Post">
                                             Edit
                                         </a>
                                     </li>
                                     <li><hr class="dropdown-divider border-top border-secondary"></li>
                                     <li>
                                         <a class="dropdown-item text-danger"
-                                           onclick="confirmDeletePost('@Model.Post.Id')"
-                                           style="color: red !important;">
+                                        onclick="confirmDeletePost('@Model.Post.Id')"
+                                        style="color: red !important;">
                                             Delete
                                         </a>
                                     </li>
@@ -84,7 +84,18 @@
 
             <!-- Comment Input -->
             @{
-                if (Model.User != null)
+
+                if(Model.User == null)
+                {
+                    <p class="mt-3 fst-italic text-danger">*@MessageConstants.ME029*</p>
+                }
+
+                else if (Model.Post.IsHidden)
+                {
+                    <p class="mt-3 fst-italic text-danger">*@MessageConstants.ME030*</p>
+                }
+
+                else
                 {
                     <div class="mt-3">
                         <button class="btn btn-success" id="toggle-btn">Add your comment</button>
@@ -101,11 +112,6 @@
                             </div>
                         </form>
                     </div>
-                }
-
-                else
-                {
-                    <p class="mt-3 fst-italic text-danger">*@MessageConstants.ME029*</p>
                 }
             }
 
