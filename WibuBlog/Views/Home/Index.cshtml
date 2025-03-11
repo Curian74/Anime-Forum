@@ -47,11 +47,11 @@
 
                                 @{
                                     var latestPost = Model.Posts?
+                                    .Where(p => !p.IsHidden)
                                     .Where(p => p.Category?.Name == c.Name)
                                     .OrderByDescending(p => p.CreatedAt)
                                     .FirstOrDefault();
                                 }
-
 
                                 @if (latestPost != null)
                                 {
@@ -94,11 +94,12 @@
                                         <p>Threads</p>
                                     </div>
                                     <div class="row-content-stat-p">
-                                        <p>@Model.Posts?.Where(p => p.Category?.Name == c.Name).Count()</p>
+                                        <p>@Model.Posts?.Where(p => !p.IsHidden).Where(p => p.Category?.Name == c.Name).Count()</p>
                                     </div>
                                 </div>
                                 @{
                                     var latestPost = Model.Posts?
+                                    .Where(p => !p.IsHidden)
                                     .Where(p => p.Category?.Name == c.Name)
                                     .OrderByDescending(p => p.CreatedAt)
                                     .FirstOrDefault();
@@ -138,6 +139,7 @@
                         var postSize = 5;
                         //Lay ra posts nhieu comments nhat trong 7 ngay tro lai day
                         foreach (var p in Model.Posts
+                            .Where(p => !p.IsHidden)
                             .Where(p => p.Category?.IsRestricted == false)
                             .Where(p => (DateTime.Now - p.CreatedAt).TotalDays <= 7)
                             .Take(postSize)
@@ -165,7 +167,9 @@
                 @{
                     if(Model?.RecentPosts?.Items != null && Model.RecentPosts.Items.Any())
                     {
-                        foreach (var p in Model.RecentPosts?.Items.Where(p => !p.Category.IsRestricted))
+                        foreach (var p in Model.RecentPosts?.Items?
+                            .Where(p => !p.IsHidden)
+                            .Where(p => !p.Category.IsRestricted))
                         {
                             var latestTime = DateFormatHelper.GetDateFormat(p.CreatedAt);
                             <div class="d-flex">

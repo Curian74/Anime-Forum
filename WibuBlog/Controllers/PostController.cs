@@ -74,7 +74,7 @@ namespace WibuBlog.Controllers
         {
             var post = await _postService.GetPostByIdAsync(id);
 
-            if (post == null || post.IsHidden) //post ma inactive hoac k tim thay thi cut ve NotFound
+            if (post == null)
             {
                 return NotFound();
             }
