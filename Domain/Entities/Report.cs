@@ -17,7 +17,6 @@ namespace Domain.Entities
 
         public string Note { get; set; } = string.Empty;
 
-        // Navigation properties
         public User User { get; set; } = null!;
 
         public Post Post { get; set; } = null!;

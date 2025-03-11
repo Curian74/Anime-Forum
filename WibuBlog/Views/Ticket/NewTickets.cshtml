@@ -1,31 +1,177 @@
-﻿@model WibuBlog.ViewModels.Ticket.TicketDetailVM
+﻿@model List<Domain.Entities.Ticket>
+@using Domain.ValueObjects.Enums
+@{
+    ViewData["Title"] = "My Tickets";
+}
 
-<h2>New Tickets</h2>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">My Support Tickets</h1>
+        <a href="@Url.Action("Add", "Ticket")" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> New Ticket
+        </a>
+    </div>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Ticket ID</th>
-            <th>Title</th>
-            <th>Status</th>
-            <th>Created At</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var ticket in Model)
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Tag</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Last Updated</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var ticket in Model)
+                            {
+                                <tr>
+                                    <td>@ticket.Id.ToString().Substring(0, 8)...</td>
+                                    <td>
+                                        <span class="badge @GetTagClass(ticket.Tag)">@ticket.Tag</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge @GetStatusClass(ticket.Status)">@ticket.Status</span>
+                                    </td>
+                                    <td>@ticket.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td>
+                                        @if (ticket.LastModifiedAt.HasValue)
+                                        {
+                                            @ticket.LastModifiedAt.Value.ToString("yyyy-MM-dd HH:mm")
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="@Url.Action("Detail", "Ticket", new { id = ticket.Id })" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i> View
+                                            </a>
+                                            @if (ticket.Status != TicketStatusEnum.TicketStatus.Closed)
+                                            {
+                                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#closeTicketModal"
+                                                        data-ticket-id="@ticket.Id">
+                                                    <i class="bi bi-x-circle"></i> Close
+                                                </button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-inbox fs-1 text-muted"></i>
+                    </div>
+                    <h4 class="text-muted">No tickets found</h4>
+                    <p class="text-muted">You haven't created any support tickets yet.</p>
+                    <a href="@Url.Action("Add", "Ticket")" class="btn btn-primary">
+                        Create your first ticket
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Close Ticket Modal -->
+<div class="modal fade" id="closeTicketModal" tabindex="-1" aria-labelledby="closeTicketModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="closeTicketModalLabel">Confirm Close Ticket</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to close this ticket? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="closeTicketForm" method="post" action="@Url.Action("Close", "Ticket")">
+                    <input type="hidden" id="ticketId" name="id" value="" />
+                    <button type="submit" class="btn btn-danger">Close Ticket</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const closeTicketModal = document.getElementById('closeTicketModal');
+            if (closeTicketModal) {
+                closeTicketModal.addEventListener('show.bs.modal', function(event) {
+                    const button = event.relatedTarget;
+                    const ticketId = button.getAttribute('data-ticket-id');
+                    document.getElementById('ticketId').value = ticketId;
+                });
+            }
+
+            // Auto-dismiss alerts after 5 seconds
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000);
+        });
+    </script>
+}
+
+@functions {
+    string GetStatusClass(TicketStatusEnum.TicketStatus status)
+    {
+        return status switch
         {
-            <tr>
-                <td>@ticket.Id</td>
-                <td>@ticket.Title</td>
-                <td>@ticket.Status</td>
-                <td>@ticket.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@ticket.Id" class="btn btn-info">View</a>
-                    <a asp-action="Edit" asp-route-id="@ticket.Id" class="btn btn-warning">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@ticket.Id" class="btn btn-danger">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+            TicketStatusEnum.TicketStatus.Pending => "bg-warning text-dark",
+            TicketStatusEnum.TicketStatus.Approved => "bg-success",
+            TicketStatusEnum.TicketStatus.Rejected => "bg-danger",
+            TicketStatusEnum.TicketStatus.Closed => "bg-secondary",
+            _ => "bg-light text-dark"
+        };
+    }
+
+    string GetTagClass(string tag)
+    {
+        return tag switch
+        {
+            "#BannedAccount" => "bg-danger",
+            "#HelpCreatePost" => "bg-info",
+            "#TechnicalIssue" => "bg-warning text-dark",
+            _ => "bg-light text-dark"
+        };
+    }
+}
