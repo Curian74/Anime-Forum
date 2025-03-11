@@ -41,11 +41,7 @@ namespace Application.Services
             }
 
             var existingVote = await _voteRepository.GetSingleWhereAsync(v => v.PostId == dto.PostId && v.UserId == userId);
-            var user = post.User;
-            if (user == null)
-            {
-                throw new InvalidOperationException("Post author not found.");
-            }
+            var user = post.User ?? throw new InvalidOperationException("Post author not found.");
 
             if (existingVote != null)
             {
