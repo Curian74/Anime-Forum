@@ -62,18 +62,18 @@ document.querySelector("#editModal .btn-primary").addEventListener("click", func
 	editModal.hide();
 });
 
-//document.querySelector("#editPasswordModal .btn-primary").addEventListener("click", function () {
-//	let oldPassword = document.getElementById("editInput").value;
-//	let newPassword = document.getElementById("editInput2").value;
-//	let confirmPassword = document.getElementById("editInput3").value;
+document.querySelector("#editPasswordModal .btn-primary").addEventListener("click", function () {
+	let oldPassword = document.getElementById("editInput").value;
+	let newPassword = document.getElementById("editInput2").value;
+	let confirmPassword = document.getElementById("editInput3").value;
 
-//	if (newPassword !== confirmPassword) {
-//		alert("New password and confirmation do not match!");
-//		return;
-//	}
-//	var editPasswordModal = bootstrap.Modal.getInstance(document.getElementById("editPasswordModal"));
-//	editPasswordModal.hide();
-//});
+	if (newPassword !== confirmPassword) {
+		alert("New password and confirmation do not match!");
+		return;
+	}
+	var editPasswordModal = bootstrap.Modal.getInstance(document.getElementById("editPasswordModal"));
+	editPasswordModal.hide();
+});
 
 document.getElementById("confirmSaveBtn").addEventListener("click", function () {
 	document.querySelector("#infoUpdate").submit();
@@ -82,6 +82,7 @@ document.getElementById("confirmSaveBtn").addEventListener("click", function () 
 $(document).ready(function () {
 	$("#updatePasswordBtn").click(function () {
 		var formData = {
+			UserId: $("#userId").val(),
 			OldPassword: $("#editInput1").val(),
 			NewPassword: $("#editInput2").val(),
 			ConfirmPassword: $("#editInput3").val()

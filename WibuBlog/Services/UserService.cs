@@ -1,10 +1,15 @@
 ﻿using Application.Common.Pagination;
 using Application.DTO;
+using Application.Services;
 using Domain.Entities;
 using Infrastructure.Configurations;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
+using System.Text.Json;
 using WibuBlog.Common.ApiResponse;
 using WibuBlog.Interfaces.Api;
 using WibuBlog.ViewModels.Users;
@@ -60,5 +65,18 @@ namespace WibuBlog.Services
             var response = await _apiService.PutAsync<ApiResponse<UpdateUserDto>>($"User/UpdateUser/", updateUserDto);
             return response.Value!;
         }
+
+        public async Task<ApiResponse<IdentityResult>> UpdatePassword(UpdatePasswordVM model)
+        {
+			UpdatePasswordDTO updatePasswordDTO = new UpdatePasswordDTO()
+			{
+                UserId = model.UserId,
+				OldPassword = model.OldPassword,
+				NewPassword = model.NewPassword,
+				ConfirmPassword = model.ConfirmPassword
+			};
+			var response = await _apiService.PutAsync<ApiResponse<IdentityResult>>($"User/UpdatePassword/", updatePasswordDTO);
+			return response;
+		}
     }
 }

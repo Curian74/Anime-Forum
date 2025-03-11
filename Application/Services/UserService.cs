@@ -6,6 +6,7 @@ using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Application.Interfaces.Email;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc;
 namespace Application.Services
 {
     public class UserService(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork)
@@ -90,12 +91,18 @@ namespace Application.Services
             return new PagedResult<User>(items, totalCount, page, size);
         }
 
-        public async Task<int> UpdateUser(UpdateUserDto userUpdateDTO)
+        public async Task<int> UpdateUserAsync(UpdateUserDto userUpdateDTO)
         {
             var updateUser = await _userManager.FindByIdAsync(userUpdateDTO.Id.ToString());
             _mapper.Map(userUpdateDTO,updateUser);          
             return await _unitOfWork.SaveChangesAsync();
         }
 
-    }
+		public async Task<IdentityResult> UpdatePasswordAsync(UpdatePasswordDTO updatePasswordDTO)
+		{
+			var updateUser = await _userManager.FindByIdAsync(updatePasswordDTO.UserId.ToString());
+            return await _userManager.ChangePasswordAsync(updateUser, updatePasswordDTO.OldPassword, updatePasswordDTO.NewPassword);
+		}
+
+	}
 }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using WibuBlog.ViewModels.Users;
 using Application.Common.MessageOperations;
+using Microsoft.AspNetCore.Identity;
 
 namespace WibuBlog.Controllers
 {
@@ -38,7 +39,6 @@ namespace WibuBlog.Controllers
         }
 
         [HttpPost]
-		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> UpdateUser(UpdateUserVM updateUserVM)
         {
 			if (!ModelState.IsValid)
@@ -49,5 +49,25 @@ namespace WibuBlog.Controllers
 			var user = await _userService.UpdateUserAsync(updateUserVM);
             return RedirectToAction(nameof(UserProfile));
         }
-    }
+
+		[HttpPost]
+		public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordVM model)
+		{
+            Console.WriteLine("=============================================");
+            Console.WriteLine(model.OldPassword);
+            Console.WriteLine(model.ConfirmPassword);
+            Console.WriteLine(model.NewPassword);
+            Console.WriteLine(model.UserId);
+            if (model.NewPassword != model.ConfirmPassword)
+			{
+				return BadRequest(MessageConstants.ME006);
+			}
+            var response = await _userService.UpdatePassword(model);
+            if (response.Succeeded)
+            {
+                return Ok(MessageConstants.ME007a);
+            }
+            return BadRequest(response.Errors[0].Description);
+        }
+	}
 }
