@@ -51,7 +51,7 @@ namespace Application.Services
             {
                 if (existingVote.IsUpvote == dto.IsUpvote)
                 {
-                    // User clicks the same vote again — remove the vote
+                    // Duped vote — remove the vote
                     await _voteRepository.DeleteAsync(existingVote.Id);
 
                     var decrement = existingVote.IsUpvote ? -1 : 1;
@@ -60,7 +60,7 @@ namespace Application.Services
                 }
                 else
                 {
-                    // User switches their vote
+                    // Switch vote
                     existingVote.IsUpvote = dto.IsUpvote;
 
                     var change = dto.IsUpvote ? 2 : -2; // +1 to -1, or -1 to +1
