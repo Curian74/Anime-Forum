@@ -52,18 +52,15 @@ namespace WibuBlog.Controllers
 
                 if (userId == null)
                 {
-                    TempData["ErrorMessage"] = "User not logged in.";
                     return RedirectToAction(nameof(Add));
                 }
 
                 addTicketVM.UserId = Guid.Parse(userId); 
 
                 await _ticketService.AddNewTicketAsync(addTicketVM);
-                TempData["SuccessMessage"] = "Ticket submitted successfully!";
             }
             catch (Exception)
             {
-                TempData["ErrorMessage"] = "An error occurred while submitting the ticket.";
             }
 
             return RedirectToAction(nameof(Add));

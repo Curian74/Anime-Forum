@@ -50,6 +50,7 @@ builder.Services.AddScoped<IEmailService,EmailService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<PostCategoryService>();
 builder.Services.AddScoped<CommentSerivce>();
+builder.Services.AddScoped<ReportService>();
 
 // AutoMapper service
 // Quet project, tim tat ca file MappingProfile roi gop lai thanh 1
