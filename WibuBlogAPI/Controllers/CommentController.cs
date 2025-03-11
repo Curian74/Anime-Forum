@@ -10,6 +10,7 @@ using System.Linq.Expressions;
 
 namespace WibuBlogAPI.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class CommentController(CommentSerivce commentSerivces) : ControllerBase
