@@ -14,7 +14,14 @@ namespace Application.Services
 
         public async Task<int> GetTotalPostVotesAsync(Guid postId)
         {
-            var (votes, _) = await _voteRepository.GetAllAsync(v => v.PostId == postId);
+            var post = await _postRepository.GetByIdAsync(postId);
+            
+            if (post == null)
+            {
+                throw new ArgumentNullException(nameof(post), "Post not found.");
+            }
+
+            var votes = post.Votes;
 
             int totalVotes = 0;
 
@@ -22,6 +29,12 @@ namespace Application.Services
             {
                 if (v.IsUpvote) totalVotes++;
                 else totalVotes--;
+            }
+
+            if (post.TotalVotes != totalVotes)
+            {
+                post.TotalVotes = totalVotes;
+                await _unitOfWork.SaveChangesAsync();
             }
 
             return totalVotes;

@@ -18,16 +18,22 @@ namespace WibuBlogAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetTotalPostVotes(Guid postId)
         {
-            var totalPostVotes = await _voteService.GetTotalPostVotesAsync(postId);
-
-            return new JsonResult(Ok(totalPostVotes));
+            try
+            {
+                var totalPostVotes = await _voteService.GetTotalPostVotesAsync(postId);
+                return new JsonResult(Ok(totalPostVotes));
+            }
+            catch (ArgumentNullException e)
+            {
+                return new JsonResult(BadRequest(e.Message));
+            }
         }
 
-        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetCurrentUserVote(Guid postId)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userIdClaim = "5EFA23F3-1451-4398-9A83-2C5FD9DA6F2C";
+            //User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(userIdClaim))
             {
@@ -42,7 +48,10 @@ namespace WibuBlogAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> ToggleVote([FromBody]VoteDto dto)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            Console.WriteLine("toggle hit");
+
+            var userIdClaim = "5EFA23F3-1451-4398-9A83-2C5FD9DA6F2C";
+                //User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(userIdClaim))
             {
