@@ -85,12 +85,12 @@
             <!-- Comment Input -->
             @{
 
-                if(Model.User == null)
+                if(Model.User == null) //Chua log in
                 {
                     <p class="mt-3 fst-italic text-danger">*@MessageConstants.ME029*</p>
                 }
 
-                else if (Model.Post.IsHidden)
+                else if (Model.Post.IsHidden) //Login roi nhung post da bi xoa
                 {
                     <p class="mt-3 fst-italic text-danger">*@MessageConstants.ME030*</p>
                 }

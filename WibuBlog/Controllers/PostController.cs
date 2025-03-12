@@ -86,7 +86,6 @@ namespace WibuBlog.Controllers
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-
             if (!string.IsNullOrEmpty(userId))
             {
                 user = await _userService.GetUserById(Guid.Parse(userId));
@@ -97,7 +96,7 @@ namespace WibuBlog.Controllers
                 }
             }
 
-            if(user == null && post.IsHidden)
+            if(user == null && post.IsHidden) //Chua dang nhap va post inactive
             {
                 return NotFound();
             }
