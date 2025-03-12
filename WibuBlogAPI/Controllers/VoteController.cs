@@ -32,8 +32,7 @@ namespace WibuBlogAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCurrentUserVote(Guid postId)
         {
-            var userIdClaim = "5EFA23F3-1451-4398-9A83-2C5FD9DA6F2C";
-            //User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(userIdClaim))
             {
@@ -50,8 +49,7 @@ namespace WibuBlogAPI.Controllers
         {
             Console.WriteLine("toggle hit");
 
-            var userIdClaim = "5EFA23F3-1451-4398-9A83-2C5FD9DA6F2C";
-                //User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(userIdClaim))
             {

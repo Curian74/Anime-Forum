@@ -5,18 +5,30 @@ const userId = document.getElementById('user-id');
 const toggleBtn = document.getElementById('toggle-btn');
 const cancelBtn = document.getElementById('cancel-btn');
 const commentField = document.getElementById('comment-field');
+const contentField = document.getElementById('content');
+const commentForm = document.getElementById('commentForm');
 
 let isCommentFieldOpen = false;
 commentField.style.display = "none";
+
+const validateComment = () => {
+    if (!editor.getText().trim()) {
+        Swal.fire({
+            title: "Warning!",
+            text: "Content is required.",
+            icon: "warning",
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+        });
+        return;
+    }
+    commentForm.submit();
+}
 
 const toggleCommentInput = () => {
     isCommentFieldOpen = !isCommentFieldOpen;
     commentField.style.display = isCommentFieldOpen ? "block" : "none";
     toggleBtn.style.display = !isCommentFieldOpen ? "block" : "none";
-
-    if (!isCommentFieldOpen) {
-        editor.setContent('');
-    }
 };
 
 const confirmDeletePost = (postId) => {
@@ -112,6 +124,6 @@ const deletePost = async (postId, isHidden) => {
 //    }
 //};
 
-//submitBtn.addEventListener("click", postComment);
+submitBtn.addEventListener("click", validateComment);
 toggleBtn.addEventListener("click", toggleCommentInput);
 cancelBtn.addEventListener("click", toggleCommentInput)
