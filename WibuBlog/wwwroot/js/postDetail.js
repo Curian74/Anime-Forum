@@ -5,18 +5,30 @@ const userId = document.getElementById('user-id');
 const toggleBtn = document.getElementById('toggle-btn');
 const cancelBtn = document.getElementById('cancel-btn');
 const commentField = document.getElementById('comment-field');
+const contentField = document.getElementById('content');
+const commentForm = document.getElementById('commentForm');
 
 let isCommentFieldOpen = false;
 commentField.style.display = "none";
+
+const validateComment = () => {
+    if (!editor.getText().trim()) {
+        Swal.fire({
+            title: "Warning!",
+            text: "Content is required.",
+            icon: "warning",
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+        });
+        return;
+    }
+    commentForm.submit();
+}
 
 const toggleCommentInput = () => {
     isCommentFieldOpen = !isCommentFieldOpen;
     commentField.style.display = isCommentFieldOpen ? "block" : "none";
     toggleBtn.style.display = !isCommentFieldOpen ? "block" : "none";
-
-    if (!isCommentFieldOpen) {
-        editor.setContent('');
-    }
 };
 
 const confirmDeletePost = (postId) => {
@@ -112,6 +124,95 @@ const deletePost = async (postId, isHidden) => {
 //    }
 //};
 
-//submitBtn.addEventListener("click", postComment);
+submitBtn.addEventListener("click", validateComment);
 toggleBtn.addEventListener("click", toggleCommentInput);
 cancelBtn.addEventListener("click", toggleCommentInput)
+
+$(document).ready(function () {
+    const postId = $('#post').data('post-id');
+
+    $.ajaxSetup({
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Authorization', '...');
+        }
+    });
+
+    // Fetch total post votes
+    function fetchTotalVotes() {
+        $.ajax({
+            url: `https://localhost:7186/api/Vote/GetTotalPostVotes?postId=${postId}`,
+            type: 'GET',
+            success: function (response) {
+                $('#total-vote-count').text(response.value);
+            },
+            error: function (xhr) {
+                console.error('Error fetching total votes:', xhr.responseText);
+            }
+        });
+    }
+
+    // Fetch current user vote
+    function fetchUserVote() {
+        $.ajax({
+            url: `https://localhost:7186/api/Vote/GetCurrentUserVote?postId=${postId}`,
+            type: 'GET',
+            xhrFields: {
+                withCredentials: true
+            },
+            success: function (response) {
+                if (response.value?.isUpvote === true) {
+                    $('.upvote-btn').addClass('active');
+                    $('.downvote-btn').removeClass('active');
+                } else if (response.value?.isUpvote === false) {
+                    $('.downvote-btn').addClass('active');
+                    $('.upvote-btn').removeClass('active');
+                } else {
+                    $('.upvote-btn, .downvote-btn').removeClass('active');
+                }
+            },
+            error: function (xhr) {
+                console.error('Error fetching user vote:', xhr.responseText);
+            }
+        });
+    }
+
+    // Toggle vote
+    function toggleVote(isUpvote) {
+        $.ajax({
+            url: `https://localhost:7186/api/Vote/ToggleVote`,
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ postId: postId, isUpvote: isUpvote }),
+            xhrFields: {
+                withCredentials: true
+            },
+            success: function (response) {
+                fetchTotalVotes();
+                fetchUserVote();
+            },
+            error: function (xhr) {
+                if (xhr.status === 401) {
+                    // User is not logged in - redirect to login page
+                    window.location.href = '@Url.Content("~/Auth/Login")';
+                } else {
+                    console.error('Error modifying vote:', xhr.responseText);
+                }
+            }
+        });
+    }
+
+    // Event listeners
+    $('.upvote-btn').click(function (e) {
+        e.preventDefault();
+        toggleVote(true);
+    });
+
+    $('.downvote-btn').click(function (e) {
+        e.preventDefault();
+        toggleVote(false);
+    });
+
+    // Initial fetch
+    fetchTotalVotes();
+    fetchUserVote();
+});

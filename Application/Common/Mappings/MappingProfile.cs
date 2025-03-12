@@ -26,6 +26,7 @@ namespace Application.Common.Mappings
             CreateMap<UpdateUserDto, User>()
            .ForMember(dest => dest.Bio, opt => opt.MapFrom(src => src.Bio))
            .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber));
+            CreateMap<Vote, VoteDto>().ReverseMap();
         }
     }
 }
