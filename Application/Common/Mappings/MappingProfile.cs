@@ -23,6 +23,7 @@ namespace Application.Common.Mappings
             CreateMap<Ticket, CreateTicketDto>().ReverseMap();
             CreateMap<Ticket, UpdateTicketDto>().ReverseMap();
             CreateMap<Comment, PostCommentDto>().ReverseMap();
+            CreateMap<Vote, VoteDto>().ReverseMap();
             CreateMap<Report, ReportDto>().ReverseMap();
             CreateMap<Report, CreateReportDto>().ReverseMap();
         }

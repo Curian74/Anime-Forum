@@ -85,9 +85,20 @@ namespace WibuBlog.Controllers
             User? user = null;
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             if (!string.IsNullOrEmpty(userId))
             {
                 user = await _userService.GetUserById(Guid.Parse(userId));
+
+                if(Guid.Parse(userId) != post.UserId && post.IsHidden) //Khong phai post cua minh va inactive thi k cho xem 
+                {
+                    return NotFound();
+                }
+            }
+
+            if(user == null && post.IsHidden) //Chua dang nhap va post inactive
+            {
+                return NotFound();
             }
 
             var postDetailVM = new PostDetailVM

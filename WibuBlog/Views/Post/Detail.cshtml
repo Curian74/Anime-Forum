@@ -9,6 +9,9 @@
 <link rel="stylesheet" href="~/richtexteditor/rte_theme_default.css" />
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.all.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
 
 <section>
     <div class="container mt-4">
@@ -40,15 +43,15 @@
                                 {
                                     <li>
                                         <a asp-route-id="@Model.Post.Id"
-                                           class="dropdown-item" asp-action="Edit" asp-controller="Post">
+                                        class="dropdown-item" asp-action="Edit" asp-controller="Post">
                                             Edit
                                         </a>
                                     </li>
                                     <li><hr class="dropdown-divider border-top border-secondary"></li>
                                     <li>
                                         <a class="dropdown-item text-danger"
-                                           onclick="confirmDeletePost('@Model.Post.Id')"
-                                           style="color: red !important;">
+                                        onclick="confirmDeletePost('@Model.Post.Id')"
+                                        style="color: red !important;">
                                             Delete
                                         </a>
                                     </li>
@@ -75,43 +78,46 @@
             </div>
 
             <!-- Post Actions -->
-            <div class="post-actions mt-5">
+            <div class="post-actions mt-5" data-post-id="@Model.Post?.Id">
                 <div class="action-button d-flex align-items-center justify-content-between px-3 py-2">
                     <div class="d-flex align-items-center">
-                        <a href="#" class="vote-btn me-1" data-vote="up"><i class="fa-regular fa-circle-up"></i></a>
-                        <span>@Model.Post?.Votes.Where(x => x.IsUpvote).Count()</span>
+                        <a href="#" class="vote-btn upvote-btn me-1" data-vote="up"><i class="fa-regular fa-circle-up"></i></a>
+                        <span class="vote-count" id="total-vote-count">0</span>
                     </div>
-                    <a href="#" class="vote-btn" data-vote="down"><i class="fa-regular fa-circle-down"></i></a>
-                </div>
-                <div class="action-button d-flex align-items-center justify-content-center px-3">
-                    <a href="#"><i class="fa-regular fa-comment"></i> @Model.Post?.Comments.Where(c => c.IsHidden == false).Count()</a>
+                    <a href="#" class="vote-btn downvote-btn" data-vote="down"><i class="fa-regular fa-circle-down"></i></a>
                 </div>
             </div>
 
             <!-- Comment Input -->
             @{
-                if (Model.User != null)
+
+                if(Model.User == null) //Chua log in
+                {
+                    <p class="mt-3 fst-italic text-danger">*@MessageConstants.ME029*</p>
+                }
+
+                else if (Model.Post.IsHidden) //Login roi nhung post da bi xoa
+                {
+                    <p class="mt-3 fst-italic text-danger">*@MessageConstants.ME030*</p>
+                }
+
+                else
                 {
                     <div class="mt-3">
                         <button class="btn btn-success" id="toggle-btn">Add your comment</button>
                     </div>
                     <div id="comment-field" class="w-100">
-                        <form asp-controller="Comment" asp-action="PostComment" class="mt-3">
+                        <form asp-controller="Comment" asp-action="PostComment" id="commentForm" class="mt-3">
                             <div asp-validation-summary="All"></div>
                             <input type="hidden" name="postId" id="post-id" value="@Model.Post?.Id" />
                             <input type="hidden" name="userId" id="user-id" value="@Model.User?.Id" />
                             <textarea id="content" name="content" class="form-control" rows="3" placeholder="Add a comment"></textarea>
                             <div class="d-flex justify-content-end mt-2">
                                 <button type="button" id="cancel-btn" class="btn btn-secondary me-2">Cancel</button>
-                                <button id="submit-btn" class="btn btn-primary">Post Comment</button>
+                                <button type="button" id="submit-btn" class="btn btn-primary">Post Comment</button>
                             </div>
                         </form>
                     </div>
-                }
-
-                else
-                {
-                    <p class="mt-3 fst-italic text-danger">*@MessageConstants.ME029*</p>
                 }
             }
 
@@ -324,4 +330,107 @@
             }
         }
     </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            const postId = "@Model.Post.Id";
+
+            $.ajaxSetup({
+                beforeSend: function(xhr) {
+                xhr.setRequestHeader('Authorization', '...');
+                }
+            });
+
+            // Fetch total post votes
+            function fetchTotalVotes() {
+                $.ajax({
+                    url: `https://localhost:7186/api/Vote/GetTotalPostVotes?postId=${postId}`,
+                    type: 'GET',
+                    success: function (response) {
+                        $('#total-vote-count').text(response.value);
+                    },
+                    error: function (xhr) {
+                        console.error('Error fetching total votes:', xhr.responseText);
+                    }
+                });
+            }
+
+            // Fetch current user vote
+            function fetchUserVote() {
+                $.ajax({
+                    url: `https://localhost:7186/api/Vote/GetCurrentUserVote?postId=${postId}`,
+                    type: 'GET',
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    success: function (response) {
+                        if (response.value?.isUpvote === true) {
+                            $('.upvote-btn').addClass('active');
+                            $('.downvote-btn').removeClass('active');
+                        } else if (response.value?.isUpvote === false) {
+                            $('.downvote-btn').addClass('active');
+                            $('.upvote-btn').removeClass('active');
+                        } else {
+                            $('.upvote-btn, .downvote-btn').removeClass('active');
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error('Error fetching user vote:', xhr.responseText);
+                    }
+                });
+            }
+
+            // Toggle vote
+            function toggleVote(isUpvote) {
+                $.ajax({
+                    url: `https://localhost:7186/api/Vote/ToggleVote`,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ postId: postId, isUpvote: isUpvote }),
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    success: function (response) {
+                        fetchTotalVotes();
+                        fetchUserVote();
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 401) {
+                            // User is not logged in - redirect to login page
+                            window.location.href = '@Url.Content("~/Auth/Login")';
+                        } else {
+                            console.error('Error modifying vote:', xhr.responseText);
+                        }
+                    }
+                });
+            }
+
+            // Event listeners
+            $('.upvote-btn').click(function (e) {
+                e.preventDefault();
+                toggleVote(true);
+            });
+
+            $('.downvote-btn').click(function (e) {
+                e.preventDefault();
+                toggleVote(false);
+            });
+
+            // Initial fetch
+            fetchTotalVotes();
+            fetchUserVote();
+        });
+    </script>
+
+    <style>
+        .vote-btn {
+            transition: color 0.1s ease-in-out;
+        }
+        .upvote-btn.active {
+            color: red;
+        }
+        .downvote-btn.active {
+            color: dodgerblue;
+        }
+    </style>
 }
