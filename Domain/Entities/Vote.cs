@@ -14,8 +14,8 @@ namespace Domain.Entities
         public Guid PostId { get; set; }
 
         // Navigation properties
-        public User User { get; set; } = null!;
+        public User? User { get; set; } = null!;
 
-        public Post Post { get; set; } = null!;
+        public Post? Post { get; set; } = null!;
     }
 }

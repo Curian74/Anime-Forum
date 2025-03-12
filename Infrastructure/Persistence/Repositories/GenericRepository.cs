@@ -13,6 +13,11 @@ namespace Infrastructure.Persistence.Repositories
             return await _dbSet.FindAsync(id);
         }
 
+        public async Task<T?> GetSingleWhereAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.FirstOrDefaultAsync(predicate);
+        }
+
         // Example usage: _repository.GetPagedAsync(x => x.Name.Contains("Memaybeo"), q => q.OrderByDescending(x => x.DateCreated)); 
         public async Task<(IEnumerable<T> Items, int TotalCount)> GetAllAsync(
             Expression<Func<T, bool>>? filter = null, 

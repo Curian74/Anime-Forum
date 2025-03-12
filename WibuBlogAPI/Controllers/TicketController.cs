@@ -19,6 +19,7 @@ namespace WibuBlogAPI.Controllers
             return Guid.TryParse(userIdClaim, out var userId) ? userId : null;
         }
 
+        [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
         [HttpGet("UserTickets")]
         public async Task<IActionResult> GetUserTickets()
         {
@@ -29,6 +30,7 @@ namespace WibuBlogAPI.Controllers
             return Ok(new { tickets, count });
         }
 
+        [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
         [HttpPost]
         public async Task<IActionResult> CreateTicket(CreateTicketDto dto)
         {
@@ -46,6 +48,7 @@ namespace WibuBlogAPI.Controllers
             return Ok(new { success = result > 0 });
         }
 
+        [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
         [HttpGet("{ticketId}")]
         public async Task<IActionResult> GetTicketDetail(Guid ticketId)
         {
@@ -56,6 +59,7 @@ namespace WibuBlogAPI.Controllers
             return new JsonResult(Ok(ticket));
         }
 
+        [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
         [HttpPut("{ticketId}")]
         public async Task<IActionResult> UpdateTicket(Guid ticketId, UpdateTicketDto dto)
         {
@@ -64,6 +68,7 @@ namespace WibuBlogAPI.Controllers
             return Ok("Ticket updated successfully");
         }
 
+        [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
         [HttpDelete("{ticketId}")]
         public async Task<IActionResult> DeleteTicket(Guid ticketId)
         {
@@ -80,8 +85,6 @@ namespace WibuBlogAPI.Controllers
             return Ok(new { tickets, count });
         }
 
-
-
         [Authorize(AuthenticationSchemes = "Bearer", Policy = "AdminPolicy")]
         [HttpPut("Approve/{ticketId}")]
         public async Task<IActionResult> ApproveTicket(Guid ticketId, [FromBody] ApproveTicketDto dto)
@@ -91,6 +94,4 @@ namespace WibuBlogAPI.Controllers
             return Ok("Ticket approved");
         }
     }
-
-    public record ApproveTicketDto(bool Approval, string? Note);
 }
