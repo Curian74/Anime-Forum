@@ -2,12 +2,7 @@
 using Application.Services;
 using Application.DTO;
 using System.Security.Claims;
-using Infrastructure.External;
-using Application.Interfaces.Email;
-using Domain.Entities;
-using Microsoft.AspNetCore.Identity;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace WibuBlogAPI.Controllers
 {

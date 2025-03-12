@@ -1,18 +1,16 @@
 ﻿using WibuBlog.Services;
 using Microsoft.AspNetCore.Mvc;
-using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
 using WibuBlog.ViewModels.Users;
 using Application.Common.MessageOperations;
-using Microsoft.AspNetCore.Identity;
 
 namespace WibuBlog.Controllers
 {
     [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
-    public class UserController(UserService userService) : Controller
+    public class UserController(UserService userService, IWebHostEnvironment webHostEnvironment) : Controller
     {
         private readonly UserService _userService = userService;
+        private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
 
         public IActionResult Index()
         {
@@ -53,11 +51,6 @@ namespace WibuBlog.Controllers
 		[HttpPost]
 		public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordVM model)
 		{
-            Console.WriteLine("=============================================");
-            Console.WriteLine(model.OldPassword);
-            Console.WriteLine(model.ConfirmPassword);
-            Console.WriteLine(model.NewPassword);
-            Console.WriteLine(model.UserId);
             if (model.NewPassword != model.ConfirmPassword)
 			{
 				return BadRequest(MessageConstants.ME006);
@@ -69,5 +62,23 @@ namespace WibuBlog.Controllers
             }
             return BadRequest(response.Errors[0].Description);
         }
-	}
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateProfilePhoto(IFormFile file)
+        {
+            string uploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
+            if (!Directory.Exists(uploadFolder))
+            {
+                Directory.CreateDirectory(uploadFolder);
+            }
+            string fileName = Path.GetFileName(file.FileName);
+            string fileSavePath = Path.Combine(uploadFolder, fileName);
+            using (FileStream stream = new FileStream(fileSavePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+            ViewBag.Message = fileName + "uploaded successfully";
+            return RedirectToAction(nameof(UserProfile));
+        }
+    }
 }

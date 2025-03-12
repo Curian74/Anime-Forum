@@ -35,7 +35,11 @@
 				<div class="overlay">
 					<span>Change avatar</span>
 				</div>
-				<input type="file" id="avatarInput" accept="image/*" style="display: none;">
+				<form asp-controller="User" asp-action="UpdateProfilePhoto" method="post" enctype="multipart/form-data">
+				<input type="file" name="file" id="avatarInput" accept="image/*" style="display: none;">
+				<input type="submit" value="Upload" class="btn btn-primary" style="margin-left:300px" />
+				<span class="text-success"> @ViewBag.Message</span>
+				</form>
 			</div>
 
 		</div>

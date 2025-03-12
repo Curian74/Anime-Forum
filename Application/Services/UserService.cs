@@ -4,9 +4,6 @@ using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using Application.Interfaces.Email;
-using System.Reflection;
-using Microsoft.AspNetCore.Mvc;
 namespace Application.Services
 {
     public class UserService(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork)

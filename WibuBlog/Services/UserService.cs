@@ -1,15 +1,9 @@
 ﻿using Application.Common.Pagination;
 using Application.DTO;
-using Application.Services;
 using Domain.Entities;
 using Infrastructure.Configurations;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
-using System.Text.Json;
 using WibuBlog.Common.ApiResponse;
 using WibuBlog.Interfaces.Api;
 using WibuBlog.ViewModels.Users;
