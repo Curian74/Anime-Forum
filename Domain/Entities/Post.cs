@@ -17,6 +17,8 @@ namespace Domain.Entities
 
         public bool IsHidden { get; set; } = false;
 
+        public int TotalVotes { get; set; } = 0;
+
         public ICollection<Vote> Votes { get; set; } = [];
 
         public ICollection<Comment> Comments { get; set; } = [];

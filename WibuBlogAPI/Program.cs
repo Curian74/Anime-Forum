@@ -46,10 +46,11 @@ builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<CommentSerivce>();
 builder.Services.AddScoped<TicketService>();
 builder.Services.AddScoped<TemplateBody>();
-builder.Services.AddScoped<IEmailService,EmailService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<PostCategoryService>();
 builder.Services.AddScoped<CommentSerivce>();
+builder.Services.AddScoped<VoteService>();
 
 // AutoMapper service
 // Quet project, tim tat ca file MappingProfile roi gop lai thanh 1
@@ -186,8 +187,14 @@ using (var scope = app.Services.CreateScope())
         await roleManager.CreateAsync(new IdentityRole<Guid>(UserRoles.Member));
     }
 
-    // Seed a superuser account, for testing purposes. Username and password are both "admin"
+    // Seed 3 accounts, for testing purposes. Username and password are the same and is the name of their roles
     var userManager = services.GetRequiredService<UserManager<User>>();
+
+    var passwordValidators = userManager.PasswordValidators;
+    var userValidators = userManager.UserValidators;
+    userManager.PasswordValidators.Clear();
+    userManager.UserValidators.Clear();
+
     var admin = await userManager.FindByNameAsync("admin");
     if (admin == null)
     {
@@ -199,29 +206,54 @@ using (var scope = app.Services.CreateScope())
             Bio = "admin"
         };
 
-        var passwordValidators = userManager.PasswordValidators;
-        var userValidators = userManager.UserValidators;
-
-        userManager.PasswordValidators.Clear();
-        userManager.UserValidators.Clear();
-
-        var result = await userManager.CreateAsync(admin, "admin");
+        await userManager.CreateAsync(admin, "admin");
         await userManager.AddToRoleAsync(admin, UserRoles.Admin);
+    }
 
-        foreach (var validator in passwordValidators)
+    var moderator = await userManager.FindByNameAsync("moderator");
+    if (moderator == null)
+    {
+        moderator = new User
         {
-            userManager.PasswordValidators.Add(validator);
-        }
+            Id = Guid.NewGuid(),
+            UserName = "moderator",
+            Email = "moderator@animeforum.com",
+            Bio = "moderator"
+        };
 
-        foreach (var validator in userValidators)
-        {
-            userManager.UserValidators.Add(validator);
-        }
+        await userManager.CreateAsync(moderator, "moderator");
+        await userManager.AddToRoleAsync(moderator, UserRoles.Moderator);
+    }
 
-        // Seed category table with categories
-        if (!db.PostCategories.Any())
+    var member = await userManager.FindByNameAsync("member");
+    if (member == null)
+    {
+        member = new User
         {
-            var categories = new List<PostCategory>
+            Id = Guid.NewGuid(),
+            UserName = "member",
+            Email = "member@animeforum.com",
+            Bio = "member"
+        };
+
+        await userManager.CreateAsync(member, "member");
+        await userManager.AddToRoleAsync(member, UserRoles.Member);
+    }
+
+    foreach (var validator in passwordValidators)
+    {
+        userManager.PasswordValidators.Add(validator);
+    }
+
+    foreach (var validator in userValidators)
+    {
+        userManager.UserValidators.Add(validator);
+    }
+
+    // Seed category table with categories
+    if (!db.PostCategories.Any())
+    {
+        var categories = new List<PostCategory>
         {
             new() { Id = Guid.NewGuid(), Name = "Thông báo"},
             new() { Id = Guid.NewGuid(), Name = "Góp ý"},
@@ -236,11 +268,11 @@ using (var scope = app.Services.CreateScope())
             new() { Id = Guid.NewGuid(), Name = "Giáo dục"},
         };
 
-            db.PostCategories.AddRange(categories);
-            await db.SaveChangesAsync();
-        }
+        db.PostCategories.AddRange(categories);
+        await db.SaveChangesAsync();
     }
 }
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
