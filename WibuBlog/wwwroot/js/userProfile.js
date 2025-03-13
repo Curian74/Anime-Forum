@@ -22,9 +22,11 @@ document.addEventListener("DOMContentLoaded", function () {
 				avatarImage.src = e.target.result;
 			};
 			reader.readAsDataURL(file);
+			avatarInput.closest("form").submit();
 		}
 	});
 });
+
 
 let updatedFields = {};
 

@@ -29,7 +29,7 @@
 				}
 				else
 				{
-						<img id="avatarImage" src="@Model.ProfilePhoto.Url" alt="Profile" class="profile-img">
+						<img id="avatarImage" src="@Url.Content(Model.ProfilePhoto.Url)" alt="Profile" class="profile-img">
 				}
 
 				<div class="overlay">
@@ -37,8 +37,6 @@
 				</div>
 				<form asp-controller="User" asp-action="UpdateProfilePhoto" method="post" enctype="multipart/form-data">
 				<input type="file" name="file" id="avatarInput" accept="image/*" style="display: none;">
-				<input type="submit" value="Upload" class="btn btn-primary" style="margin-left:300px" />
-				<span class="text-success"> @ViewBag.Message</span>
 				</form>
 			</div>
 

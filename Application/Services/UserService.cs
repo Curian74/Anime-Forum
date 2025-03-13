@@ -79,7 +79,7 @@ namespace Application.Services
 
             result.Roles = await _userManager.GetRolesAsync(user);
 
-            return result;
+			return result;
         }
         public async Task<User?> FindByIdAsync(Guid userId)
         {
