@@ -1,7 +1,10 @@
-﻿using Application.Common.Pagination;
+﻿using Application.Common.File;
+using Application.Common.Pagination;
 using Application.DTO;
+using Application.Services;
 using Domain.Entities;
 using Infrastructure.Configurations;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using WibuBlog.Common.ApiResponse;
@@ -10,12 +13,14 @@ using WibuBlog.ViewModels.Users;
 
 namespace WibuBlog.Services
 {
-    public class UserService(IApiService apiService, IOptions<AuthTokenOptions> authTokenOptions, IHttpContextAccessor httpContextAccessor)
+    public class UserService(IApiService apiService, IOptions<AuthTokenOptions> authTokenOptions, IHttpContextAccessor httpContextAccessor, FileService fileService, MediaService mediaService)
     {
         private readonly IApiService _apiService = apiService;
         private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-        public async Task<UserProfileDto> GetUserProfile()
+		private readonly FileService _fileService = fileService;
+        private readonly MediaService _mediaService = mediaService;
+		public async Task<UserProfileDto> GetUserProfile()
         {
             var token = _httpContextAccessor.HttpContext?.Request.Cookies[_authTokenOptions.Name];
             if (string.IsNullOrEmpty(token))
@@ -72,5 +77,13 @@ namespace WibuBlog.Services
 			var response = await _apiService.PutAsync<ApiResponse<IdentityResult>>($"User/UpdatePassword/", updatePasswordDTO);
 			return response;
 		}
-    }
+
+		public async Task<Media> UpdateProfilePhoto(IFormFile file)
+        {
+			Media media = await _fileService.UploadImage(file);
+            var resp =  await _apiService.PostAsync<ApiResponse<Media>>($"Media/Add/", media);
+			var response = await _apiService.PutAsync<ApiResponse<Media>>("User/UpdateProfilePhoto/", media);
+            return response.Value!;
+		}
+	}
 }

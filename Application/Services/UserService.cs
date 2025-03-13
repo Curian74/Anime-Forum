@@ -1,19 +1,24 @@
-﻿using Application.Common.Pagination;
+﻿using Application.Common.File;
+using Application.Common.Pagination;
 using Application.DTO;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 namespace Application.Services
 {
-    public class UserService(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork)
+    public class UserService(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly UserManager<User> _userManager = userManager;
         private readonly IMapper _mapper = mapper;
         private readonly IGenericRepository<User> _userGenericRepository = unitOfWork.GetRepository<User>();
+        private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
 
-        public async Task<User?> FindByLoginAsync(LoginDto dto)
+		public async Task<User?> FindByLoginAsync(LoginDto dto)
         {
             var user = await _userManager.FindByNameAsync(dto.Login);
 
@@ -101,5 +106,13 @@ namespace Application.Services
             return await _userManager.ChangePasswordAsync(updateUser, updatePasswordDTO.OldPassword, updatePasswordDTO.NewPassword);
 		}
 
+
+		public async Task<Media> UpdateProfilePhotoAsync(Media media, string currentUserId)
+        {
+            var updateUser = await _userManager.FindByIdAsync(currentUserId);
+            updateUser.ProfilePhoto = media;
+            await _unitOfWork.SaveChangesAsync();
+            return media;
+		}
 	}
 }

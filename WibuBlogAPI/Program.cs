@@ -15,6 +15,7 @@ using System.Text.Json.Serialization;
 using Infrastructure.External;
 using Application.Interfaces.Email;
 using Application.Common.EmailTemplate;
+using Application.Common.File;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,6 +52,8 @@ builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<PostCategoryService>();
 builder.Services.AddScoped<CommentSerivce>();
 builder.Services.AddScoped<VoteService>();
+builder.Services.AddScoped<MediaService>();
+builder.Services.AddScoped<FileService>();
 
 // AutoMapper service
 // Quet project, tim tat ca file MappingProfile roi gop lai thanh 1

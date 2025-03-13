@@ -2,6 +2,7 @@
 using Application.Services;
 using Application.DTO;
 using System.Security.Claims;
+using Domain.Entities;
 
 
 namespace WibuBlogAPI.Controllers
@@ -99,6 +100,20 @@ namespace WibuBlogAPI.Controllers
 				return new JsonResult(NotFound($"{ex.GetType().Name}: {ex.Message}"));
 			}
             return new JsonResult(BadRequest());
+		}
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateProfilePhoto([FromBody] Media media)
+        {
+			try
+            {
+				var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);			 
+                return new JsonResult(await _userService.UpdateProfilePhotoAsync(media, currentUserId));  
+            }
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"file/server error: {ex.Message}");
+			}
 		}
 
 	}

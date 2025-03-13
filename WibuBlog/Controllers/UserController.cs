@@ -66,19 +66,9 @@ namespace WibuBlog.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateProfilePhoto(IFormFile file)
         {
-            string uploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
-            if (!Directory.Exists(uploadFolder))
-            {
-                Directory.CreateDirectory(uploadFolder);
-            }
-            string fileName = Path.GetFileName(file.FileName);
-            string fileSavePath = Path.Combine(uploadFolder, fileName);
-            using (FileStream stream = new FileStream(fileSavePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-            ViewBag.Message = fileName + "uploaded successfully";
+			var response = await _userService.UpdateProfilePhoto(file);
             return RedirectToAction(nameof(UserProfile));
+                        
         }
     }
 }
