@@ -285,7 +285,8 @@
     </div>
 </section>
 @section Scripts {
-    <script src="~/js/postDetail.js"></script>
+    <div id="post" data-post-id="@Model.Post.Id"></div>
+    <script src="~/js/postDetail.js?v=1.0"></script>
     <partial name="_ValidationScriptsPartial"></partial>
     <partial name="_RichTextEditorInit"></partial>
     <script type="text/javascript">
@@ -331,106 +332,4 @@
         }
     </script>
 
-    <script type="text/javascript">
-        $(document).ready(function () {
-            const postId = "@Model.Post.Id";
-
-            $.ajaxSetup({
-                beforeSend: function(xhr) {
-                xhr.setRequestHeader('Authorization', '...');
-                }
-            });
-
-            // Fetch total post votes
-            function fetchTotalVotes() {
-                $.ajax({
-                    url: `https://localhost:7186/api/Vote/GetTotalPostVotes?postId=${postId}`,
-                    type: 'GET',
-                    success: function (response) {
-                        $('#total-vote-count').text(response.value);
-                    },
-                    error: function (xhr) {
-                        console.error('Error fetching total votes:', xhr.responseText);
-                    }
-                });
-            }
-
-            // Fetch current user vote
-            function fetchUserVote() {
-                $.ajax({
-                    url: `https://localhost:7186/api/Vote/GetCurrentUserVote?postId=${postId}`,
-                    type: 'GET',
-                    xhrFields: {
-                        withCredentials: true
-                    },
-                    success: function (response) {
-                        if (response.value?.isUpvote === true) {
-                            $('.upvote-btn').addClass('active');
-                            $('.downvote-btn').removeClass('active');
-                        } else if (response.value?.isUpvote === false) {
-                            $('.downvote-btn').addClass('active');
-                            $('.upvote-btn').removeClass('active');
-                        } else {
-                            $('.upvote-btn, .downvote-btn').removeClass('active');
-                        }
-                    },
-                    error: function (xhr) {
-                        console.error('Error fetching user vote:', xhr.responseText);
-                    }
-                });
-            }
-
-            // Toggle vote
-            function toggleVote(isUpvote) {
-                $.ajax({
-                    url: `https://localhost:7186/api/Vote/ToggleVote`,
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({ postId: postId, isUpvote: isUpvote }),
-                    xhrFields: {
-                        withCredentials: true
-                    },
-                    success: function (response) {
-                        fetchTotalVotes();
-                        fetchUserVote();
-                    },
-                    error: function (xhr) {
-                        if (xhr.status === 401) {
-                            // User is not logged in - redirect to login page
-                            window.location.href = '@Url.Content("~/Auth/Login")';
-                        } else {
-                            console.error('Error modifying vote:', xhr.responseText);
-                        }
-                    }
-                });
-            }
-
-            // Event listeners
-            $('.upvote-btn').click(function (e) {
-                e.preventDefault();
-                toggleVote(true);
-            });
-
-            $('.downvote-btn').click(function (e) {
-                e.preventDefault();
-                toggleVote(false);
-            });
-
-            // Initial fetch
-            fetchTotalVotes();
-            fetchUserVote();
-        });
-    </script>
-
-    <style>
-        .vote-btn {
-            transition: color 0.1s ease-in-out;
-        }
-        .upvote-btn.active {
-            color: red;
-        }
-        .downvote-btn.active {
-            color: dodgerblue;
-        }
-    </style>
 }

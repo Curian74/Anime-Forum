@@ -47,8 +47,6 @@ namespace WibuBlogAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> ToggleVote([FromBody]VoteDto dto)
         {
-            Console.WriteLine("toggle hit");
-
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(userIdClaim))
