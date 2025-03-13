@@ -21,14 +21,14 @@ namespace WibuBlogAPI.Controllers
         }
 
         [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
-        [HttpGet("UserTickets")]
+        [HttpGet()]
         public async Task<IActionResult> GetUserTickets()
         {
             var userId = GetUserId();
             if (userId == null) return Unauthorized("Invalid user ID");
 
-            var (tickets, count) = await _ticketService.GetUserTicketsAsync(userId.Value);
-            return Ok(new { tickets, count });
+            var (cacacaaca, count) = await _ticketService.GetUserTicketsAsync(userId.Value);
+            return new JsonResult(Ok(cacacaaca));
         }
 
         [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
