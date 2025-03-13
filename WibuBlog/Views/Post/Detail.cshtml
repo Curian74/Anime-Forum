@@ -55,11 +55,17 @@
                                             Delete
                                         </a>
                                     </li>
+                                    <li><hr class="dropdown-divider border-top border-secondary"></li>
+                                   
                                 }
 
                                 else
                                 {
-                                    <li><a class="dropdown-item text-warning" href="#">Report</a></li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" href="#" onclick="showReportDialog('@Model.Post.Id', '@Model.User?.Id'); return false;">
+                                            Report
+                                        </a>
+                                    </li>
                                 }
                             }
                         </ul>
@@ -285,6 +291,45 @@
     <partial name="_RichTextEditorInit"></partial>
     <script type="text/javascript">
         var editor = new RichTextEditor("#content", configs);
+        async function showReportDialog(postId, userId) {
+            const { value: text } = await Swal.fire({
+                input: "textarea",
+                inputLabel: "Report Post",
+                inputPlaceholder: "Type your reason for reporting here...",
+                inputAttributes: {
+                    "aria-label": "Type your reason for reporting here"
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Submit Report',
+                confirmButtonColor: '#dc3545'
+            });
+
+            if (text) {
+                $.ajax({
+                    url: '@Url.Action("CreateReport", "Report")',
+                    type: 'POST',
+                    data: {
+                        postId: postId,
+                        userId: userId,
+                        Reason: text
+                    },
+                    success: function(response) {
+                        Swal.fire({
+                            title: 'Report Submitted',
+                            text: response.message,
+                            icon: 'success'
+                        });
+                    },
+                    error: function(error) {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'There was a problem submitting your report. Please try again.',
+                            icon: 'error'
+                        });
+                    }
+                });
+            }
+        }
     </script>
 
 }

@@ -1,12 +1,46 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Application.Services;
+using Application.DTO;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WibuBlogAPI.Controllers
 {
-    public class ReportController : Controller
+    [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
+    [Route("api/[controller]/[action]")]
+    [ApiController]
+    public class ReportController(ReportService reportService, UserService userService, PostService postService) : ControllerBase
     {
-        public IActionResult Index()
+        private readonly ReportService _reportService = reportService;
+        private readonly UserService _userService = userService;
+        private readonly PostService _postService = postService;
+
+        [HttpPost]
+        public async Task<IActionResult> CreateReport([FromBody] CreateReportDto addReportDTO)
         {
-            return View();
+            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            addReportDTO.UserId = userId;
+            if (!ModelState.IsValid || addReportDTO.PostId == Guid.Empty)
+            {
+                return BadRequest(new { success = false });
+            }
+            try
+            {
+                await _reportService.CreateReportAsync(addReportDTO);
+                return Ok(new { success = true, message = Application.Common.MessageOperations.MessageConstants.ME020 });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false });
+            }
+        }
+        [Authorize(AuthenticationSchemes = "Bearer", Policy = "ModeratorPolicy")]
+        [HttpPut("Approve/{reportId}")]
+        public async Task<IActionResult> ApproveReport(Guid reportId, [FromBody] ApproveTicketDto dto)
+        {
+            var result = await _reportService.ApproveTicketAsync(reportId, dto.Approval, dto.Note);
+            if (result == 0) return NotFound("Ticket not found");
+            return Ok("Ticket approved");
         }
     }
 }
