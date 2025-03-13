@@ -11,12 +11,9 @@ namespace WibuBlog.Services
     {
         private readonly IApiService _apiService = apiService;
 
-        // In ReportService.cs
         public async Task<bool> CreateReportAsync(AddReportVM data)
         {
-            // Log the data being sent
             var response = await _apiService.PostAsync<ApiResponse<Post>>("Report/CreateReport", data);
-            Console.WriteLine($"Response: {response?.Value}");
             return response != null;
         }
     }

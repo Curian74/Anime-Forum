@@ -56,16 +56,16 @@
                                         </a>
                                     </li>
                                     <li><hr class="dropdown-divider border-top border-secondary"></li>
+                                   
+                                }
+
+                                else
+                                {
                                     <li>
                                         <a class="dropdown-item text-danger" href="#" onclick="showReportDialog('@Model.Post.Id', '@Model.User?.Id'); return false;">
                                             Report
                                         </a>
                                     </li>
-                                }
-
-                                else
-                                {
-                                    <li><a class="dropdown-item text-warning" href="#">Report</a></li>
                                 }
                             }
                         </ul>

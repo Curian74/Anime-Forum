@@ -13,7 +13,7 @@ namespace Domain.Entities
         [ForeignKey(nameof(Post))]
         public Guid PostId { get; set; }
 
-        public bool IsApproved {  get; set; }
+        public bool? IsApproved {  get; set; }
 
         public string Note { get; set; } = string.Empty;
 
