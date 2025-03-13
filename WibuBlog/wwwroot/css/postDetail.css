@@ -95,3 +95,15 @@ a {
     align-items: center;
     border:none;
 }
+
+.vote-btn {
+    transition: color 0.1s ease-in-out;
+}
+
+.upvote-btn.active {
+    color: red;
+}
+
+.downvote-btn.active {
+    color: dodgerblue;
+}
