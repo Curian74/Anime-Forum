@@ -183,6 +183,8 @@ namespace WibuBlog.Controllers
             if (userId != null)
             {
                 user = await _userService.GetUserById(Guid.Parse(userId));
+
+                if (Guid.Parse(userId) != post.UserId) return NotFound();
             }
 
             var data = new EditPostVM
