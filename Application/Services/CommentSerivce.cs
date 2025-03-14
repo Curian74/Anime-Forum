@@ -1,5 +1,6 @@
 ﻿
 using Application.Common.Pagination;
+using Application.DTO;
 using Application.DTO.Comment;
 using Application.Interfaces.Pagination;
 using AutoMapper;
@@ -37,6 +38,15 @@ namespace Application.Services
             var comment = _mapper.Map<Comment>(dto);
 
             await _commentGenericRepository.AddAsync(comment);
+
+            return await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task<int> UpdateCommentAsync(Guid commentId, EditCommentDto dto)
+        {
+            var comment = await _commentGenericRepository.GetByIdAsync(commentId) ?? throw new KeyNotFoundException("Could not find requested post.");
+
+            _mapper.Map(dto, comment);
 
             return await _unitOfWork.SaveChangesAsync();
         }
