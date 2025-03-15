@@ -15,6 +15,7 @@ using System.Text.Json.Serialization;
 using Infrastructure.External;
 using Application.Interfaces.Email;
 using Application.Common.EmailTemplate;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,6 +52,7 @@ builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<PostCategoryService>();
 builder.Services.AddScoped<CommentSerivce>();
 builder.Services.AddScoped<VoteService>();
+builder.Services.AddScoped<InventoryService>();
 
 // AutoMapper service
 // Quet project, tim tat ca file MappingProfile roi gop lai thanh 1
@@ -269,10 +271,29 @@ using (var scope = app.Services.CreateScope())
         };
 
         db.PostCategories.AddRange(categories);
+    }
+
+    if (!db.UserFlairs.Any())
+    {
+        var flairs = new List<UserFlair>
+        {
+            new() { Id = Guid.NewGuid(), Name = "Lính mới", ColorHex = "#FF0000", PointsRequired = 0 }, // red
+            new() { Id = Guid.NewGuid(), Name = "Công dân hạng C", ColorHex = "#FF7F00", PointsRequired = 50 }, // orange
+            new() { Id = Guid.NewGuid(), Name = "Wibu", ColorHex = "#FFFF00", PointsRequired = 150 }, // yellow
+            new() { Id = Guid.NewGuid(), Name = "Wibu kỳ cựu", ColorHex = "#00FF00", PointsRequired = 450 }, // green
+            new() { Id = Guid.NewGuid(), Name = "Tộc trưởng wibu", ColorHex = "#FF0000", PointsRequired = 1350 }, // blue
+            new() { Id = Guid.NewGuid(), Name = "Nhật nội địa", ColorHex = "#4B0082", PointsRequired = 4050 }, // indigo
+            new() { Id = Guid.NewGuid(), Name = "Wibu chúa", ColorHex = "#8B00FF", PointsRequired = 12150 }, // violet
+        };
+
+        db.UserFlairs.AddRange(flairs);
+    }
+
+    if (db.ChangeTracker.HasChanges())
+    {
         await db.SaveChangesAsync();
     }
 }
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
