@@ -10,6 +10,7 @@ namespace WibuBlog.Views.Shared.ViewComponents
         public async Task<IViewComponentResult> InvokeAsync()
         {
             var user = await _userService.GetUserProfile();
+           
             return View(user);
         }
     }

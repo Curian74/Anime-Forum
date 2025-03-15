@@ -46,7 +46,7 @@ namespace Application.Common.MessageOperations
         public const string MEN008 = "Username taken";
         public const string MEN009 = "Post title must be at least 2 characters.";
         public const string MEN010 = "Must be loggeed in to do this action";
-       
+        public const string MEN011 = "Invalid phone number format";
 
         //message nay dung de debug chu khong lien quan gi den BR hay nghiep vu
         public const string MEO001 = "Error reading expiry date";

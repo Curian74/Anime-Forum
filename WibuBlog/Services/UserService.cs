@@ -83,7 +83,8 @@ namespace WibuBlog.Services
 		public async Task<Media> UpdateProfilePhoto(IFormFile file)
         {
 			Media media = await _fileService.UploadImage(file);
-            var resp =  await _apiService.PostAsync<ApiResponse<Media>>($"Media/Add/", media);
+            //await _fileService.DeleteCurrentProfilePhoto();
+            var resp = await _apiService.PostAsync<ApiResponse<Media>>($"Media/Add/", media);
 			var response = await _apiService.PutAsync<ApiResponse<Media>>("User/UpdateProfilePhoto/", media);
             return response.Value!;
 		}

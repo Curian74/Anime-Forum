@@ -1,12 +1,16 @@
-﻿using Domain.Entities;
+﻿using Application.Services;
+using Domain.Entities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Application.Common.File
 {
@@ -14,6 +18,7 @@ namespace Application.Common.File
 	{
 		private readonly IWebHostEnvironment _webHostEnvironment;
 		private readonly IHttpContextAccessor _httpContextAccessor;
+		//private readonly UserService _userService;
 		public FileService(IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor)
 		{
 			_webHostEnvironment = webHostEnvironment;
@@ -63,6 +68,14 @@ namespace Application.Common.File
 			string fileExtension = Path.GetExtension(file.FileName);
 			string newFileName = $"{fileName}{fileExtension}";
 			return newFileName;
+		}
+
+		private bool FindFile(string fileNameWithoutExtension)
+		{
+			string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "images", "user");
+			var matchingFile = Directory.EnumerateFiles(folderPath)
+										.FirstOrDefault(f => Path.GetFileNameWithoutExtension(f) == fileNameWithoutExtension);
+			return matchingFile != null; 
 		}
 	}
 }

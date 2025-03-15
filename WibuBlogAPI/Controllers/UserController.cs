@@ -115,6 +115,5 @@ namespace WibuBlogAPI.Controllers
 				return StatusCode(500, $"file/server error: {ex.Message}");
 			}
 		}
-
 	}
 }
