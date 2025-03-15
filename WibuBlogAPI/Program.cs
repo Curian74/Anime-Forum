@@ -54,6 +54,7 @@ builder.Services.AddScoped<CommentSerivce>();
 builder.Services.AddScoped<VoteService>();
 builder.Services.AddScoped<MediaService>();
 builder.Services.AddScoped<FileService>();
+builder.Services.AddScoped<ReportService>();
 
 // AutoMapper service
 // Quet project, tim tat ca file MappingProfile roi gop lai thanh 1

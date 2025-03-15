@@ -44,6 +44,7 @@ namespace WibuBlog
 			builder.Services.AddScoped<CommentService>();
 			builder.Services.AddScoped<FileService>();
 			builder.Services.AddScoped<Application.Services.MediaService>();
+            builder.Services.AddScoped<ReportService>();
             builder.Services.AddScoped<IEmailService,EmailService>();
             //
             builder.Services.AddDistributedMemoryCache();

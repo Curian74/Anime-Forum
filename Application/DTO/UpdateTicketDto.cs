@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Domain.ValueObjects.Enums.TicketStatusEnum;
 
 namespace Application.DTO
 {
@@ -12,7 +13,7 @@ namespace Application.DTO
         public string Content { get; set; } = string.Empty;
         public string? Email { get; set; }
         public string? Tag { get; set; }
-        public bool? IsApproved { get; set; }
+        public TicketStatus Status { get; set; } = TicketStatus.Pending;
         public string? Note { get; set; }
     }
 }
