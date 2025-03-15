@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Application.Common.MessageOperations;
+using Domain.Entities;
 namespace Application.DTO
 {
     public class UserProfileDto
@@ -17,6 +18,7 @@ namespace Application.DTO
         public int? Points { get; set; }
         public bool? PhoneNumberConfirmed { get; set; }
         public bool? TwoFactorEnabled { get; set; }
+        public Rank? Rank { get; set; }
         public IList<string>? Roles { get; set; }
     }
 }

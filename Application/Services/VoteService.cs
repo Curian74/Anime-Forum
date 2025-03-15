@@ -5,13 +5,14 @@ using Domain.Interfaces;
 
 namespace Application.Services
 {
-    public class VoteService(IUnitOfWork unitOfWork, IMapper mapper, InventoryService inventoryService)
+    public class VoteService(IUnitOfWork unitOfWork, IMapper mapper, InventoryService inventoryService, RankService rankService)
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IGenericRepository<Vote> _voteRepository = unitOfWork.GetRepository<Vote>();
         private readonly IGenericRepository<Post> _postRepository = unitOfWork.GetRepository<Post>();
         private readonly IMapper _mapper = mapper;
         private readonly InventoryService _inventoryService = inventoryService;
+        private readonly RankService _rankService = rankService;
 
         public async Task<int> GetTotalPostVotesAsync(Guid postId)
         {
@@ -92,6 +93,7 @@ namespace Application.Services
             }
 
             await _inventoryService.UpdateFlairsAsync(userId);
+            await _rankService.UpdateUserRankAsync(userId);
 
             return await _unitOfWork.SaveChangesAsync();
         }

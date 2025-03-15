@@ -54,6 +54,7 @@ builder.Services.AddScoped<CommentSerivce>();
 builder.Services.AddScoped<VoteService>();
 builder.Services.AddScoped<ReportService>();
 builder.Services.AddScoped<InventoryService>();
+builder.Services.AddScoped<RankService>();
 
 // AutoMapper service
 // Quet project, tim tat ca file MappingProfile roi gop lai thanh 1
@@ -274,6 +275,22 @@ using (var scope = app.Services.CreateScope())
         db.PostCategories.AddRange(categories);
     }
 
+    if (!db.Ranks.Any())
+    {
+        var ranks = new List<Rank>
+        {
+            new() { Id = Guid.NewGuid(), Name = "Lính mới", PointsRequired = 0 },
+            new() { Id = Guid.NewGuid(), Name = "Công dân hạng C", PointsRequired = 50 },
+            new() { Id = Guid.NewGuid(), Name = "Wibu", PointsRequired = 150 },
+            new() { Id = Guid.NewGuid(), Name = "Wibu kỳ cựu", PointsRequired = 450 },
+            new() { Id = Guid.NewGuid(), Name = "Tộc trưởng wibu", PointsRequired = 1350 },
+            new() { Id = Guid.NewGuid(), Name = "Nhật nội địa", PointsRequired = 4050 },
+            new() { Id = Guid.NewGuid(), Name = "Wibu chúa", PointsRequired = 12150 },
+        };
+
+        db.Ranks.AddRange(ranks);
+    }
+
     if (!db.UserFlairs.Any())
     {
         var flairs = new List<UserFlair>
@@ -289,6 +306,7 @@ using (var scope = app.Services.CreateScope())
 
         db.UserFlairs.AddRange(flairs);
     }
+
 
     if (db.ChangeTracker.HasChanges())
     {

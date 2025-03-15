@@ -13,6 +13,9 @@ namespace Domain.Entities
 
         public string? Bio { get; set; }
 
+        [ForeignKey(nameof(Rank))]
+        public Guid? RankId { get; set; }
+
         // Navigation properties
         public virtual Rank? Rank { get; set; }
 

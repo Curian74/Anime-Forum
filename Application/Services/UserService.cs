@@ -7,11 +7,12 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Application.Services
 {
-    public class UserService(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork)
+    public class UserService(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork, RankService rankService)
     {
         private readonly UserManager<User> _userManager = userManager;
         private readonly IMapper _mapper = mapper;
         private readonly IGenericRepository<User> _userRepository = unitOfWork.GetRepository<User>();
+        private readonly RankService _rankService = rankService;
 
         public async Task<User?> FindByLoginAsync(LoginDto dto)
         {
@@ -69,6 +70,8 @@ namespace Application.Services
             {
                 return null;
             }
+
+            await _rankService.UpdateUserRankAsync(id);
 
             var result = _mapper.Map<UserProfileDto>(user);
 
