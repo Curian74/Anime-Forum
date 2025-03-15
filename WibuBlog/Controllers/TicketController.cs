@@ -4,6 +4,7 @@ using WibuBlog.ViewModels.Ticket;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace WibuBlog.Controllers
 {
@@ -12,17 +13,23 @@ namespace WibuBlog.Controllers
     {
         private readonly TicketService _ticketService = ticketService;
 
-        public async Task<IActionResult> Index(int? page = 1, int? pageSize = 5)
+        public async Task<IActionResult> Index()
         {
-            var value = await _ticketService.GetPagedTicketAsync(page, pageSize);
-            return View("Index", value);
+            return View("Index");
         }
 
-        public async Task<IActionResult> NewTickets(int? page = 1, int? pageSize = 10)
+        public async Task<IActionResult> NewTickets()
         {
-            var value = await _ticketService.GetPagedTicketAsync(page, pageSize);
-            return View(value);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized("Invalid user ID");
+            }
+
+            var tickets = await _ticketService.GetUserTicketsAsync(userId);
+            return View(tickets);
         }
+
 
         [HttpGet]
         public IActionResult Add()
@@ -45,18 +52,15 @@ namespace WibuBlog.Controllers
 
                 if (userId == null)
                 {
-                    TempData["ErrorMessage"] = "User not logged in.";
                     return RedirectToAction(nameof(Add));
                 }
 
                 addTicketVM.UserId = Guid.Parse(userId); 
 
                 await _ticketService.AddNewTicketAsync(addTicketVM);
-                TempData["SuccessMessage"] = "Ticket submitted successfully!";
             }
             catch (Exception)
             {
-                TempData["ErrorMessage"] = "An error occurred while submitting the ticket.";
             }
 
             return RedirectToAction(nameof(Add));
@@ -77,7 +81,11 @@ namespace WibuBlog.Controllers
                 Email = ticket.Email,
                 Content = ticket.Content,
                 Tag = ticket.Tag,
-                IsApproved = ticket.IsApproved ?? false
+                Status = ticket.Status,
+                Note = ticket.Note,
+                CreatedAt = ticket.CreatedAt,
+                LastModifiedAt = ticket.LastModifiedAt,
+                UserId = ticket.UserId,
             };
 
             return View(model);
@@ -112,7 +120,45 @@ namespace WibuBlog.Controllers
                 return View("Detail", model);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> Close(Guid id)
+        {
+            try
+            {
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (userId == null)
+                {
+                    TempData["ErrorMessage"] = "User not logged in.";
+                    return RedirectToAction(nameof(Index));
+                }
 
+                var ticket = await _ticketService.GetTicketByIdAsync(id);
+
+                if (ticket.UserId.ToString() != userId)
+                {
+                    TempData["ErrorMessage"] = "You can only close tickets you created.";
+                    return RedirectToAction(nameof(Detail), new { id });
+                }
+
+                var success = await _ticketService.CloseTicketAsync(id);
+
+                if (success)
+                {
+                    TempData["SuccessMessage"] = "Ticket closed successfully!";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Failed to close ticket.";
+                }
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception)
+            {
+                TempData["ErrorMessage"] = "An error occurred while closing the ticket.";
+                return RedirectToAction(nameof(Detail), new { id });
+            }
+        }
         [HttpGet]
         public async Task<IActionResult> Delete(Guid id)
         {

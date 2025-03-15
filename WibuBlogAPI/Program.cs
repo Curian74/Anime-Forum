@@ -52,6 +52,7 @@ builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<PostCategoryService>();
 builder.Services.AddScoped<CommentSerivce>();
 builder.Services.AddScoped<VoteService>();
+builder.Services.AddScoped<ReportService>();
 builder.Services.AddScoped<InventoryService>();
 
 // AutoMapper service

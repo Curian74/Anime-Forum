@@ -1,0 +1,27 @@
+﻿            <!-- Report Section -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reportModalLabel">Report Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="d-none">Debug: Post ID = @Model.Post?.Id</p>
+
+                <form asp-controller="Report" asp-action="CreateReport" method="post">
+                    <input type="hidden" name="postId" id="post-id" value="@Model.Post?.Id" />
+                    <input type="hidden" name="userId" id="user-id" value="@Model.User?.Id" />
+                    <div class="mb-3">
+                        <label for="reportReason" class="form-label">Reason for reporting:</label>
+                        <textarea class="form-control" name="Reason" rows="3" required></textarea>
+                    </div>
+                    <div class="text-end">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Submit Report</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

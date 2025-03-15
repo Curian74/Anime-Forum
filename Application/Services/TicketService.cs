@@ -2,6 +2,7 @@
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
+using static Domain.ValueObjects.Enums.TicketStatusEnum;
 
 namespace Application.Services
 {
@@ -63,11 +64,21 @@ namespace Application.Services
 
             if (ticket != null)
             {
-                ticket.IsApproved = approval;
+                ticket.Status = approval ? TicketStatus.Approved : TicketStatus.Rejected;
                 ticket.Note = note;
                 await _ticketRepository.UpdateAsync(ticket);
             }
 
+            return await _unitOfWork.SaveChangesAsync();
+        }
+        public async Task<int> CloseTicketAsync(Guid ticketId)
+        {
+            var ticket = await _ticketRepository.GetByIdAsync(ticketId);
+            if (ticket != null)
+            {
+                ticket.Status = TicketStatus.Closed;
+                await _ticketRepository.UpdateAsync(ticket);
+            }
             return await _unitOfWork.SaveChangesAsync();
         }
 

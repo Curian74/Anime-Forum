@@ -1,5 +1,6 @@
 ﻿using Domain.Common.BaseEntities;
 using System.ComponentModel.DataAnnotations.Schema;
+using static Domain.ValueObjects.Enums.TicketStatusEnum;
 
 namespace Domain.Entities
 {
@@ -12,7 +13,7 @@ namespace Domain.Entities
         public string Tag { get; set; } = null!;
         public string Email { get; set; } = null!;
 
-        public bool? IsApproved { get; set; } = null;
+        public TicketStatus Status { get; set; } = TicketStatus.Pending;
 
         public string? Note { get; set; }
 
