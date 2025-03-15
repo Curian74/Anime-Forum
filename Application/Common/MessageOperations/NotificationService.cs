@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Application.Common.MessageOperations
 {
     public static class NotificationService

@@ -15,7 +15,6 @@ using System.Text.Json.Serialization;
 using Infrastructure.External;
 using Application.Interfaces.Email;
 using Application.Common.EmailTemplate;
-using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -275,6 +274,7 @@ using (var scope = app.Services.CreateScope())
         db.PostCategories.AddRange(categories);
     }
 
+    // Seed rank table with ranks
     if (!db.Ranks.Any())
     {
         var ranks = new List<Rank>
@@ -291,6 +291,7 @@ using (var scope = app.Services.CreateScope())
         db.Ranks.AddRange(ranks);
     }
 
+    // Seed user flair table with user flairs
     if (!db.UserFlairs.Any())
     {
         var flairs = new List<UserFlair>
