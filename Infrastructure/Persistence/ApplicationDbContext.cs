@@ -53,8 +53,11 @@ namespace Infrastructure.Persistence
             {
                 opt.Navigation(p => p.User).AutoInclude();
             });
-
-            modelBuilder.Entity<Comment>()
+			modelBuilder.Entity<User>(opt =>
+			{
+				opt.Navigation(p => p.ProfilePhoto).AutoInclude();
+			});
+			modelBuilder.Entity<Comment>()
                 .HasOne(c => c.Post)
                 .WithMany(p => p.Comments)
                 .HasForeignKey(c => c.PostId)

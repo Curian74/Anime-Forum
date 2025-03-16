@@ -1,14 +1,16 @@
 ﻿using WibuBlog.Services;
 using Microsoft.AspNetCore.Mvc;
-using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
+using WibuBlog.ViewModels.Users;
+using Application.Common.MessageOperations;
 
 namespace WibuBlog.Controllers
 {
-   // [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
-    public class UserController(UserService userService) : Controller
+    [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
+    public class UserController(UserService userService, IWebHostEnvironment webHostEnvironment) : Controller
     {
         private readonly UserService _userService = userService;
+        private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
 
         public IActionResult Index()
         {
@@ -19,7 +21,7 @@ namespace WibuBlog.Controllers
         public async Task<IActionResult> UserProfile()
         {
             var result = await _userService.GetUserProfile();
-            if (result == null)
+            if (result is null)
             {
                 return NotFound();
             }
@@ -35,23 +37,38 @@ namespace WibuBlog.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] User user)
+		public async Task<IActionResult> UpdateUser(UpdateUserVM updateUserVM)
         {
-            if (!ModelState.IsValid)
+			if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState); 
+                return RedirectToAction(nameof(UserProfile));
             }
-            try
-            {
-                await _userService.UpdateUserAsync(userId, user); 
-                return Json(new { success = true, message = "Updated!" });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = "Exception: " + ex.Message });
-            }
+			
+			var user = await _userService.UpdateUserAsync(updateUserVM);
+            return RedirectToAction(nameof(UserProfile));
         }
 
-      
+		[HttpPost]
+		public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordVM model)
+		{
+            if (model.NewPassword != model.ConfirmPassword)
+			{
+				return BadRequest(MessageConstants.ME006);
+			}
+            var response = await _userService.UpdatePassword(model);
+            if (response.Succeeded)
+            {
+                return Ok(MessageConstants.ME007a);
+            }
+            return BadRequest(response.Errors[0].Description);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateProfilePhoto(IFormFile file)
+        {
+			var response = await _userService.UpdateProfilePhoto(file);
+            return RedirectToAction(nameof(UserProfile));
+                        
+        }
     }
 }

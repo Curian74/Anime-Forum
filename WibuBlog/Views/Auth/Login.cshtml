@@ -29,7 +29,12 @@
                                                     @TempData["RegistrationSuccess"]
                                                 </div>
                                             }
-
+                                            @if (TempData["LoginRequired"] != null)
+                                            {
+                                                    <div class="alert alert-error">
+                                                    @TempData["LoginRequired"]
+                                                    </div>
+                                            }
                                             <form asp-action="LoginAuthentication" asp-controller="Auth" method="post">
                                                 <div class="form-group">
                                                     <label class="font-weight-semibold" for="userName">Username:</label>

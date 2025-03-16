@@ -1,16 +1,34 @@
-﻿using Application.Common.Pagination;
+﻿using Application.Common.File;
+using Application.Common.Pagination;
 using Application.DTO;
+using Application.Services;
 using Domain.Entities;
+using Infrastructure.Configurations;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using System.Security.Claims;
 using WibuBlog.Common.ApiResponse;
 using WibuBlog.Interfaces.Api;
+using WibuBlog.ViewModels.Users;
+using System.Security.Claims;
 
 namespace WibuBlog.Services
 {
-    public class UserService(IApiService apiService)
+    public class UserService(IApiService apiService, IOptions<AuthTokenOptions> authTokenOptions, IHttpContextAccessor httpContextAccessor, FileService fileService, MediaService mediaService)
     {
         private readonly IApiService _apiService = apiService;
-        public async Task<UserProfileDto> GetUserProfile()
+        private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+		private readonly FileService _fileService = fileService;
+        private readonly MediaService _mediaService = mediaService;
+		public async Task<UserProfileDto> GetUserProfile()
         {
+            var token = _httpContextAccessor.HttpContext?.Request.Cookies[_authTokenOptions.Name];
+            if (string.IsNullOrEmpty(token))
+            {
+                return null; 
+            }
             var response = await _apiService.GetAsync<ApiResponse<UserProfileDto>>($"User/GetAccountDetails/");
             return response.Value!;
         }
@@ -37,11 +55,38 @@ namespace WibuBlog.Services
             return response.Value!;
         }
 
-        public async Task<User> UpdateUserAsync<T>(T userId, User data)
+        public async Task<UpdateUserDto> UpdateUserAsync(UpdateUserVM updateUserVM)
         {
-            var response = await _apiService.PutAsync<ApiResponse<User>>($"User/UpdateUser/{userId}", data);
+            UpdateUserDto updateUserDto = new UpdateUserDto()
+            {
+               Id = updateUserVM.UserId,
+               Bio = updateUserVM.Bio,
+               PhoneNumber = updateUserVM.Phone
+            };
+            var response = await _apiService.PutAsync<ApiResponse<UpdateUserDto>>($"User/UpdateUser/", updateUserDto);
             return response.Value!;
         }
 
-    }
+        public async Task<ApiResponse<IdentityResult>> UpdatePassword(UpdatePasswordVM model)
+        {
+			UpdatePasswordDTO updatePasswordDTO = new UpdatePasswordDTO()
+			{
+                UserId = model.UserId,
+				OldPassword = model.OldPassword,
+				NewPassword = model.NewPassword,
+				ConfirmPassword = model.ConfirmPassword
+			};
+			var response = await _apiService.PutAsync<ApiResponse<IdentityResult>>($"User/UpdatePassword/", updatePasswordDTO);
+			return response;
+		}
+
+		public async Task<Media> UpdateProfilePhoto(IFormFile file)
+        {
+			Media media = await _fileService.UploadImage(file);
+            //await _fileService.DeleteCurrentProfilePhoto();
+            var resp = await _apiService.PostAsync<ApiResponse<Media>>($"Media/Add/", media);
+			var response = await _apiService.PutAsync<ApiResponse<Media>>("User/UpdateProfilePhoto/", media);
+            return response.Value!;
+		}
+	}
 }

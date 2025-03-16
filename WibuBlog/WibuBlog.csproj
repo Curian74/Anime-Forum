@@ -8,10 +8,12 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\js\header.js" />
+    <Content Remove="wwwroot\js\userProfile.js" />
   </ItemGroup>
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="wwwroot\css\profile.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\userProfile.js" />
     <None Remove="Views\Auth\Login.cshtml.orig" />
     <None Remove="Views\Auth\Register.cshtml.orig" />
   </ItemGroup>
@@ -53,6 +55,11 @@
   <ItemGroup>
     <None Include="wwwroot\css\app.min.css" />
     <None Include="wwwroot\js\header.js" />
+    <None Include="wwwroot\js\userProfile.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\uploads\images\user\" />
   </ItemGroup>
 
 </Project>
