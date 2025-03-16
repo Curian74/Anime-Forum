@@ -17,6 +17,7 @@ namespace Domain.Entities
 
         public string? Note { get; set; }
 
-        public User User { get; set; } = null!;
+        // Navigation properties
+        public virtual User? User { get; set; }
     }
 }

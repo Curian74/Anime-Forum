@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Application.Services;
-using Application.DTO;
 using System.Security.Claims;
 using Domain.Entities;
 
@@ -16,9 +15,12 @@ namespace WibuBlogAPI.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAccountDetails()
+        public async Task<IActionResult> GetAccountDetails(Guid? userId)
         {
-            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            if (userId == null)
+            {
+                userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            }
 
             var result = await _userService.GetProfileDetails(userId);
 

@@ -32,6 +32,7 @@ namespace Infrastructure.Persistence
             {
                 var connectionString = _configuration.GetConnectionString("Default");
                 optionsBuilder.UseSqlServer(connectionString);
+                optionsBuilder.UseLazyLoadingProxies();
             }
         }
 
