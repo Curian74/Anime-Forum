@@ -1,20 +1,27 @@
-﻿using Application.Common.Pagination;
+﻿using Application.Common.File;
+using Application.Common.Pagination;
 using Application.DTO;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 
 namespace Application.Services
 {
-    public class UserService(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork, RankService rankService)
+    public class UserService(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork, RankService rankService, IWebHostEnvironment webHostEnvironment)
     {
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly UserManager<User> _userManager = userManager;
         private readonly IMapper _mapper = mapper;
+        private readonly IGenericRepository<User> _userGenericRepository = unitOfWork.GetRepository<User>();
+        private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
         private readonly IGenericRepository<User> _userRepository = unitOfWork.GetRepository<User>();
         private readonly RankService _rankService = rankService;
 
-        public async Task<User?> FindByLoginAsync(LoginDto dto)
+		public async Task<User?> FindByLoginAsync(LoginDto dto)
         {
             var user = await _userManager.FindByNameAsync(dto.Login);
 
@@ -77,7 +84,7 @@ namespace Application.Services
 
             result.Roles = await _userManager.GetRolesAsync(user);
 
-            return result;
+			return result;
         }
         public async Task<User?> FindByIdAsync(Guid userId)
         {
@@ -91,5 +98,29 @@ namespace Application.Services
             return new PagedResult<User>(items, totalCount, page, size);
         }
 
-    }
+        public async Task<int> UpdateUserAsync(UpdateUserDto userUpdateDTO)
+        {
+            var updateUser = await _userManager.FindByIdAsync(userUpdateDTO.Id.ToString());
+            _mapper.Map(userUpdateDTO,updateUser);          
+            return await _unitOfWork.SaveChangesAsync();
+        }
+
+		public async Task<IdentityResult> UpdatePasswordAsync(UpdatePasswordDTO updatePasswordDTO)
+		{
+			var updateUser = await _userManager.FindByIdAsync(updatePasswordDTO.UserId.ToString());
+            return await _userManager.ChangePasswordAsync(updateUser, updatePasswordDTO.OldPassword, updatePasswordDTO.NewPassword);
+		}
+
+
+		public async Task<Media> UpdateProfilePhotoAsync(Media media, string currentUserId)
+        {
+            var updateUser = await _userManager.FindByIdAsync(currentUserId);
+            updateUser.ProfilePhoto = media;
+            await _unitOfWork.SaveChangesAsync();
+            return media;
+		}
+
+
+		
+	}
 }

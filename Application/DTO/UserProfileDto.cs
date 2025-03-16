@@ -5,6 +5,7 @@ namespace Application.DTO
 {
     public class UserProfileDto
     {
+        public Guid userId { get; set; }
         [Required(ErrorMessage = MessageConstants.ME002)]
         [StringLength(50, ErrorMessage = MessageConstants.MEN001)]
         [MinLength(5, ErrorMessage = MessageConstants.MEN002)]
@@ -12,6 +13,8 @@ namespace Application.DTO
         public string? Email { get; set; }
         public bool? EmailConfirmed { get; set; }
         public string? PhoneNumber { get; set; }
+
+        public Media? ProfilePhoto { get; set; }
 
         [MinLength(0, ErrorMessage = MessageConstants.MEO003)]
         public string? Bio { get; set; }
