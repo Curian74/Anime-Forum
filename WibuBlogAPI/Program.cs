@@ -261,9 +261,9 @@ using (var scope = app.Services.CreateScope())
     {
         var categories = new List<PostCategory>
         {
-            new() { Id = Guid.NewGuid(), Name = "Thông báo"},
+            new() { Id = Guid.NewGuid(), Name = "Thông báo", IsRestricted = true},
             new() { Id = Guid.NewGuid(), Name = "Góp ý"},
-            new() { Id = Guid.NewGuid(), Name = "Tin tức"},
+            new() { Id = Guid.NewGuid(), Name = "Tin tức", IsRestricted = true},
             new() { Id = Guid.NewGuid(), Name = "Chia sẻ kiến thức"},
             new() { Id = Guid.NewGuid(), Name = "Review linh tinh"},
             new() { Id = Guid.NewGuid(), Name = "Review manga"},
