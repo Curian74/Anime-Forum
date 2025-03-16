@@ -103,6 +103,7 @@ const editComment = async (cmtId) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ content: editedContent }),
+            credentials: 'include'
         });
 
         const result = await response.json();

@@ -50,5 +50,14 @@ namespace Application.Services
 
             return await _unitOfWork.SaveChangesAsync();
         }
+
+        public async Task<int> DeleteCommentAsync(Guid commentId)
+        {
+            var comment = await _commentGenericRepository.GetByIdAsync(commentId) ?? throw new KeyNotFoundException("Could not find requested post.");
+
+            comment.IsHidden = true;
+
+            return await _unitOfWork.SaveChangesAsync();
+        }
     }
 }

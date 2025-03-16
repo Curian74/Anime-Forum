@@ -72,7 +72,6 @@ namespace WibuBlogAPI.Controllers
             return new JsonResult(Ok());
         }
 
-        [AllowAnonymous]
         [HttpPut("{commentId}")]
         public async Task<IActionResult> Update(Guid commentId, [FromBody] EditCommentDto dto)
         {
@@ -86,6 +85,23 @@ namespace WibuBlogAPI.Controllers
             }
 
             return new JsonResult(Accepted(dto));
+
+        }
+
+        [AllowAnonymous]
+        [HttpPut("{commentId}")]
+        public async Task<IActionResult> Delete(Guid commentId)
+        {
+            try
+            {
+                await _commentSerivce.DeleteCommentAsync(commentId);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new JsonResult(NotFound($"{ex.GetType().Name}: {ex.Message}"));
+            }
+
+            return new JsonResult(NoContent());
 
         }
     }

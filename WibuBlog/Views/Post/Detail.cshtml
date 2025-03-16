@@ -9,9 +9,6 @@
 <link rel="stylesheet" href="~/richtexteditor/rte_theme_default.css" />
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.all.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.7.1.js"
-        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-        crossorigin="anonymous"></script>
 
 <section>
     <div class="container mt-4">
@@ -237,7 +234,7 @@
                                     <div class="w-100">
                                         <div class="d-flex justify-content-between">
                                             <div class="d-flex flex-column mb-2">
-                                                <strong>@c.User?.UserName</strong> 
+                                                <strong>@c.User?.UserName</strong>
                                                 <small class="fst-italic" style="font-size: 12px; color:#576f76;">
                                                     @DateFormatHelper.GetDateFormat(c.CreatedAt)
                                                 </small>
@@ -251,6 +248,12 @@
                                                     <ul class="dropdown-menu">
                                                         <li>
                                                             <a class="dropdown-item" href="#" onclick="openEditCmt('@c.Id'); return false;">Edit</a>
+                                                        </li>
+
+                                                        <li>
+                                                            <a class="dropdown-item" href="#" onclick="openEditCmt('@c.Id'); return false;" style="color: red !important;">
+                                                                Delete
+                                                            </a>
                                                         </li>
                                                     </ul>
                                                 </div>
