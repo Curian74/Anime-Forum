@@ -19,17 +19,19 @@ namespace Domain.Entities
 
         public int TotalVotes { get; set; } = 0;
 
-        public ICollection<Vote> Votes { get; set; } = [];
-
-        public ICollection<Comment> Comments { get; set; } = [];
-
-        public ICollection<Report> Reports { get; set; } = [];
-
         public int Views {  get; set; }
 
         // Navigation properties
-        public User? User { get; set; }
-        public PostCategory? Category { get; set; }
-        public Media? Media { get; set; }
+        public virtual ICollection<Vote>? Votes { get; set; } = [];
+
+        public virtual ICollection<Comment>? Comments { get; set; } = [];
+
+        public virtual ICollection<Report>? Reports { get; set; } = [];
+
+        public virtual User? User { get; set; }
+
+        public virtual PostCategory? Category { get; set; }
+
+        public virtual Media? Media { get; set; }
     }
 }

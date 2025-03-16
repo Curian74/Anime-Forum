@@ -4,7 +4,6 @@ using Application.Services;
 using Domain.Entities;
 using Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;

@@ -11,8 +11,7 @@ namespace Domain.Entities
         [ForeignKey(nameof(UserFlair))]
         public Guid FlairId { get; set; }
 
-        public User User { get; set; } = null!;
-
-        public UserFlair Flair { get; set; } = null!;
+        // Navigation properties
+        public virtual UserFlair? Flair { get; set; }
     }
 }

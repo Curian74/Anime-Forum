@@ -1,5 +1,4 @@
-﻿
-namespace Application.DTO.Post
+﻿namespace Application.DTO.Post
 {
     public class DeactivatePostDto
     {

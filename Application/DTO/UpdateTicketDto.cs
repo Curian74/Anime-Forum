@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Domain.ValueObjects.Enums.TicketStatusEnum;
+﻿using static Domain.ValueObjects.Enums.TicketStatusEnum;
 
 namespace Application.DTO
 {

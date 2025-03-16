@@ -4,15 +4,15 @@ using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using Application.Interfaces.Email;
 
 namespace Application.Services
 {
-    public class UserService(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork)
+    public class UserService(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork, RankService rankService)
     {
         private readonly UserManager<User> _userManager = userManager;
         private readonly IMapper _mapper = mapper;
-        private readonly IGenericRepository<User> _userGenericRepository = unitOfWork.GetRepository<User>();
+        private readonly IGenericRepository<User> _userRepository = unitOfWork.GetRepository<User>();
+        private readonly RankService _rankService = rankService;
 
         public async Task<User?> FindByLoginAsync(LoginDto dto)
         {
@@ -62,7 +62,7 @@ namespace Application.Services
             return result;
         }
 
-        public async Task<UserProfileDto?> GetProfileDetails(Guid id)
+        public async Task<UserProfileDto?> GetProfileDetails(Guid? id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
 
@@ -70,6 +70,8 @@ namespace Application.Services
             {
                 return null;
             }
+
+            await _rankService.UpdateUserRankAsync(id);
 
             var result = _mapper.Map<UserProfileDto>(user);
 
@@ -85,7 +87,7 @@ namespace Application.Services
 
         public async Task<PagedResult<User>> GetPagedUsersAsync(int page, int size)
         {
-            var (items, totalCount) = await _userGenericRepository.GetPagedAsync(page, size);
+            var (items, totalCount) = await _userRepository.GetPagedAsync(page, size);
             return new PagedResult<User>(items, totalCount, page, size);
         }
 
