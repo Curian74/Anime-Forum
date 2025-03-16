@@ -22,6 +22,7 @@ namespace Application.Common.Mappings
             CreateMap<Ticket, CreateTicketDto>().ReverseMap();
             CreateMap<Ticket, UpdateTicketDto>().ReverseMap();
             CreateMap<Comment, PostCommentDto>().ReverseMap();
+            CreateMap<Comment, EditCommentDto>().ReverseMap();
             CreateMap<UpdateUserDto, User>()
            .ForMember(dest => dest.Bio, opt => opt.MapFrom(src => src.Bio))
            .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber));

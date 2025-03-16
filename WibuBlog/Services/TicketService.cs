@@ -14,25 +14,12 @@ namespace WibuBlog.Services
         {
             try
             {
-                var response = await _apiService.GetAsync<ApiResponse<object>>("Ticket/GetUserTickets/UserTickets");
+                var response = await _apiService.GetAsync<ApiResponse<List<Ticket>>>("Ticket/GetUserTickets");
                 // Check if we got a response
                 if (response?.Value == null)
                     return new List<Ticket>();
 
-                // Try to extract the tickets property using reflection
-                var valueType = response.Value.GetType();
-                var ticketsProp = valueType.GetProperty("tickets");
-
-                if (ticketsProp != null)
-                {
-                    var ticketsObj = ticketsProp.GetValue(response.Value);
-                    if (ticketsObj is List<Ticket> tickets)
-                        return tickets;
-                }
-
-                // If we couldn't extract tickets property, log an error
-                Console.WriteLine("Could not extract tickets from API response");
-                return new List<Ticket>();
+                return response.Value;
             }
             catch (Exception ex)
             {

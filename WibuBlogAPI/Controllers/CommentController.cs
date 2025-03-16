@@ -1,4 +1,5 @@
-﻿using Application.DTO.Comment;
+﻿using Application.DTO;
+using Application.DTO.Comment;
 using Application.Services;
 using Domain.Entities;
 using Infrastructure.Extensions;
@@ -68,6 +69,39 @@ namespace WibuBlogAPI.Controllers
             }
 
             return new JsonResult(Ok());
+        }
+
+        [HttpPut("{commentId}")]
+        public async Task<IActionResult> Update(Guid commentId, [FromBody] EditCommentDto dto)
+        {
+            try
+            {
+                await _commentSerivce.UpdateCommentAsync(commentId, dto);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new JsonResult(NotFound($"{ex.GetType().Name}: {ex.Message}"));
+            }
+
+            return new JsonResult(Accepted(dto));
+
+        }
+
+        [AllowAnonymous]
+        [HttpPut("{commentId}")]
+        public async Task<IActionResult> Delete(Guid commentId)
+        {
+            try
+            {
+                await _commentSerivce.DeleteCommentAsync(commentId);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new JsonResult(NotFound($"{ex.GetType().Name}: {ex.Message}"));
+            }
+
+            return new JsonResult(NoContent());
+
         }
     }
 }
