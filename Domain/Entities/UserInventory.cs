@@ -8,9 +8,10 @@ namespace Domain.Entities
         [ForeignKey(nameof(User))]
         public Guid UserId { get; set; }
 
-        public ICollection<UserFlair> Flairs { get; set; } = [];
 
         // Navigation properties
-        public User User { get; set; } = null!;
+        public virtual ICollection<UserFlair>? Flairs { get; set; } = [];
+
+        // public User? User { get; set; }
     }
 }

@@ -13,11 +13,9 @@ using Infrastructure.Extensions;
 using Infrastructure.Configurations;
 using System.Text.Json.Serialization;
 using Infrastructure.External;
-<<<<<<< HEAD
 using Application.Interfaces.Email;
 using Application.Common.EmailTemplate;
-=======
->>>>>>> main
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +36,7 @@ builder.Services.AddSwaggerGen();
 
 // Persistence classes
 builder.Services.AddDbContext<ApplicationDbContext>();
-builder.Services.AddScoped<DbContext, ApplicationDbContext>();
+builder.Services.AddScoped<ApplicationDbContext>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -46,16 +44,18 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<PostService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AdminService>();
-<<<<<<< HEAD
-builder.Services.AddScoped<TicketServices>();
-builder.Services.AddScoped<TemplateBody>();
-builder.Services.AddScoped<IEmailService,EmailService>();
-builder.Services.AddScoped<PostCategoryServices>();
-=======
+builder.Services.AddScoped<CommentSerivce>();
 builder.Services.AddScoped<TicketService>();
+builder.Services.AddScoped<TemplateBody>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<PostCategoryService>();
-builder.Services.AddScoped<CommentSerivces>();
+builder.Services.AddScoped<CommentSerivce>();
+builder.Services.AddScoped<VoteService>();
+<<<<<<< HEAD
+builder.Services.AddScoped<InventoryService>();
+=======
+builder.Services.AddScoped<ReportService>();
 >>>>>>> main
 
 // AutoMapper service
@@ -141,8 +141,6 @@ builder.Services.Configure<AuthTokenOptions>(
     builder.Configuration.GetSection("AuthTokenOptions")
 );
 
-<<<<<<< HEAD
-=======
 
 // Cookie configuration + CORS
 builder.Services.Configure<CookiePolicyOptions>(options =>
@@ -152,30 +150,16 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
     options.MinimumSameSitePolicy = SameSiteMode.None;
 });
 
->>>>>>> main
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
         builder => builder
-<<<<<<< HEAD
-            .WithOrigins("https://localhost:7139")
-=======
             .SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost") // Allow any localhost port
->>>>>>> main
             .AllowCredentials()
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
 
-<<<<<<< HEAD
-builder.Services.Configure<CookiePolicyOptions>(options =>
-{
-    // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-    options.CheckConsentNeeded = context => false;
-    options.MinimumSameSitePolicy = SameSiteMode.None;
-});
-=======
->>>>>>> main
 
 var app = builder.Build();
 
@@ -209,8 +193,14 @@ using (var scope = app.Services.CreateScope())
         await roleManager.CreateAsync(new IdentityRole<Guid>(UserRoles.Member));
     }
 
-    // Seed a superuser account, for testing purposes. Username and password are both "admin"
+    // Seed 3 accounts, for testing purposes. Username and password are the same and is the name of their roles
     var userManager = services.GetRequiredService<UserManager<User>>();
+
+    var passwordValidators = userManager.PasswordValidators;
+    var userValidators = userManager.UserValidators;
+    userManager.PasswordValidators.Clear();
+    userManager.UserValidators.Clear();
+
     var admin = await userManager.FindByNameAsync("admin");
     if (admin == null)
     {
@@ -222,29 +212,54 @@ using (var scope = app.Services.CreateScope())
             Bio = "admin"
         };
 
-        var passwordValidators = userManager.PasswordValidators;
-        var userValidators = userManager.UserValidators;
-
-        userManager.PasswordValidators.Clear();
-        userManager.UserValidators.Clear();
-
-        var result = await userManager.CreateAsync(admin, "admin");
+        await userManager.CreateAsync(admin, "admin");
         await userManager.AddToRoleAsync(admin, UserRoles.Admin);
+    }
 
-        foreach (var validator in passwordValidators)
+    var moderator = await userManager.FindByNameAsync("moderator");
+    if (moderator == null)
+    {
+        moderator = new User
         {
-            userManager.PasswordValidators.Add(validator);
-        }
+            Id = Guid.NewGuid(),
+            UserName = "moderator",
+            Email = "moderator@animeforum.com",
+            Bio = "moderator"
+        };
 
-        foreach (var validator in userValidators)
-        {
-            userManager.UserValidators.Add(validator);
-        }
+        await userManager.CreateAsync(moderator, "moderator");
+        await userManager.AddToRoleAsync(moderator, UserRoles.Moderator);
+    }
 
-        // Seed category table with categories
-        if (!db.PostCategories.Any())
+    var member = await userManager.FindByNameAsync("member");
+    if (member == null)
+    {
+        member = new User
         {
-            var categories = new List<PostCategory>
+            Id = Guid.NewGuid(),
+            UserName = "member",
+            Email = "member@animeforum.com",
+            Bio = "member"
+        };
+
+        await userManager.CreateAsync(member, "member");
+        await userManager.AddToRoleAsync(member, UserRoles.Member);
+    }
+
+    foreach (var validator in passwordValidators)
+    {
+        userManager.PasswordValidators.Add(validator);
+    }
+
+    foreach (var validator in userValidators)
+    {
+        userManager.UserValidators.Add(validator);
+    }
+
+    // Seed category table with categories
+    if (!db.PostCategories.Any())
+    {
+        var categories = new List<PostCategory>
         {
             new() { Id = Guid.NewGuid(), Name = "Thông báo"},
             new() { Id = Guid.NewGuid(), Name = "Góp ý"},
@@ -259,9 +274,28 @@ using (var scope = app.Services.CreateScope())
             new() { Id = Guid.NewGuid(), Name = "Giáo dục"},
         };
 
-            db.PostCategories.AddRange(categories);
-            await db.SaveChangesAsync();
-        }
+        db.PostCategories.AddRange(categories);
+    }
+
+    if (!db.UserFlairs.Any())
+    {
+        var flairs = new List<UserFlair>
+        {
+            new() { Id = Guid.NewGuid(), Name = "Lính mới", ColorHex = "#FF0000", PointsRequired = 0 }, // red
+            new() { Id = Guid.NewGuid(), Name = "Công dân hạng C", ColorHex = "#FF7F00", PointsRequired = 50 }, // orange
+            new() { Id = Guid.NewGuid(), Name = "Wibu", ColorHex = "#FFFF00", PointsRequired = 150 }, // yellow
+            new() { Id = Guid.NewGuid(), Name = "Wibu kỳ cựu", ColorHex = "#00FF00", PointsRequired = 450 }, // green
+            new() { Id = Guid.NewGuid(), Name = "Tộc trưởng wibu", ColorHex = "#FF0000", PointsRequired = 1350 }, // blue
+            new() { Id = Guid.NewGuid(), Name = "Nhật nội địa", ColorHex = "#4B0082", PointsRequired = 4050 }, // indigo
+            new() { Id = Guid.NewGuid(), Name = "Wibu chúa", ColorHex = "#8B00FF", PointsRequired = 12150 }, // violet
+        };
+
+        db.UserFlairs.AddRange(flairs);
+    }
+
+    if (db.ChangeTracker.HasChanges())
+    {
+        await db.SaveChangesAsync();
     }
 }
 

@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Application.Services;
-using Application.DTO;
 using System.Security.Claims;
-using Infrastructure.External;
-using Application.Interfaces.Email;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,9 +14,12 @@ namespace WibuBlogAPI.Controllers
         private readonly UserService _userService = userService;
 
         [HttpGet]
-        public async Task<IActionResult> GetAccountDetails()
+        public async Task<IActionResult> GetAccountDetails(Guid? userId)
         {
-            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            if (userId == null)
+            {
+                userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            }
 
             var result = await _userService.GetProfileDetails(userId);
 

@@ -52,6 +52,8 @@ builder.Services.AddScoped<PostCategoryService>();
 builder.Services.AddScoped<CommentSerivce>();
 builder.Services.AddScoped<VoteService>();
 builder.Services.AddScoped<ReportService>();
+builder.Services.AddScoped<InventoryService>();
+builder.Services.AddScoped<RankService>();
 
 // AutoMapper service
 // Quet project, tim tat ca file MappingProfile roi gop lai thanh 1
@@ -270,10 +272,48 @@ using (var scope = app.Services.CreateScope())
         };
 
         db.PostCategories.AddRange(categories);
+    }
+
+    // Seed rank table with ranks
+    if (!db.Ranks.Any())
+    {
+        var ranks = new List<Rank>
+        {
+            new() { Id = Guid.NewGuid(), Name = "Lính mới", PointsRequired = 0 },
+            new() { Id = Guid.NewGuid(), Name = "Công dân hạng C", PointsRequired = 50 },
+            new() { Id = Guid.NewGuid(), Name = "Wibu", PointsRequired = 150 },
+            new() { Id = Guid.NewGuid(), Name = "Wibu kỳ cựu", PointsRequired = 450 },
+            new() { Id = Guid.NewGuid(), Name = "Tộc trưởng wibu", PointsRequired = 1350 },
+            new() { Id = Guid.NewGuid(), Name = "Nhật nội địa", PointsRequired = 4050 },
+            new() { Id = Guid.NewGuid(), Name = "Wibu chúa", PointsRequired = 12150 },
+        };
+
+        db.Ranks.AddRange(ranks);
+    }
+
+    // Seed user flair table with user flairs
+    if (!db.UserFlairs.Any())
+    {
+        var flairs = new List<UserFlair>
+        {
+            new() { Id = Guid.NewGuid(), Name = "Lính mới", ColorHex = "#FF0000", PointsRequired = 0 }, // red
+            new() { Id = Guid.NewGuid(), Name = "Công dân hạng C", ColorHex = "#FF7F00", PointsRequired = 50 }, // orange
+            new() { Id = Guid.NewGuid(), Name = "Wibu", ColorHex = "#FFFF00", PointsRequired = 150 }, // yellow
+            new() { Id = Guid.NewGuid(), Name = "Wibu kỳ cựu", ColorHex = "#00FF00", PointsRequired = 450 }, // green
+            new() { Id = Guid.NewGuid(), Name = "Tộc trưởng wibu", ColorHex = "#FF0000", PointsRequired = 1350 }, // blue
+            new() { Id = Guid.NewGuid(), Name = "Nhật nội địa", ColorHex = "#4B0082", PointsRequired = 4050 }, // indigo
+            new() { Id = Guid.NewGuid(), Name = "Wibu chúa", ColorHex = "#8B00FF", PointsRequired = 12150 }, // violet
+        };
+
+        db.UserFlairs.AddRange(flairs);
+    }
+
+
+    if (db.ChangeTracker.HasChanges())
+    {
         await db.SaveChangesAsync();
     }
 }
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
