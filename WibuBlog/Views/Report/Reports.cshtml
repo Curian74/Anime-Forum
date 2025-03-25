@@ -1,0 +1,42 @@
+﻿@model WibuBlog.ViewModels.Report.ReportsVM
+@{
+    ViewData["Title"] = "Report List";
+}
+<h2>Report List</h2>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Post Title</th>
+            <th>Reason</th>
+            <th>Approved</th>
+            <th>Note</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model?.Reports != null && Model.Reports.Items.Any())
+        {
+            @foreach (var report in Model.Reports.Items)
+            {
+                <tr>
+                    <td>@report.Username</td>
+                    <td>@report.PostTitle</td>
+                    <td>@report.Reason</td>
+                    <td>@(report.IsApproved.HasValue ? (report.IsApproved.Value ? "Approved" : "Rejected") : "Pending")</td>
+                    <td>@report.Note</td>
+                    <td>
+                        <a asp-action="ApproveReport" asp-route-reportId="@report.Id" class="btn btn-success">Approve</a>
+                        <a asp-action="RejectReport" asp-route-reportId="@report.Id" class="btn btn-danger">Reject</a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6" class="text-center">No reports found.</td>
+            </tr>
+        }
+    </tbody>
+</table>
