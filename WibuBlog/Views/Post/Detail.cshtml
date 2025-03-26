@@ -28,7 +28,7 @@
                         <small class="text-muted">@DateFormatHelper.GetDateFormat(Model.Post.CreatedAt)</small>
                     </div>
                 </div>
-                @if (User.Identity.IsAuthenticated)
+                @if (User.Identity.IsAuthenticated && !Model.Post.IsHidden)
                 {
                     <div class="dropdown">
                         <button class="btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
