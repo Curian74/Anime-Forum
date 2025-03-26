@@ -104,3 +104,11 @@ $(document).ready(function () {
 		});
 	});
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+	document.querySelectorAll(".post-card").forEach(card => {
+		card.addEventListener("click", function () {
+			window.location.href = this.getAttribute("data-url");
+		});
+	});
+});
