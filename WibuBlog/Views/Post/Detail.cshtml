@@ -22,7 +22,7 @@
 
             <div class="post-header d-flex justify-content-between">
                 <div class="d-flex gap-2">
-                    <img src="@Model.User?.ProfilePhoto?.Url" alt="Avatar" class="avatar">
+                    <img src="@Model.Post.User.ProfilePhoto.Url" alt="Avatar" class="avatar">
                     <div>
                         <h5 class="m-0">@Model.Post?.User?.UserName</h5>
                         <small class="text-muted">@DateFormatHelper.GetDateFormat(Model.Post.CreatedAt)</small>
