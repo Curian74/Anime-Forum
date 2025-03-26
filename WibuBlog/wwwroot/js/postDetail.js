@@ -12,7 +12,6 @@ const editCmtField = document.getElementById('edit-comment-section');
 const PAGE_SIZE = 10;
 
 let isCommentFieldOpen = false;
-commentField.style.display = "none";
 
 document.addEventListener("DOMContentLoaded", function () {
     const editors = new Map();
@@ -47,6 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
             } else {
                 // commentForm.submit();
                 await postComment();
+                toggleCommentInput();
             }
         });
     }
@@ -81,6 +81,19 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     window.getEditor = (id) => editors.get(id);
+
+    function toggleCommentInput() {
+        isCommentFieldOpen = !isCommentFieldOpen;
+        commentField.style.display = isCommentFieldOpen ? "block" : "none";
+        mainEditor.setHTMLCode('');
+        toggleBtn.style.display = !isCommentFieldOpen ? "block" : "none";
+    };
+
+    if(commentField){
+        commentField.style.display = "none";
+        toggleBtn.addEventListener("click", toggleCommentInput);
+        cancelBtn.addEventListener("click", toggleCommentInput)
+    }
 });
 
 
@@ -156,12 +169,6 @@ const editComment = async (cmtId) => {
     }
 };
 
-const toggleCommentInput = () => {
-    isCommentFieldOpen = !isCommentFieldOpen;
-    commentField.style.display = isCommentFieldOpen ? "block" : "none";
-    toggleBtn.style.display = !isCommentFieldOpen ? "block" : "none";
-};
-
 const confirmDeletePost = (postId) => {
     Swal.fire({
         title: "Are you sure?",
@@ -219,7 +226,7 @@ const confirmDeleteComment = (cmtId) => {
                     icon: "success"
                 }).then((res) => {
                     if (res.isConfirmed) {
-                        window.location.reload();
+                        fetchComments('postId', postId.value, 'createdAt', true);
                     }
                 });
             }
@@ -362,7 +369,8 @@ function renderComments(data, currentPage, size) {
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end">
                                         <li><a class="dropdown-item" onclick="openEditCmt('${c.id}'); return false;">Edit</a></li>
-                                        <li><a class="dropdown-item text-danger" onclick="confirmDeleteComment('${c.id}'); return false;">Delete</a></li>
+                                        <li><hr class="dropdown-divider border-top border-secondary"></li>
+                                        <li><a class="dropdown-item" style="color: red !important;" onclick="confirmDeleteComment('${c.id}'); return false;">Delete</a></li>
                                     </ul>
                                 </div>
                             ` : ""}
@@ -432,9 +440,6 @@ function initializeEditors() {
 
     window.getEditor = (id) => editors.get(id);
 }
-
-toggleBtn.addEventListener("click", toggleCommentInput);
-cancelBtn.addEventListener("click", toggleCommentInput)
 
 $(document).ready(function () {
     const postId = $('#post').data('post-id');
