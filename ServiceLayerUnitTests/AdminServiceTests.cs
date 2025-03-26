@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Application.DTO;
+﻿using Application.DTO;
 using Application.Services;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
 using Moq;
-using NUnit.Framework;
 
 namespace ServiceLayerUnitTests
 {
