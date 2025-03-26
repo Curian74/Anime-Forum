@@ -77,11 +77,11 @@
             <div class="post-actions mt-5" data-post-id="@Model.Post?.Id">
                 <div class="action-button d-flex align-items-center justify-content-between px-3 py-2">
                     <div class="d-flex align-items-center">
-                        <a href="#" class="vote-btn upvote-btn me-1" data-vote="up"><i
+                        <a class="vote-btn upvote-btn me-1" data-vote="up"><i
                                 class="fa-regular fa-circle-up"></i></a>
                         <span class="vote-count" id="total-vote-count">0</span>
                     </div>
-                    <a href="#" class="vote-btn downvote-btn" data-vote="down"><i
+                    <a class="vote-btn downvote-btn" data-vote="down"><i
                             class="fa-regular fa-circle-down"></i></a>
                 </div>
             </div>
@@ -133,10 +133,8 @@
                             <small>Sort By <i class="fa-solid fa-angle-down"></i></small>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item"
-                                    onclick="fetchComments('postId', postId, 'createdAt', true)">Latest</a></li>
-                            <li><a class="dropdown-item"
-                                    onclick="fetchComments('postId', postId, 'createdAt', false)">Oldest</a></li>
+                            <li><a class="dropdown-item" onclick="fetchComments('postId', postId, 'createdAt', true)">Latest</a></li>
+                            <li><a class="dropdown-item" onclick="fetchComments('postId', postId, 'createdAt', false)">Oldest</a></li>
                         </ul>
                     </div>
 

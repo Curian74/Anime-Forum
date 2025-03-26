@@ -8,6 +8,7 @@ const commentField = document.getElementById('comment-field');
 const contentField = document.getElementById('content');
 const commentForm = document.getElementById('commentForm');
 const editCmtField = document.getElementById('edit-comment-section');
+const commentSection = document.getElementById('comment-section');
 
 const PAGE_SIZE = 10;
 
@@ -89,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
         toggleBtn.style.display = !isCommentFieldOpen ? "block" : "none";
     };
 
-    if(commentField){
+    if (commentField) {
         commentField.style.display = "none";
         toggleBtn.addEventListener("click", toggleCommentInput);
         cancelBtn.addEventListener("click", toggleCommentInput)
@@ -342,7 +343,17 @@ function renderComments(data, currentPage, size) {
     commentList.innerHTML = ""; // Clear existing comments
 
     if (!data.items || data.items.length === 0) {
-        commentList.innerHTML = "<p>No comments yet.</p>";
+        commentSection.innerHTML = `
+        <div class="d-flex align-items-center mt-5 gap-3">
+            <img src="https://www.redditstatic.com/shreddit/assets/thinking-snoo.png" 
+                alt="No comments yet" style="width: 50px; height: auto;" />
+            <div style="font-size: 14px;">
+                <h5 style="font-weight: 500; margin-bottom: 5px;">Be the first to comment</h5>
+                <p class="mb-0">Nobody's responded to this post yet.</p>
+                <p class="mb-0">Add your thoughts and get the conversation going.</p>
+            </div>
+        </div>`;
+        commentSection.classList = "comment-sections"
         return;
     }
 
@@ -515,15 +526,17 @@ $(document).ready(function () {
     }
 
     // Event listeners
-    $('.upvote-btn').click(function (e) {
-        e.preventDefault();
-        toggleVote(true);
-    });
+    if (userId.value) {
+        $('.upvote-btn').click(function (e) {
+            e.preventDefault();
+            toggleVote(true);
+        });
 
-    $('.downvote-btn').click(function (e) {
-        e.preventDefault();
-        toggleVote(false);
-    });
+        $('.downvote-btn').click(function (e) {
+            e.preventDefault();
+            toggleVote(false);
+        });
+    }
 
     // Initial fetch
     fetchTotalVotes();
