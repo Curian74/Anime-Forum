@@ -24,5 +24,8 @@ namespace Domain.Entities
         public virtual UserInventory? UserInventory { get; set; }
 
         public virtual UserFlairSelection? UserFlairSelection { get; set; }
-    }
+
+		public virtual ICollection<Notification>? Notifications { get; set; } = [];
+
+	}
 }

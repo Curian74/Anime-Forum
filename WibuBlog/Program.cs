@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using WibuBlog.Hubs;
 using WibuBlog.Interfaces.Api;
 using WibuBlog.Services;
 using WibuBlog.Services.Api;
@@ -46,8 +47,9 @@ namespace WibuBlog
 			builder.Services.AddScoped<Application.Services.MediaService>();
             builder.Services.AddScoped<ReportService>();
             builder.Services.AddScoped<IEmailService,EmailService>();
-            //
-            builder.Services.AddDistributedMemoryCache();
+			builder.Services.AddSignalR();
+			//
+			builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30); 
@@ -148,7 +150,9 @@ namespace WibuBlog
 
             app.UseAuthorization();
 
-            app.MapControllerRoute(
+			app.MapHub<NotificationHub>("/notificationHub");
+
+			app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 

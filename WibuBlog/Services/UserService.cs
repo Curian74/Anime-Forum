@@ -12,6 +12,7 @@ using WibuBlog.Common.ApiResponse;
 using WibuBlog.Interfaces.Api;
 using WibuBlog.ViewModels.Users;
 using System.Security.Claims;
+using WibuBlog.Views.Shared.ViewComponents;
 
 namespace WibuBlog.Services
 {
@@ -31,9 +32,8 @@ namespace WibuBlog.Services
             }
             var response = await _apiService.GetAsync<ApiResponse<UserProfileDto>>($"User/GetAccountDetails/");
             return response.Value!;
-        }
-
-        public async Task<User> GetUserById(Guid userId)
+        }     
+		public async Task<User> GetUserById(Guid userId)
         {
             var response = await _apiService.GetAsync<ApiResponse<User>>($"User/GetUserById/{userId}");
             return response.Value!;
@@ -87,6 +87,12 @@ namespace WibuBlog.Services
             var resp = await _apiService.PostAsync<ApiResponse<Media>>($"Media/Add/", media);
 			var response = await _apiService.PutAsync<ApiResponse<Media>>("User/UpdateProfilePhoto/", media);
             return response.Value!;
+		}
+
+		public async Task<HeaderViewDto> GetUserNotifications()
+		{
+			var response = await _apiService.GetAsync<ApiResponse<HeaderViewDto>>($"User/GetUserNotifications/");
+			return response.Value!;
 		}
 	}
 }

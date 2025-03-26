@@ -1,5 +1,5 @@
 ﻿@using System.Security.Claims;
-@model Application.DTO.UserProfileDto;
+@model Application.DTO.HeaderViewDto;
 @if (ViewData["ShowHeader"] as bool? != false)
 {
     <link rel="stylesheet" href="~/css/header.css" />
@@ -44,18 +44,41 @@
                         <div class="dropdown">
                             <button class="btn dropdown-toggle border-0 d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 <div class="text-white text-start me-2">
-                                    <p class="mb-0 fw-bold">@Model.UserName</p>
-                                    <p class="mb-0 text-secondary" style="font-size: 0.85rem;">@Model.Roles.FirstOrDefault()</p>
+                                    <p class="mb-0 fw-bold">@Model.User.UserName</p>
+                                    <p class="mb-0 text-secondary" style="font-size: 0.85rem;">@Model.User.Roles.FirstOrDefault()</p>
                                 </div>
-                            @if (Model.ProfilePhoto == null || String.IsNullOrEmpty(Model.ProfilePhoto.Url))
+                            @if (Model.User.ProfilePhoto == null || String.IsNullOrEmpty(Model.User.ProfilePhoto.Url))
                             {
                                             <img id="avatarImage" src="~/images/defaults/user/default_avatar.jpg" class="rounded-circle" width="40" height="40" alt="User Avatar">
                             }
                             else
                             {
-                                            <img id="avatarImage" src="@Url.Content(Model.ProfilePhoto.Url)" class="rounded-circle" width="40" height="40" alt="User Avatar">
+                                                        <img id="avatarImage" src="@Url.Content(Model.User.ProfilePhoto.Url)" class="rounded-circle" width="40" height="40" alt="User Avatar">
                             }
                             </button>
+
+                        @if (User.Identity.IsAuthenticated && Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var currentUserId))
+                        {
+                                    <div class="dropdown">
+                                        <button class="btn dropdown-toggle" id="notificationDropdown" data-bs-toggle="dropdown">
+                                            🔔 <span id="notificationCount" style="color: white">@Model.Notifications.Count</span>
+                                        </button>
+                                        <ul class="dropdown-menu" id="notificationList">
+                                                            @if (Model.Notifications.Any())
+                                                            {
+                                                                @foreach (var notification in Model.Notifications)
+                                                                {
+                                                            <li><a class="dropdown-item" href="#">@notification.Content</a></li>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                    <li class="dropdown-item text-muted">No new notifications</li>
+                                                            }
+                                        </ul>
+                                    </div>
+                                    }
+
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li><a class="dropdown-item" href="/User/UserProfile">Profile</a></li>
                                 <li><a class="dropdown-item" href="/Ticket/Add">Ticket</a></li>
@@ -94,4 +117,5 @@
             </div>
         </div>
     </header>
+
 }

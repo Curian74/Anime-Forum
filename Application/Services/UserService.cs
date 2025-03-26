@@ -18,6 +18,7 @@ namespace Application.Services
         private readonly IMapper _mapper = mapper;
         private readonly IGenericRepository<User> _userGenericRepository = unitOfWork.GetRepository<User>();
         private readonly IGenericRepository<Post> _postGenericRepository = unitOfWork.GetRepository<Post>();
+        private readonly IGenericRepository<Notification> _notificationGenericRepository = unitOfWork.GetRepository<Notification>();
         private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
         private readonly RankService _rankService = rankService;
 
@@ -121,7 +122,27 @@ namespace Application.Services
             return media;
 		}
 
+        public async Task<HeaderViewDto> GetUserNotification(Guid currentUserId)
+        {
+			var user = await _userManager.FindByIdAsync(currentUserId.ToString());
 
-		
+			if (user == null)
+			{
+				return null;
+			}
+			await _rankService.UpdateUserRankAsync(currentUserId);
+			var result = _mapper.Map<UserProfileDto>(user);
+			result.PostList = await _postGenericRepository.GetAllWhereAsync(m => m.UserId == currentUserId);
+			result.Roles = await _userManager.GetRolesAsync(user);
+            var notifications = await _notificationGenericRepository.GetAllWhereAsync(n => n.User.Id == currentUserId);
+            HeaderViewDto headerViewDto = new HeaderViewDto()
+            {
+                User = result,
+                Notifications = notifications
+            };
+            return headerViewDto;
+		}
+
+
 	}
 }

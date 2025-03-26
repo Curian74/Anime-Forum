@@ -118,5 +118,24 @@ namespace WibuBlogAPI.Controllers
 				return StatusCode(500, $"file/server error: {ex.Message}");
 			}
 		}
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserNotifications()
+        {
+			try
+			{
+				var currentUserId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                var result = await _userService.GetUserNotification(currentUserId);
+                if (result == null)
+                {
+                    return BadRequest();
+                }
+				return new JsonResult(Ok(result));
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"file/server error: {ex.Message}");
+			}
+		}
 	}
 }
