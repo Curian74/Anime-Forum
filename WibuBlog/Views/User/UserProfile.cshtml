@@ -57,43 +57,28 @@
 
 		<!--posts-->
 		<div id="posts" class="tab-content mt-3">
-			<div class="card mb-3">
+			@foreach (var post in Model.PostList)
+			{
+			<div class="card post-card mb-3" data-url="@Url.Action("Detail", "Post", new { id = post.Id })">
 				<div class="card-body">
 					<div class="d-flex">
-						<img src="https://via.placeholder.com/50" class="rounded-circle me-2" alt="Avatar">
+						<img src="@(post.User.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" 
+							 class="rounded-circle" width="40" height="40" style="margin-right: 10px;">
 						<div>
-							<h6 class="mb-0">Nguyễn Văn A</h6>
-							<small class="text-muted">2 phút trước</small>
+							<h6 class="mb-0">@post.User.UserName</h6>
+							<small class="text-muted">@post.CreatedAt</small>
 						</div>
 					</div>
-					<p class="mt-2">Đây là nội dung của bài viết đầu tiên...</p>
+					<p class="mt-2">@post.Title</p>
 					<div class="text-end">
-						<button class="btn btn-outline-primary btn-sm">👍 Thích</button>
-						<button class="btn btn-outline-secondary btn-sm">💬 Bình luận</button>
-						<button class="btn btn-outline-success btn-sm">🔗 Chia sẻ</button>
+						<button class="btn btn-outline-primary btn-sm">@post.TotalVotes</button>
+						<button class="btn btn-outline-secondary btn-sm">💬 @post.Comments.Count</button>
 					</div>
 				</div>
 			</div>
+			}
+</div>
 
-			<div class="card mb-3">
-				<div class="card-body">
-					<div class="d-flex">
-						<img src="" class="rounded-circle me-2" alt="Avatar">
-						<div>
-							<h6 class="mb-0">Trần Văn A</h6>
-							<small class="text-muted">10 phút trước</small>
-						</div>
-					</div>
-					<p class="mt-2">Bài viết thứ hai có thể có thêm hình ảnh:</p>
-					<img src="https://via.placeholder.com/300" class="img-fluid rounded">
-					<div class="text-end mt-2">
-						<button class="btn btn-outline-primary btn-sm">👍 Thích</button>
-						<button class="btn btn-outline-secondary btn-sm">💬 Bình luận</button>
-						<button class="btn btn-outline-success btn-sm">🔗 Chia sẻ</button>
-					</div>
-				</div>
-			</div>
-		</div>
 
 		<div id="info" class="tab-content mt-3 d-none small-form">
 			<div class="card p-3">

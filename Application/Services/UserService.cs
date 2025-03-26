@@ -17,8 +17,8 @@ namespace Application.Services
         private readonly UserManager<User> _userManager = userManager;
         private readonly IMapper _mapper = mapper;
         private readonly IGenericRepository<User> _userGenericRepository = unitOfWork.GetRepository<User>();
+        private readonly IGenericRepository<Post> _postGenericRepository = unitOfWork.GetRepository<Post>();
         private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
-        private readonly IGenericRepository<User> _userRepository = unitOfWork.GetRepository<User>();
         private readonly RankService _rankService = rankService;
 
 		public async Task<User?> FindByLoginAsync(LoginDto dto)
@@ -81,6 +81,7 @@ namespace Application.Services
             await _rankService.UpdateUserRankAsync(id);
 
             var result = _mapper.Map<UserProfileDto>(user);
+            result.PostList = await _postGenericRepository.GetAllWhereAsync(m => m.UserId == id);
 
             result.Roles = await _userManager.GetRolesAsync(user);
 
@@ -94,7 +95,7 @@ namespace Application.Services
 
         public async Task<PagedResult<User>> GetPagedUsersAsync(int page, int size)
         {
-            var (items, totalCount) = await _userRepository.GetPagedAsync(page, size);
+            var (items, totalCount) = await _userGenericRepository.GetPagedAsync(page, size);
             return new PagedResult<User>(items, totalCount, page, size);
         }
 

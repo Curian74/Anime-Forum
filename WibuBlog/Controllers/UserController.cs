@@ -21,6 +21,7 @@ namespace WibuBlog.Controllers
         public async Task<IActionResult> UserProfile()
         {
             var result = await _userService.GetUserProfile();
+
             if (result is null)
             {
                 return NotFound();
