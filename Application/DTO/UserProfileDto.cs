@@ -23,5 +23,6 @@ namespace Application.DTO
         public bool? TwoFactorEnabled { get; set; }
         public Rank? Rank { get; set; }
         public IList<string>? Roles { get; set; }
+        public List<Domain.Entities.Post> PostList { get; set; }
     }
 }
