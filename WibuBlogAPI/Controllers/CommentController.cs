@@ -13,9 +13,9 @@ namespace WibuBlogAPI.Controllers
     [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class CommentController(CommentSerivce commentSerivces) : ControllerBase
+    public class CommentController(CommentService commentService) : ControllerBase
     {
-        private readonly CommentSerivce _commentSerivce = commentSerivces;
+        private readonly CommentService _commentService = commentService;
 
         [AllowAnonymous]
         [HttpGet]
@@ -28,7 +28,7 @@ namespace WibuBlogAPI.Controllers
             Expression<Func<Comment, bool>>? filter = ExpressionBuilder.BuildFilterExpression<Comment>(filterBy, searchTerm);
             Func<IQueryable<Comment>, IOrderedQueryable<Comment>>? orderExpression = ExpressionBuilder.BuildOrderExpression<Comment>(orderBy, descending);
 
-            var result = await _commentSerivce.GetAllAsync(filter, orderExpression);
+            var result = await _commentService.GetAllAsync(filter, orderExpression);
 
             return new JsonResult(Ok(result.Items));
         }
@@ -46,7 +46,7 @@ namespace WibuBlogAPI.Controllers
             Expression<Func<Comment, bool>>? filter = ExpressionBuilder.BuildFilterExpression<Comment>(filterBy, searchTerm);
             Func<IQueryable<Comment>, IOrderedQueryable<Comment>>? orderExpression = ExpressionBuilder.BuildOrderExpression<Comment>(orderBy, descending);
 
-            var result = await _commentSerivce.GetPagedAsync(page, size, filter, orderExpression);
+            var result = await _commentService.GetPagedAsync(page, size, filter, orderExpression);
 
             return new JsonResult(Ok(result));
         }
@@ -56,7 +56,7 @@ namespace WibuBlogAPI.Controllers
         {
             try
             {
-                await _commentSerivce.PostCommentAsync(dto);
+                await _commentService.PostCommentAsync(dto);
             }
             catch (ValidationException ex)
             {
@@ -76,7 +76,7 @@ namespace WibuBlogAPI.Controllers
         {
             try
             {
-                await _commentSerivce.UpdateCommentAsync(commentId, dto);
+                await _commentService.UpdateCommentAsync(commentId, dto);
             }
             catch (KeyNotFoundException ex)
             {
@@ -93,7 +93,7 @@ namespace WibuBlogAPI.Controllers
         {
             try
             {
-                await _commentSerivce.DeleteCommentAsync(commentId);
+                await _commentService.DeleteCommentAsync(commentId);
             }
             catch (KeyNotFoundException ex)
             {

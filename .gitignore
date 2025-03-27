@@ -363,4 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 Migrations/
 *.orig
-uploads/images/
+/WibuBlog/wwwroot/uploads/images/user/
