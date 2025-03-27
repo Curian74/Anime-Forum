@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 body: JSON.stringify({
                     userId: userId.value,
                     postId: postId.value,
-                    content: mainEditor.getText().trim()
+                    content: mainEditor.getHTML().trim()
                 }),
                 credentials: 'include'
             });
@@ -102,6 +102,14 @@ if (editCmtField) {
     editCmtField.style.display = 'none';
 }
 
+const openReplyCmt = (cmtId) => {
+    const replyField = document.getElementById(`reply-comment-section-${cmtId}`);
+
+    if (replyField) {
+        replyField.style.display = 'block';
+    }
+};
+
 const openEditCmt = (cmtId) => {
     const editCmtField = document.getElementById(`edit-comment-section-${cmtId}`);
     const commentText = document.getElementById(`comment-text-${cmtId}`);
@@ -112,6 +120,16 @@ const openEditCmt = (cmtId) => {
     }
 };
 
+const cancelReply = (cmtId) => {
+    const replyField = document.getElementById(`reply-comment-section-${cmtId}`);
+    // const commentText = document.getElementById(`reply-text-${cmtId}`);
+
+    if (replyField) {
+        replyField.style.display = 'none';
+        // commentText.classList.remove('d-none');
+    }
+};
+
 const cancelEdit = (cmtId) => {
     const editCmtField = document.getElementById(`edit-comment-section-${cmtId}`);
     const commentText = document.getElementById(`comment-text-${cmtId}`);
@@ -119,6 +137,53 @@ const cancelEdit = (cmtId) => {
     if (editCmtField && commentText) {
         editCmtField.style.display = 'none';
         commentText.classList.remove('d-none');
+    }
+};
+
+const replyComment = async (parentId, id) => {
+
+    try {
+        const editorId = `reply-cmt-${id}`;
+        const editor = window.getEditor(editorId);
+        console.log(id);
+        console.log(parentId);
+
+        // Validate the editor content
+        if (!editor || !editor.getHTML().trim()) {
+            Swal.fire({
+                title: "Warning!",
+                text: "Comment content cannot be empty.",
+                icon: "warning",
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+            });
+            return;
+        }
+        const endpoint = 'https://localhost:7186/api/Comment/PostComment';
+        const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json",
+            },
+            body: JSON.stringify({
+                userId: userId.value,
+                postId: postId.value,
+                content: editor.getHTML().trim(),
+                parentCommentId: parentId,
+            }),
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            throw new Error(response.status);
+        }
+
+        const result = await response.json();
+        console.log("Success:", result);
+        fetchComments('postId', postId.value, 'createdAt', true);
+    }
+    catch (err) {
+        console.error("Error posting comment:", err);
     }
 };
 
@@ -338,33 +403,55 @@ function paginateComments(page, size) {
     renderPagination(totalPages, page, size);
 }
 
-function renderComments(data, currentPage, size) {
-    const commentList = document.getElementById("comment-list");
-    commentList.innerHTML = ""; // Clear existing comments
+const fetchChildComments = async (parentCommentId) => {
+    try {
+        const url = `https://localhost:7186/api/Comment/GetAll?filterBy=parentCommentId&searchTerm=${parentCommentId}&descending=false`
+        const response = await fetch(url);
+        const result = await response.json();
+        const data = result.value;
 
+        return data;
+    }
+
+    catch (err) {
+        console.log(err)
+    }
+}
+
+async function renderComments(data, currentPage, size) {
+    const commentList = document.getElementById("comment-list");
+    const commentSection = document.getElementById("comment-section");
+
+    // Clear existing comments
+    commentList.innerHTML = "";
+
+    // Handle empty state
     if (!data.items || data.items.length === 0) {
         commentSection.innerHTML = `
-        <div class="d-flex align-items-center mt-5 gap-3">
-            <img src="https://www.redditstatic.com/shreddit/assets/thinking-snoo.png" 
-                alt="No comments yet" style="width: 50px; height: auto;" />
-            <div style="font-size: 14px;">
-                <h5 style="font-weight: 500; margin-bottom: 5px;">Be the first to comment</h5>
-                <p class="mb-0">Nobody's responded to this post yet.</p>
-                <p class="mb-0">Add your thoughts and get the conversation going.</p>
-            </div>
-        </div>`;
-        commentSection.classList = "comment-sections"
+            <div class="d-flex align-items-center mt-5 gap-3">
+                <img src="https://www.redditstatic.com/shreddit/assets/thinking-snoo.png" 
+                    alt="No comments yet" style="width: 50px; height: auto;" />
+                <div style="font-size: 14px;">
+                    <h5 style="font-weight: 500; margin-bottom: 5px;">Be the first to comment</h5>
+                    <p class="mb-0">Nobody's responded to this post yet.</p>
+                    <p class="mb-0">Add your thoughts and get the conversation going.</p>
+                </div>
+            </div>`;
+        commentSection.classList.add("comment-sections");
         return;
     }
 
-    data.items
-        .filter(c => !c.isHidden) // Only include comments where isHidden is false
-        .forEach(c => {
-            const commentHtml = `
+    // Render parent comments
+    for (const c of data.items.filter(c => !c.isHidden && c.parentCommentId == null)) {
+        // Await child comments for each parent
+        const childComments = await fetchChildComments(c.id);
+
+        const commentHtml = `
             <div class="card p-2 mb-2 border">
                 <div class="d-flex align-items-start">
                     <img class="rounded-circle avatar me-2"
-                        src="${c.user?.profilePhoto?.url || '/images/defaults/user/default_avatar.jpg'}" />
+                        src="${c.user?.profilePhoto?.url || '/images/defaults/user/default_avatar.jpg'}" 
+                        alt="${c.user?.userName}'s avatar" />
                     <div class="w-100">
                         <div class="d-flex justify-content-between">
                             <div class="d-flex flex-column mb-2">
@@ -381,30 +468,93 @@ function renderComments(data, currentPage, size) {
                                     <ul class="dropdown-menu dropdown-menu-end">
                                         <li><a class="dropdown-item" onclick="openEditCmt('${c.id}'); return false;">Edit</a></li>
                                         <li><hr class="dropdown-divider border-top border-secondary"></li>
-                                        <li><a class="dropdown-item" style="color: red !important;" onclick="confirmDeleteComment('${c.id}'); return false;">Delete</a></li>
+                                        <li><a class="dropdown-item text-danger" onclick="confirmDeleteComment('${c.id}'); return false;">Delete</a></li>
                                     </ul>
                                 </div>
-                            ` : ""}
+                            ` : ''}
                         </div>
                         <div class="mb-1 comment-text" id="comment-text-${c.id}">${c.content}</div>
-                        
+
+                        <button onclick="openReplyCmt('${c.id}')">Reply</button>
+
+                        <div id="reply-comment-section-${c.id}" style="display: none;">
+                            <textarea id="reply-cmt-${c.id}" class="form-control"></textarea>
+                            <div class="d-flex justify-content-end mt-2">
+                                <button type="button" class="btn btn-secondary me-2" onclick="cancelReply('${c.id}')">Cancel</button>
+                                <button type="button" class="btn btn-primary" onclick="replyComment('${c.id}', '${c.id}')">Save</button>
+                            </div>
+                        </div>
+
                         <!-- Edit Comment Section -->
                         <div id="edit-comment-section-${c.id}" style="display: none;">
-                            <textarea id="edit-cmt-${c.id}">${c.content}</textarea>
+                            <textarea id="edit-cmt-${c.id}" class="form-control">${c.content}</textarea>
                             <div class="d-flex justify-content-end mt-2">
                                 <button type="button" class="btn btn-secondary me-2" onclick="cancelEdit('${c.id}')">Cancel</button>
                                 <button type="button" class="btn btn-primary" onclick="editComment('${c.id}')">Save</button>
                             </div>
                         </div>
+
+                        <!-- Child Comments Section -->
+                        <div id="child-comments-${c.id}">
+                            ${renderChildComments(childComments)}
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+
+        commentList.insertAdjacentHTML("beforeend", commentHtml);
+    }
+
+    initializeEditors();
+}
+
+// Helper function to render child comments
+function renderChildComments(childComments, parentId) {
+    if (!childComments || childComments.length === 0) {
+        return '';
+    }
+
+    return childComments.map(child => `
+        <div class="card p-2 mb-2 border ml-4">
+            <div class="d-flex align-items-start">
+                <img class="rounded-circle avatar me-2"
+                    src="${child.user?.profilePhoto?.url || '/images/defaults/user/default_avatar.jpg'}" 
+                    alt="${child.user?.userName}'s avatar" />
+                <div class="w-100">
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex flex-column mb-2">
+                            <strong>${child.user?.userName}</strong>
+                            <small class="fst-italic" style="font-size: 12px; color:#576f76;">
+                                ${new Date(child.createdAt).toLocaleString()}
+                            </small>
+                        </div>
+                        ${child.userId === userId.value ? `
+                            <div class="dropdown">
+                                <button class="btn btn-sm" type="button" data-bs-toggle="dropdown">
+                                    <i class="fa-solid fa-ellipsis"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" onclick="openEditCmt('${child.id}'); return false;">Edit</a></li>
+                                    <li><hr class="dropdown-divider border-top border-secondary"></li>
+                                    <li><a class="dropdown-item text-danger" onclick="confirmDeleteComment('${child.id}'); return false;">Delete</a></li>
+                                </ul>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="mb-1 comment-text" id="comment-text-${child.id}">${child.content}</div>
+
+                    <!-- Edit Comment Section for Child -->
+                    <div id="edit-comment-section-${child.id}" style="display: none;">
+                        <textarea id="edit-cmt-${child.id}" class="form-control">${child.content}</textarea>
+                        <div class="d-flex justify-content-end mt-2">
+                            <button type="button" class="btn btn-secondary me-2" onclick="cancelEdit('${child.id}')">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="editComment('${child.id}')">Save</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        `;
-
-            commentList.insertAdjacentHTML("beforeend", commentHtml);
-        });
-
-    initializeEditors();
+        </div>
+    `).join('');
 }
 
 function renderPagination(totalPages, currentPage, size) {
@@ -445,6 +595,11 @@ function initializeEditors() {
 
     // Editors for each dynamically loaded comment edit field
     document.querySelectorAll("[id^='edit-cmt-']").forEach(textarea => {
+        const editor = new RichTextEditor(`#${textarea.id}`, configs);
+        editors.set(textarea.id, editor);
+    });
+
+    document.querySelectorAll("[id^='reply-cmt-']").forEach(textarea => {
         const editor = new RichTextEditor(`#${textarea.id}`, configs);
         editors.set(textarea.id, editor);
     });
