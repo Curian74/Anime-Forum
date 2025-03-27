@@ -70,7 +70,6 @@ namespace WibuBlog.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var response = await _userService.UpdateProfilePhoto(file,userId);
-
             return RedirectToAction(nameof(UserProfile));
                         
         }

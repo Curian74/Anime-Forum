@@ -1,5 +1,6 @@
 using Application.Common.EmailTemplate;
 using Application.Common.File;
+using Application.Hubs;
 using Application.Interfaces.Email;
 using Domain.Common.Roles;
 using Domain.Interfaces;
@@ -10,7 +11,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using WibuBlog.Hubs;
 using WibuBlog.Interfaces.Api;
 using WibuBlog.Services;
 using WibuBlog.Services.Api;
@@ -47,7 +47,6 @@ namespace WibuBlog
 			builder.Services.AddScoped<Application.Services.MediaService>();
             builder.Services.AddScoped<ReportService>();
             builder.Services.AddScoped<IEmailService,EmailService>();
-			builder.Services.AddSignalR();
 			//
 			builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>
@@ -89,8 +88,6 @@ namespace WibuBlog
                     options.LoginPath = "/Authentication/Login"; // Where to redirect when not logged in
                     options.AccessDeniedPath = "/Authentication/AccessDenied"; // For unauthorized access
                 });
-            builder.Services.AddAuthentication();
-            builder.Services.AddAuthorization();
 
             builder.Services.AddAuthorizationBuilder()
                 .AddPolicy("MemberPolicy", policy => policy.RequireRole(UserRoles.Member, UserRoles.Moderator, UserRoles.Admin))
@@ -108,6 +105,10 @@ namespace WibuBlog
             );
 
             builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddSignalR();
+            builder.Services.AddAuthentication();
+            builder.Services.AddAuthorization();
 
             var app = builder.Build();
 
@@ -152,9 +153,9 @@ namespace WibuBlog
 
             app.UseAuthorization();
 
-			app.MapHub<NotificationHub>("/notificationHub");
+            app.MapHub<NotificationHub>("/notificationHub");
 
-			app.MapControllerRoute(
+            app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 

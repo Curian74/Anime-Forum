@@ -18,6 +18,8 @@ namespace Domain.Entities
         [ForeignKey(nameof(User))]
         public Guid UserId { get; set; }
 
+        [ForeignKey(nameof(Post))]
+        public Guid? PostId { get; set; }
 		public bool IsDeleted { get; set; }	
 	}
 }

@@ -62,10 +62,11 @@
                                     <div class="dropdown">
                                         <button class="btn dropdown-toggle" id="notificationDropdown" data-bs-toggle="dropdown">
                                                          <span>🔔</span>
-                                    @if(@Model.Notifications.Count > 0)
-                                    {         
-                                       
-                                        <span id="notificationCount" style="color: red">@Model.Notifications.Count</span>
+                                    @if (@Model.Notifications.Count > 0)
+                                    {
+                                        <span id="notificationCount" style="color: red">
+                                                                @(Model.Notifications.Count < 10 ? Model.Notifications.Count.ToString() : "9+")
+                                        </span>
                                     }
                                    
                                         </button>
@@ -135,20 +136,33 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
     <script>
-        var connection = new signalR.HubConnectionBuilder()
-            .withUrl("/notificationHub")
-            .build();
+         var connection = new signalR.HubConnectionBuilder()
+        .withUrl("/notificationHub")
+        .build();
 
-        connection.start().catch(err => console.error(err.toString()));
+    connection.start().catch(err => console.error(err.toString()));
 
-        connection.on("ReceiveNotification", function (message) {
-            let notificationList = document.getElementById("notificationList");
-            let newNotification = document.createElement("li");
-            newNotification.innerHTML = `<a class="dropdown-item" href="#">${message}</a>`;
-            notificationList.prepend(newNotification);
+    connection.on("ReceiveNotification", function (message) {
+        console.log("Received Notification");
 
-            let count = document.getElementById("notificationCount");
-            count.innerText = parseInt(count.innerText) + 1;
-        });
+        let notificationList = document.getElementById("notificationList");
+        let count = document.getElementById("notificationCount");
+
+        if (!notificationList || !count) {
+            console.error("Notification elements not found in DOM!");
+            return;
+        }
+
+        let newNotification = document.createElement("li");
+        newNotification.classList.add("dropdown-item");
+        newNotification.innerHTML = `<a href="#">🔔 ${message}</a>`;
+        notificationList.prepend(newNotification);
+
+        newNotification.style.backgroundColor = "#f0f8ff";
+        setTimeout(() => newNotification.style.backgroundColor = "transparent", 3000);
+
+        let currentCount = parseInt(count.innerText) || 0;
+        count.innerText = currentCount < 9 ? currentCount + 1 : "9+";
+    });
     </script>
 }

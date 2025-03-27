@@ -11,20 +11,18 @@ using WibuBlog.Common.ApiResponse;
 using WibuBlog.Interfaces.Api;
 using WibuBlog.ViewModels.Users;
 using Microsoft.AspNetCore.SignalR;
-using WibuBlog.Hubs;
 using Microsoft.Extensions.Hosting;
 using Application.Common.MessageOperations;
 
 namespace WibuBlog.Services
 {
-    public class UserService(IApiService apiService, IOptions<AuthTokenOptions> authTokenOptions, IHttpContextAccessor httpContextAccessor, FileService fileService, MediaService mediaService, IHubContext<NotificationHub> hubContext)
+    public class UserService(IApiService apiService, IOptions<AuthTokenOptions> authTokenOptions, IHttpContextAccessor httpContextAccessor, FileService fileService, MediaService mediaService)
     {
         private readonly IApiService _apiService = apiService;
         private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 		private readonly FileService _fileService = fileService;
         private readonly MediaService _mediaService = mediaService;
-        private readonly IHubContext<NotificationHub> _hubContext = hubContext;
         public async Task<UserProfileDto> GetUserProfile()
         {
             var token = _httpContextAccessor.HttpContext?.Request.Cookies[_authTokenOptions.Name];
@@ -90,9 +88,9 @@ namespace WibuBlog.Services
             Notification notification = new Notification()
             {
                 NotiType = NotiType.Profile,
-                Content = Application.Common.MessageOperations.NotificationService.GetNotification("NOTI08", "Quoc anh"),
+                Content = Application.Common.MessageOperations.NotificationService.GetNotification("NOTIN01"),
                 UserId = Guid.Parse(userId),
-                IsDeleted = false
+                IsDeleted = false,
             };
             var noti = await apiService.PostAsync<ApiResponse<Notification>>($"Notification/Add/", notification);      
             var response = await _apiService.PutAsync<ApiResponse<Media>>("User/UpdateProfilePhoto/", media);

@@ -19,7 +19,6 @@ namespace Application.Services
         private readonly IGenericRepository<User> _userGenericRepository = unitOfWork.GetRepository<User>();
         private readonly IGenericRepository<Post> _postGenericRepository = unitOfWork.GetRepository<Post>();
         private readonly IGenericRepository<Notification> _notificationGenericRepository = unitOfWork.GetRepository<Notification>();
-        private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
         private readonly RankService _rankService = rankService;
 
 		public async Task<User?> FindByLoginAsync(LoginDto dto)

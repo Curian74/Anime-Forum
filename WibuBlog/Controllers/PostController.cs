@@ -8,8 +8,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Application.Common.Pagination;
 using Microsoft.AspNetCore.SignalR;
-using WibuBlog.Hubs;
 using Microsoft.Extensions.Hosting;
+using Application.Hubs;
 
 namespace WibuBlog.Controllers
 {
@@ -173,8 +173,7 @@ namespace WibuBlog.Controllers
             try
             {
                 await _postService.CreatePostAsync(createPostVM);
-                TempData["successMessage"] = "Post created successfully.";
-                await _hubContext.Clients.All.SendAsync("ReceiveNotification", "New post created: " + createPostVM.Title);
+                TempData["successMessage"] = "Post created successfully.";              
                 return RedirectToAction(nameof(Create));
             }
 

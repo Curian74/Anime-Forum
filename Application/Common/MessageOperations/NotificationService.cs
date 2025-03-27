@@ -7,9 +7,10 @@ namespace Application.Common.MessageOperations
             { "NOTI01", "Your post <b>{0}</b> has been uploaded on <i>{1}</i>." },
             { "NOTI02", "Your post <b>{0}</b> has been edited on <i>{1}</i>." },
             { "NOTI03", "Your post <b>{0}</b> has been deleted on <i>{1}</i>." },
+            { "NOTI04","{0} has commented on your post {1}"},
             { "NOTI06", "You have been <span style='color: red;'>banned</span> from <b>{0}</b> for: <i>{1}</i> until <b>{2}</b>.<br><small>Date: {3}</small>" },
-            { "NOTI07", "Your post has been deleted due to <i>{0}</i>, please be cautious with your content.<br><small>Date: {1}</small>" },
-            { "NOTI08", "You've successfully updated your profile picture {0}" }
+            { "NOTI07", "Your post has been deleted due to <i>{0}</i>, please be cautious with your content.<br><small>Date: {1}</small>" },           
+            { "NOTIN01", "You've successfully updated your profile picture" }
         };
 
         public static string GetNotification(string code, params object[] args)
