@@ -81,7 +81,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const result = await response.json();
             console.log("Success:", result);
-            fetchComments('postId', postId.value, 'createdAt', true);
+            window.location.reload();
+
         }
         catch (err) {
             console.error("Error posting comment:", err);
@@ -384,26 +385,50 @@ async function fetchComments(filterBy, searchTerm, orderBy, descending = false) 
             const response = await fetch(`https://localhost:7186/api/Comment/GetPaged?page=${page}&size=${size}&filterBy=${filterBy}&searchTerm=${searchTerm}&orderBy=${orderBy}&descending=${descending}`);
             const result = await response.json();
             const data = result.value;
-        
+
             if (!response.ok) {
                 throw new Error(data.message || "Failed to load comments.");
             }
-        
+
             // Filter to include only top-level (non-reply) comments that are not hidden
             const visibleComments = data.items.filter(comment => !comment.isHidden && comment.parentCommentId == null);
             allComments.push(...visibleComments);
-        
+            console.log(allComments)
+
             hasMore = data.items.length === size; // Stop if fewer than `size` items were returned
             page++; // Move to the next page
         }
-        
 
-        paginateComments(1, PAGE_SIZE); // Start with page 1
+        if (allComments.length > 0) {
+            console.log("ALi")
+            paginateComments(1, PAGE_SIZE); // Start with page 1
+            return allComments.length;
+        }
+
+        const commentSection = document.getElementById("comment-section");
+
+        // Clear existing comments
+        commentSection.innerHTML = `<div class="d-flex align-items-center mt-5 gap-3">
+                 <img src="https://www.redditstatic.com/shreddit/assets/thinking-snoo.png" 
+                     alt="No comments yet" style="width: 50px; height: auto;" />
+                 <div style="font-size: 14px;">
+                     <h5 style="font-weight: 500; margin-bottom: 5px;">Be the first to comment</h5>
+                     <p class="mb-0">Nobody's responded to this post yet.</p>
+                     <p class="mb-0">Add your thoughts and get the conversation going.</p>
+                 </div>
+             </div>`;
+
+        // Handle empty state
+        commentSection.classList = '';
+
+        return 0;
     } catch (error) {
         console.error("Error fetching comments:", error);
         document.getElementById("comment-list").innerHTML = `<p>Error loading comments.</p>`;
+        return 0;
     }
 }
+
 
 function paginateComments(page, size) {
     const totalComments = allComments.length;
@@ -445,21 +470,20 @@ async function renderComments(data, currentPage, size) {
     if (!data.items || data.items.length === 0) {
         commentSection.classList = ''; //Trick lo?d
         commentSection.innerHTML = `
-            <div class="d-flex align-items-center mt-5 gap-3">
-                <img src="https://www.redditstatic.com/shreddit/assets/thinking-snoo.png" 
-                    alt="No comments yet" style="width: 50px; height: auto;" />
-                <div style="font-size: 14px;">
-                    <h5 style="font-weight: 500; margin-bottom: 5px;">Be the first to comment</h5>
-                    <p class="mb-0">Nobody's responded to this post yet.</p>
-                    <p class="mb-0">Add your thoughts and get the conversation going.</p>
-                </div>
-            </div>`;
+             <div class="d-flex align-items-center mt-5 gap-3">
+                 <img src="https://www.redditstatic.com/shreddit/assets/thinking-snoo.png" 
+                     alt="No comments yet" style="width: 50px; height: auto;" />
+                 <div style="font-size: 14px;">
+                     <h5 style="font-weight: 500; margin-bottom: 5px;">Be the first to comment</h5>
+                     <p class="mb-0">Nobody's responded to this post yet.</p>
+                     <p class="mb-0">Add your thoughts and get the conversation going.</p>
+                 </div>
+             </div>`;
         return;
     }
 
     // Render parent comments
     for (const c of data.items.filter(c => !c.isHidden && c.parentCommentId == null)) {
-        // Await child comments for each parent
         const childComments = await fetchChildComments(c.id);
 
         const commentHtml = `
@@ -534,8 +558,8 @@ function renderChildComments(childComments, parentId) {
     }
 
     return childComments
-    .filter(child => !child.isHidden)
-    .map(child => `
+        .filter(child => !child.isHidden)
+        .map(child => `
         <div class="card p-2 mb-2 border ml-4">
             <div class="d-flex align-items-start">
                 <img class="rounded-circle avatar me-2"
@@ -569,7 +593,7 @@ function renderChildComments(childComments, parentId) {
                         <textarea id="edit-cmt-${child.id}" class="form-control">${child.content}</textarea>
                         <div class="d-flex justify-content-end mt-2">
                             <button type="button" class="me-2" onclick="cancelEdit('${child.id}')">Cancel</button>
-                            <button type="button" onclick="editComment('${child.id}')">Save</button>
+                            <button type="button" style="background-color: #003584; color: white;" onclick="editComment('${child.id}')">Save</button>
                         </div>
                     </div>
                 </div>

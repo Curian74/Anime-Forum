@@ -22,7 +22,8 @@
 
             <div class="post-header d-flex justify-content-between">
                 <div class="d-flex gap-2">
-                    <img src="@(Model.Post.User.ProfilePhoto != null ? Model.Post.User.ProfilePhoto.Url : "default-avatar-url")" alt="Avatar" class="avatar">
+                    <img src="@(Model.Post.User.ProfilePhoto != null ? Model.Post.User.ProfilePhoto.Url : "default-avatar-url")"
+                        alt="Avatar" class="avatar">
                     <div>
                         <h5 class="m-0">@Model.Post?.User?.UserName</h5>
                         <small class="text-muted">@DateFormatHelper.GetDateFormat(Model.Post.CreatedAt)</small>
@@ -77,12 +78,10 @@
             <div class="post-actions mt-5" data-post-id="@Model.Post?.Id">
                 <div class="action-button d-flex align-items-center justify-content-between px-3 py-2">
                     <div class="d-flex align-items-center">
-                        <a class="vote-btn upvote-btn me-1" data-vote="up"><i
-                                class="fa-regular fa-circle-up"></i></a>
+                        <a class="vote-btn upvote-btn me-1" data-vote="up"><i class="fa-regular fa-circle-up"></i></a>
                         <span class="vote-count" id="total-vote-count">0</span>
                     </div>
-                    <a class="vote-btn downvote-btn" data-vote="down"><i
-                            class="fa-regular fa-circle-down"></i></a>
+                    <a class="vote-btn downvote-btn" data-vote="down"><i class="fa-regular fa-circle-down"></i></a>
                 </div>
             </div>
 
@@ -133,8 +132,10 @@
                             <small>Sort By <i class="fa-solid fa-angle-down"></i></small>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" onclick="fetchComments('postId', postId, 'createdAt', true)">Latest</a></li>
-                            <li><a class="dropdown-item" onclick="fetchComments('postId', postId, 'createdAt', false)">Oldest</a></li>
+                            <li><a class="dropdown-item"
+                                    onclick="fetchComments('postId', postId, 'createdAt', true)">Latest</a></li>
+                            <li><a class="dropdown-item"
+                                    onclick="fetchComments('postId', postId, 'createdAt', false)">Oldest</a></li>
                         </ul>
                     </div>
 
