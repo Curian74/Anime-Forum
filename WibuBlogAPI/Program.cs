@@ -38,19 +38,18 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddScoped<ApplicationDbContext>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Service classes
 builder.Services.AddScoped<PostService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AdminService>();
-builder.Services.AddScoped<CommentSerivce>();
+builder.Services.AddScoped<CommentService>();
 builder.Services.AddScoped<TicketService>();
 builder.Services.AddScoped<TemplateBody>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<PostCategoryService>();
-builder.Services.AddScoped<CommentSerivce>();
+builder.Services.AddScoped<CommentService>();
 builder.Services.AddScoped<VoteService>();
 builder.Services.AddScoped<MediaService>();
 builder.Services.AddScoped<FileService>();
