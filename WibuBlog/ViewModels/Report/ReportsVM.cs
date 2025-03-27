@@ -1,19 +1,13 @@
 ﻿using Application.Common.Pagination;
 using Application.DTO;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace WibuBlog.ViewModels.Report
 {
     public class ReportsVM
     {
         public PagedResult<ReportDto> Reports { get; set; }
-        public List<MostReportedPostDto> MostReportedPosts { get; set; }
+        public List<SelectListItem>? CategoryList { get; set; }
+        public Guid PostCategoryId { get; set; }
     }
-
-    public class MostReportedPostDto
-    {
-        public Guid Id { get; set; }
-        public string Title { get; set; }
-        public int ReportCount { get; set; }
-    }
-
 }

@@ -37,13 +37,18 @@ namespace WibuBlogAPI.Controllers
                 return StatusCode(500, new { success = false });
             }
         }
-        [Authorize(AuthenticationSchemes = "Bearer", Policy = "ModeratorPolicy")]
-        [HttpPut("reports/{reportId}/approval")]
-        public async Task<IActionResult> ApproveReport(Guid reportId, [FromBody] ApproveTicketDto dto)
+        [HttpPut("reports/{reportId}")]
+        public async Task<IActionResult> ApproveReport(Guid reportId, [FromBody] ApproveReportDto dto)
         {
             var result = await _reportService.ApproveReportAsync(reportId, dto.Approval, dto.Note);
-            if (result == 0) return NotFound("Ticket not found");
-            return Ok("Report approved");
+            try
+            {
+                return Ok(new { success = true, message = Application.Common.MessageOperations.MessageConstants.ME020 });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false });
+            }
         }
 
         [Authorize(AuthenticationSchemes = "Bearer", Policy = "ModeratorPolicy")]

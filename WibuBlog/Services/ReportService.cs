@@ -39,7 +39,7 @@ namespace WibuBlog.Services
         public async Task<bool> ApproveReportAsync(Guid reportId, bool approval, string? note = null)
         {
             var response = await _apiService.PutAsync<ApiResponse<Report>>(
-                $"reports/{reportId}/approval",
+                $"Report/ApproveReport/reports/{reportId}",
                 new ApproveReportDto
                 {
                     Approval = approval,

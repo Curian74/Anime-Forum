@@ -29,16 +29,32 @@ namespace Application.Services
 
         public async Task<int> ApproveReportAsync(Guid reportId, bool approval, string? note = null)
         {
-            var report = await _reportRepository.GetByIdAsync(reportId);
-            if (report == null)
+            try
             {
-                throw new KeyNotFoundException("Report not found.");
-            }
+                Console.WriteLine($"ApproveReportAsync called with: ReportId={reportId}, Approval={approval}, Note={note}");
 
-            report.IsApproved = approval;
-            report.Note = note;
-            await _reportRepository.UpdateAsync(report);
-            return await _unitOfWork.SaveChangesAsync();
+                var report = await _reportRepository.GetByIdAsync(reportId);
+                if (report == null)
+                {
+                    Console.WriteLine($"Report not found: {reportId}");
+                    return 0; // Or throw an exception
+                }
+
+                report.IsApproved = approval;
+                report.Note = note;
+
+                await _reportRepository.UpdateAsync(report);
+                int result = await _unitOfWork.SaveChangesAsync();
+
+                Console.WriteLine($"Report updated. SaveChanges result: {result}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in ApproveReportAsync: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                throw;
+            }
         }
 
 
