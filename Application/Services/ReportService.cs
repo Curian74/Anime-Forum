@@ -10,7 +10,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using static Domain.ValueObjects.Enums.TicketStatusEnum;
 
 namespace Application.Services
 {
@@ -27,20 +26,46 @@ namespace Application.Services
             await _reportRepository.AddAsync(report);
             await _unitOfWork.SaveChangesAsync();
         }
-    
-            public async Task<int> ApproveTicketAsync(Guid reportId, bool approval, string? note = null)
+
+        public async Task<int> ApproveReportAsync(Guid reportId, bool approval, string? note = null)
         {
             var report = await _reportRepository.GetByIdAsync(reportId);
-
-            if (report != null)
+            if (report == null)
             {
-                report.IsApproved = approval;
-                report.Note = note;
-                await _reportRepository.UpdateAsync(report);
+                throw new KeyNotFoundException("Report not found.");
             }
 
+            report.IsApproved = approval;
+            report.Note = note;
+            await _reportRepository.UpdateAsync(report);
             return await _unitOfWork.SaveChangesAsync();
         }
+
+
+        public async Task<(IEnumerable<Report> Items, int TotalCount)> GetAllAsync(
+           Expression<Func<Report, bool>>? filter = null,
+           Func<IQueryable<Report>, IOrderedQueryable<Report>>? orderBy = null)
+        {
+            return await _reportRepository.GetAllAsync(filter, orderBy);
+        }
+
+        public async Task<(IEnumerable<Report>, int totalCount)> FindAsync(
+        Expression<Func<Report, bool>>? filter = null,
+        Func<IQueryable<Report>, IOrderedQueryable<Report>>? orderBy = null)
+        {
+            return await _reportRepository.GetPagedAsync(1, 10, filter, orderBy);
+        }
+
+        public async Task<IPagedResult<Report>> GetPagedAsync(
+            int page = 1,
+            int size = 10,
+            Expression<Func<Report, bool>>? filter = null,
+            Func<IQueryable<Report>, IOrderedQueryable<Report>>? orderBy = null)
+        {
+            var (items, totalCount) = await _reportRepository.GetPagedAsync(page, size, filter, orderBy);
+            return new PagedResult<Report>(items, totalCount, page, size);
+        }
+
         public async Task<IEnumerable<ReportDto>> GetReportsWithDetailsAsync(
             Expression<Func<Report, bool>>? filter = null,
             Func<IQueryable<Report>, IOrderedQueryable<Report>>? orderBy = null)
@@ -52,18 +77,16 @@ namespace Application.Services
             {
                 var reportDto = _mapper.Map<ReportDto>(report);
 
-                // Get user info
                 var user = await _userRepository.GetByIdAsync(report.UserId);
                 if (user != null)
                 {
-                    reportDto.Username = user.UserName; // Adjust property name based on your User entity
+                    reportDto.Username = user.UserName; 
                 }
 
-                // Get post info
                 var post = await _postRepository.GetByIdAsync(report.PostId);
                 if (post != null)
                 {
-                    reportDto.PostTitle = post.Title; // Adjust property name based on your Post entity
+                    reportDto.PostTitle = post.Title; 
                 }
 
                 reportDtos.Add(reportDto);
@@ -72,7 +95,6 @@ namespace Application.Services
             return reportDtos;
         }
 
-        // New method for paged reports with details
         public async Task<IPagedResult<ReportDto>> GetPagedReportsWithDetailsAsync(
             int page = 1,
             int size = 10,
@@ -86,18 +108,16 @@ namespace Application.Services
             {
                 var reportDto = _mapper.Map<ReportDto>(report);
 
-                // Get user info
                 var user = await _userRepository.GetByIdAsync(report.UserId);
                 if (user != null)
                 {
-                    reportDto.Username = user.UserName; // Adjust property name based on your User entity
+                    reportDto.Username = user.UserName; 
                 }
 
-                // Get post info
                 var post = await _postRepository.GetByIdAsync(report.PostId);
                 if (post != null)
                 {
-                    reportDto.PostTitle = post.Title; // Adjust property name based on your Post entity
+                    reportDto.PostTitle = post.Title; 
                 }
 
                 reportDtos.Add(reportDto);
@@ -105,5 +125,6 @@ namespace Application.Services
 
             return new PagedResult<ReportDto>(reportDtos, totalCount, page, size);
         }
+
     }
 }

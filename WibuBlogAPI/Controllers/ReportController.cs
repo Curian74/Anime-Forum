@@ -38,26 +38,28 @@ namespace WibuBlogAPI.Controllers
             }
         }
         [Authorize(AuthenticationSchemes = "Bearer", Policy = "ModeratorPolicy")]
-        [HttpPut("Approve/{reportId}")]
+        [HttpPut("reports/{reportId}/approval")]
         public async Task<IActionResult> ApproveReport(Guid reportId, [FromBody] ApproveTicketDto dto)
         {
-            var result = await _reportService.ApproveTicketAsync(reportId, dto.Approval, dto.Note);
+            var result = await _reportService.ApproveReportAsync(reportId, dto.Approval, dto.Note);
             if (result == 0) return NotFound("Ticket not found");
-            return Ok("Ticket approved");
+            return Ok("Report approved");
         }
 
         [Authorize(AuthenticationSchemes = "Bearer", Policy = "ModeratorPolicy")]
         [HttpGet("WithDetails")]
         public async Task<IActionResult> GetAllWithDetails(
-                    string? filterBy = null,
-                    string? searchTerm = null,
-                    string? orderBy = null,
-                    bool descending = false)
+            string? filterBy = null,
+            string? searchTerm = null,
+            string? orderBy = null,
+            bool descending = false)
         {
             Expression<Func<Report, bool>>? filter = ExpressionBuilder.BuildFilterExpression<Report>(filterBy, searchTerm);
             Func<IQueryable<Report>, IOrderedQueryable<Report>>? orderExpression = ExpressionBuilder.BuildOrderExpression<Report>(orderBy, descending);
+
             var result = await _reportService.GetReportsWithDetailsAsync(filter, orderExpression);
-            return new JsonResult(Ok(result));
+
+            return Ok(result);
         }
 
         [HttpGet("PagedWithDetails")]
@@ -74,5 +76,6 @@ namespace WibuBlogAPI.Controllers
             var result = await _reportService.GetPagedReportsWithDetailsAsync(page, size, filter, orderExpression);
             return Ok(result);
         }
+
     }
 }

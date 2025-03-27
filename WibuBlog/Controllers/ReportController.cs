@@ -70,5 +70,12 @@ namespace WibuBlog.Controllers
             };
             return View("Reports", data);
         }
+        [Authorize(AuthenticationSchemes = "Bearer", Policy = "ModeratorPolicy")]
+        [HttpPut("reports/{reportId}/approval")]
+        public async Task<IActionResult> ApproveReport(Guid reportId, [FromBody] ApproveTicketDto dto)
+        {
+            var result = await _reportService.ApproveReportAsync(reportId, dto.Approval, dto.Note);
+            return Ok("Report approved");
+        }
     }
 }

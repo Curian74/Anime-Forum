@@ -17,13 +17,17 @@ namespace WibuBlog.Services
             var response = await _apiService.PostAsync<ApiResponse<Report>>("Report/CreateReport", data);
             return response != null;
         }
-        public async Task<List<ReportDto>> GetAllReportWithDetailsAsync(string? filterBy, string? searchTerm, bool? isDesc)
+        public async Task<List<ReportDto>> GetAllReportWithDetailsAsync(
+            string? filterBy = null,
+            string? searchTerm = null,
+            bool? isDesc = false)
         {
-            var response = await _apiService.GetAsync<ApiResponse<List<ReportDto>>>(
-                $"Report/GetAllWithDetails?filterBy={filterBy}&searchTerm={searchTerm}&descending={isDesc}");
-            return response.Value!;
+            var response = await _apiService.GetAsync<List<ReportDto>>(
+                    $"Report/GetAllWithDetails/WithDetails?filterBy={filterBy}&searchTerm={searchTerm}&descending={isDesc}");
+
+            return response ?? new List<ReportDto>();
         }
-        
+
         public async Task<PagedResult<ReportDto>> GetPagedReportWithDetailsAsync(int? page, int? pageSize,
             string? filterBy, string? searchTerm, string? orderBy, bool? isDescending)
         {
@@ -31,6 +35,18 @@ namespace WibuBlog.Services
                 $"Report/GetPagedWithDetails?page={page}&size={pageSize}&filterBy={filterBy}" +
                 $"&searchTerm={searchTerm}&orderBy={orderBy}&descending={isDescending}");
             return response.Value!;
+        }
+        public async Task<bool> ApproveReportAsync(Guid reportId, bool approval, string? note = null)
+        {
+            var response = await _apiService.PutAsync<ApiResponse<Report>>(
+                $"reports/{reportId}/approval",
+                new ApproveReportDto
+                {
+                    Approval = approval,
+                    Note = note
+                }
+            );
+            return response != null;
         }
     }
 }
