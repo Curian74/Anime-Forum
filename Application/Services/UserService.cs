@@ -11,14 +11,13 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Application.Services
 {
-    public class UserService(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork, RankService rankService, IWebHostEnvironment webHostEnvironment)
+    public class UserService(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork, RankService rankService)
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly UserManager<User> _userManager = userManager;
         private readonly IMapper _mapper = mapper;
         private readonly IGenericRepository<User> _userGenericRepository = unitOfWork.GetRepository<User>();
         private readonly IGenericRepository<Post> _postGenericRepository = unitOfWork.GetRepository<Post>();
-        private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
         private readonly RankService _rankService = rankService;
 
 		public async Task<User?> FindByLoginAsync(LoginDto dto)
@@ -51,6 +50,9 @@ namespace Application.Services
             {
                 await _userManager.AddToRoleAsync(user, "Member");
             }
+
+            user.LastActive = DateTime.Now;
+            await _unitOfWork.SaveChangesAsync();
 
             return result;
         }
@@ -87,6 +89,7 @@ namespace Application.Services
 
 			return result;
         }
+
         public async Task<User?> FindByIdAsync(Guid userId)
         {
             return await _userManager.FindByIdAsync(userId.ToString());
@@ -112,7 +115,6 @@ namespace Application.Services
             return await _userManager.ChangePasswordAsync(updateUser, updatePasswordDTO.OldPassword, updatePasswordDTO.NewPassword);
 		}
 
-
 		public async Task<Media> UpdateProfilePhotoAsync(Media media, string currentUserId)
         {
             var updateUser = await _userManager.FindByIdAsync(currentUserId);
@@ -120,8 +122,5 @@ namespace Application.Services
             await _unitOfWork.SaveChangesAsync();
             return media;
 		}
-
-
-		
 	}
 }

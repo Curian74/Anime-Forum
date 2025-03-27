@@ -125,8 +125,6 @@ namespace WibuBlog.Controllers
             return View(postDetailVM);
         }
 
-
-
         [HttpGet]
         public async Task<IActionResult> Create()
         {
