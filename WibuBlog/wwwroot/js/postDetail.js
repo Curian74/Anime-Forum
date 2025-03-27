@@ -369,18 +369,19 @@ async function fetchComments(filterBy, searchTerm, orderBy, descending = false) 
             const response = await fetch(`https://localhost:7186/api/Comment/GetPaged?page=${page}&size=${size}&filterBy=${filterBy}&searchTerm=${searchTerm}&orderBy=${orderBy}&descending=${descending}`);
             const result = await response.json();
             const data = result.value;
-
+        
             if (!response.ok) {
                 throw new Error(data.message || "Failed to load comments.");
             }
-
-            // Store only non-hidden comments
-            const visibleComments = data.items.filter(comment => !comment.isHidden);
+        
+            // Filter to include only top-level (non-reply) comments that are not hidden
+            const visibleComments = data.items.filter(comment => !comment.isHidden && comment.parentCommentId == null);
             allComments.push(...visibleComments);
-
+        
             hasMore = data.items.length === size; // Stop if fewer than `size` items were returned
             page++; // Move to the next page
         }
+        
 
         paginateComments(1, PAGE_SIZE); // Start with page 1
     } catch (error) {
@@ -427,6 +428,7 @@ async function renderComments(data, currentPage, size) {
 
     // Handle empty state
     if (!data.items || data.items.length === 0) {
+        commentSection.classList = ''; //Trick lo?d
         commentSection.innerHTML = `
             <div class="d-flex align-items-center mt-5 gap-3">
                 <img src="https://www.redditstatic.com/shreddit/assets/thinking-snoo.png" 
@@ -437,7 +439,6 @@ async function renderComments(data, currentPage, size) {
                     <p class="mb-0">Add your thoughts and get the conversation going.</p>
                 </div>
             </div>`;
-        commentSection.classList.add("comment-sections");
         return;
     }
 
@@ -514,7 +515,9 @@ function renderChildComments(childComments, parentId) {
         return '';
     }
 
-    return childComments.map(child => `
+    return childComments
+    .filter(child => !child.isHidden)
+    .map(child => `
         <div class="card p-2 mb-2 border ml-4">
             <div class="d-flex align-items-start">
                 <img class="rounded-circle avatar me-2"
