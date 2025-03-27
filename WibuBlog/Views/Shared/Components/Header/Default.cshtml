@@ -16,6 +16,10 @@
                 </a>
             </div>
 
+                @{
+                    var username = User.Identity.IsAuthenticated ? User.FindFirst("name")?.Value ?? "Unknown" : "";
+                    var roleName = User.Identity.IsAuthenticated ? User.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown Role" : "";
+                }
             <div class="d-flex justify-content-between align-items-center">
                 <div class="dropdown">
                     <button class="forum-dropdown btn dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
@@ -34,11 +38,12 @@
                         <li><button class="dropdown-item" type="button">New profile posts</button></li>
                         <li><button class="dropdown-item" type="button">Latest activity</button></li>
                     </ul>
+
+                    @if (roleName == "Admin")
+                    {
+                        <a href="@Url.Action("Dashboard", "Admin")" class="forum-dropdown btn">Dashboard</a>
+                    }
                 </div>
-                @{
-                    var username = User.Identity.IsAuthenticated ? User.FindFirst("name")?.Value ?? "Unknown" : "";
-                    var roleName = User.Identity.IsAuthenticated ? User.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown Role" : "";
-                }
                 @if (User.Identity.IsAuthenticated && Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId))
                 {
                         <div class="dropdown">
