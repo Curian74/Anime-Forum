@@ -51,6 +51,9 @@ namespace Application.Services
                 await _userManager.AddToRoleAsync(user, "Member");
             }
 
+            user.LastActive = DateTime.Now;
+            await _unitOfWork.SaveChangesAsync();
+
             return result;
         }
 
