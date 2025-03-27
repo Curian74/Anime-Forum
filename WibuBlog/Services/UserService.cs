@@ -94,8 +94,7 @@ namespace WibuBlog.Services
                 UserId = Guid.Parse(userId),
                 IsDeleted = false
             };
-            var noti = await apiService.PostAsync<ApiResponse<Notification>>($"Notification/Add/", notification);
-            await _hubContext.Clients.All.SendAsync("ReceiveNotification", "Updated Profile");
+            var noti = await apiService.PostAsync<ApiResponse<Notification>>($"Notification/Add/", notification);      
             var response = await _apiService.PutAsync<ApiResponse<Media>>("User/UpdateProfilePhoto/", media);
             return response.Value!;
 		}

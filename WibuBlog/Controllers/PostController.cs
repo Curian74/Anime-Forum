@@ -7,18 +7,21 @@ using WibuBlog.Helpers;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Application.Common.Pagination;
+using Microsoft.AspNetCore.SignalR;
+using WibuBlog.Hubs;
+using Microsoft.Extensions.Hosting;
 
 namespace WibuBlog.Controllers
 {
     [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     public class PostController(PostService postService, CommentService commentServices,
-        PostCategoryService postCategoryService, UserService userService) : Controller
+        PostCategoryService postCategoryService, UserService userService, IHubContext<NotificationHub> hubContext) : Controller
     {
         private readonly PostService _postService = postService;
         private readonly CommentService _commentService = commentServices;
         private readonly PostCategoryService _postCategoryService = postCategoryService;
         private readonly UserService _userService = userService;
-
+        private readonly IHubContext<NotificationHub> _hubContext = hubContext;
         private async Task<List<SelectListItem>> GetCategoryListAsync()
         {
             var categories = await _postCategoryService.GetAllCategories("", "", false);
@@ -171,6 +174,7 @@ namespace WibuBlog.Controllers
             {
                 await _postService.CreatePostAsync(createPostVM);
                 TempData["successMessage"] = "Post created successfully.";
+                await _hubContext.Clients.All.SendAsync("ReceiveNotification", "New post created: " + createPostVM.Title);
                 return RedirectToAction(nameof(Create));
             }
 
