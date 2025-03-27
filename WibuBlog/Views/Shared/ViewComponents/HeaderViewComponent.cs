@@ -12,15 +12,14 @@ namespace WibuBlog.Views.Shared.ViewComponents
 		public async Task<IViewComponentResult> InvokeAsync()
 		{
 			var user = await _userService.GetUserProfile();
-			var notifications = await _userService.GetUserNotifications();
+			
 
-			var model = new HeaderViewDto
+            if (user != null)
 			{
-				User = user,
-				Notifications = notifications.Notifications
-			};
-
-			return View(model);
+                var model = await _userService.GetUserNotifications();
+                return View(model);
+            }
+			return View(new HeaderViewDto());	      
 		}
 	}
 }

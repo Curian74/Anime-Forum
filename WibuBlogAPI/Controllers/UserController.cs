@@ -3,6 +3,8 @@ using Application.Services;
 using System.Security.Claims;
 using Domain.Entities;
 using Application.DTO;
+using Microsoft.AspNetCore.SignalR;
+using Application.Common.MessageOperations;
 
 
 namespace WibuBlogAPI.Controllers
@@ -13,7 +15,6 @@ namespace WibuBlogAPI.Controllers
     public class UserController(UserService userService) : ControllerBase
     {
         private readonly UserService _userService = userService;
-
 
         [HttpGet]
         public async Task<IActionResult> GetAccountDetails(Guid? userId)
@@ -110,8 +111,10 @@ namespace WibuBlogAPI.Controllers
         {
 			try
             {
-				var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);			 
+				var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
                 return new JsonResult(await _userService.UpdateProfilePhotoAsync(media, currentUserId));  
+
             }
 			catch (Exception ex)
 			{
@@ -126,10 +129,6 @@ namespace WibuBlogAPI.Controllers
 			{
 				var currentUserId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
                 var result = await _userService.GetUserNotification(currentUserId);
-                if (result == null)
-                {
-                    return BadRequest();
-                }
 				return new JsonResult(Ok(result));
 			}
 			catch (Exception ex)

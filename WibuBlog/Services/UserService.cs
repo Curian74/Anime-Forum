@@ -4,26 +4,28 @@ using Application.DTO;
 using Application.Services;
 using Domain.Entities;
 using Infrastructure.Configurations;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using WibuBlog.Common.ApiResponse;
 using WibuBlog.Interfaces.Api;
 using WibuBlog.ViewModels.Users;
-using System.Security.Claims;
-using WibuBlog.Views.Shared.ViewComponents;
+using Microsoft.AspNetCore.SignalR;
+using WibuBlog.Hubs;
+using Microsoft.Extensions.Hosting;
+using Application.Common.MessageOperations;
 
 namespace WibuBlog.Services
 {
-    public class UserService(IApiService apiService, IOptions<AuthTokenOptions> authTokenOptions, IHttpContextAccessor httpContextAccessor, FileService fileService, MediaService mediaService)
+    public class UserService(IApiService apiService, IOptions<AuthTokenOptions> authTokenOptions, IHttpContextAccessor httpContextAccessor, FileService fileService, MediaService mediaService, IHubContext<NotificationHub> hubContext)
     {
         private readonly IApiService _apiService = apiService;
         private readonly AuthTokenOptions _authTokenOptions = authTokenOptions.Value;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 		private readonly FileService _fileService = fileService;
         private readonly MediaService _mediaService = mediaService;
-		public async Task<UserProfileDto> GetUserProfile()
+        private readonly IHubContext<NotificationHub> _hubContext = hubContext;
+        public async Task<UserProfileDto> GetUserProfile()
         {
             var token = _httpContextAccessor.HttpContext?.Request.Cookies[_authTokenOptions.Name];
             if (string.IsNullOrEmpty(token))
@@ -80,12 +82,21 @@ namespace WibuBlog.Services
 			return response;
 		}
 
-		public async Task<Media> UpdateProfilePhoto(IFormFile file)
+		public async Task<Media> UpdateProfilePhoto(IFormFile file, string userId)
         {
-			Media media = await _fileService.UploadImage(file);
+            Media media = await _fileService.UploadImage(file);
             //await _fileService.DeleteCurrentProfilePhoto();
             var resp = await _apiService.PostAsync<ApiResponse<Media>>($"Media/Add/", media);
-			var response = await _apiService.PutAsync<ApiResponse<Media>>("User/UpdateProfilePhoto/", media);
+            Notification notification = new Notification()
+            {
+                NotiType = NotiType.Profile,
+                Content = Application.Common.MessageOperations.NotificationService.GetNotification("NOTI08", "Quoc anh"),
+                UserId = Guid.Parse(userId),
+                IsDeleted = false
+            };
+            var noti = await apiService.PostAsync<ApiResponse<Notification>>($"Notification/Add/", notification);
+            await _hubContext.Clients.All.SendAsync("ReceiveNotification", "Updated Profile");
+            var response = await _apiService.PutAsync<ApiResponse<Media>>("User/UpdateProfilePhoto/", media);
             return response.Value!;
 		}
 

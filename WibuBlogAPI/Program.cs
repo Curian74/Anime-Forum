@@ -16,6 +16,7 @@ using Infrastructure.External;
 using Application.Interfaces.Email;
 using Application.Common.EmailTemplate;
 using Application.Common.File;
+using Application.Common.MessageOperations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +58,7 @@ builder.Services.AddScoped<FileService>();
 builder.Services.AddScoped<ReportService>();
 builder.Services.AddScoped<InventoryService>();
 builder.Services.AddScoped<RankService>();
+builder.Services.AddScoped<Application.Services.NotificationService>();
 
 // AutoMapper service
 // Quet project, tim tat ca file MappingProfile roi gop lai thanh 1

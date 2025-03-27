@@ -89,6 +89,8 @@ namespace WibuBlog
                     options.LoginPath = "/Authentication/Login"; // Where to redirect when not logged in
                     options.AccessDeniedPath = "/Authentication/AccessDenied"; // For unauthorized access
                 });
+            builder.Services.AddAuthentication();
+            builder.Services.AddAuthorization();
 
             builder.Services.AddAuthorizationBuilder()
                 .AddPolicy("MemberPolicy", policy => policy.RequireRole(UserRoles.Member, UserRoles.Moderator, UserRoles.Admin))

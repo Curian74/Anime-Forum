@@ -61,21 +61,36 @@
                         {
                                     <div class="dropdown">
                                         <button class="btn dropdown-toggle" id="notificationDropdown" data-bs-toggle="dropdown">
-                                            🔔 <span id="notificationCount" style="color: white">@Model.Notifications.Count</span>
+                                                         <span>🔔</span>
+                                    @if(@Model.Notifications.Count > 0)
+                                    {         
+                                       
+                                        <span id="notificationCount" style="color: red">@Model.Notifications.Count</span>
+                                    }
+                                   
                                         </button>
-                                        <ul class="dropdown-menu" id="notificationList">
-                                                            @if (Model.Notifications.Any())
-                                                            {
-                                                                @foreach (var notification in Model.Notifications)
-                                                                {
-                                                            <li><a class="dropdown-item" href="#">@notification.Content</a></li>
-                                                                }
-                                                            }
-                                                            else
-                                                            {
-                                                    <li class="dropdown-item text-muted">No new notifications</li>
-                                                            }
-                                        </ul>
+                                     <ul class="dropdown-menu" id="notificationList" style="width: 600px;">
+                                    @if (Model.Notifications.Any())
+                                    {
+                                        @foreach (var notification in Model.Notifications)
+                                        {
+                                <li class="notification-item d-flex align-items-center p-2" style="border-bottom: 1px solid #ddd;">
+                                    <img src="@(notification.User.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" 
+                                         class="rounded-circle" width="40" height="40" style="margin-right: 10px;">
+                                    <div>
+                                        <a class="notification-content" href="#" style="text-decoration: none; font-weight: bold; color: #333;">
+                                                        @notification.Content
+                                        </a>
+                                        <div class="text-muted" style="font-size: 12px;">@notification.CreatedAt.ToString("dd/MM/yyyy - HH:mm")</div>
+                                    </div>
+                                </li>
+                                        }
+                                    }
+                                    else
+                                    {
+                        <li class="text-muted p-2">No new notifications</li>
+                                    }
+            </ul>
                                     </div>
                                     }
 
@@ -95,7 +110,7 @@
                             </div>
                             <div class="modal-body">
                                 Are you sure you want to log out?
-                            </div>
+                            </div> 
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                 <form id="logoutForm" action="/Auth/Logout" method="POST">
@@ -118,4 +133,22 @@
         </div>
     </header>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script>
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/notificationHub")
+            .build();
+
+        connection.start().catch(err => console.error(err.toString()));
+
+        connection.on("ReceiveNotification", function (message) {
+            let notificationList = document.getElementById("notificationList");
+            let newNotification = document.createElement("li");
+            newNotification.innerHTML = `<a class="dropdown-item" href="#">${message}</a>`;
+            notificationList.prepend(newNotification);
+
+            let count = document.getElementById("notificationCount");
+            count.innerText = parseInt(count.innerText) + 1;
+        });
+    </script>
 }

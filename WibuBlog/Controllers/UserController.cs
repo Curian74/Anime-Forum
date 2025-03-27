@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using WibuBlog.ViewModels.Users;
 using Application.Common.MessageOperations;
+using System.Security.Claims;
 
 namespace WibuBlog.Controllers
 {
@@ -67,7 +68,9 @@ namespace WibuBlog.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateProfilePhoto(IFormFile file)
         {
-			var response = await _userService.UpdateProfilePhoto(file);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var response = await _userService.UpdateProfilePhoto(file,userId);
+
             return RedirectToAction(nameof(UserProfile));
                         
         }
