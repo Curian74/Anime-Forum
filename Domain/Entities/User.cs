@@ -1,4 +1,5 @@
 ﻿using Domain.Common.BaseEntities;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities
 {
@@ -12,13 +13,16 @@ namespace Domain.Entities
 
         public string? Bio { get; set; }
 
+        [ForeignKey(nameof(Rank))]
+        public Guid? RankId { get; set; }
+
         // Navigation properties
-        public Rank? Rank { get; set; }
+        public virtual Rank? Rank { get; set; }
 
-        public Media? ProfilePhoto { get; set; }
+        public virtual Media? ProfilePhoto { get; set; }
 
-        public UserInventory UserInventory { get; set; } = null!;
+        public virtual UserInventory? UserInventory { get; set; }
 
-        public UserFlairSelection? UserFlairSelection { get; set; }
+        public virtual UserFlairSelection? UserFlairSelection { get; set; }
     }
 }

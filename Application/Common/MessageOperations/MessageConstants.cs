@@ -10,6 +10,7 @@ namespace Application.Common.MessageOperations
         public const string ME005 = "The email address doesn’t exist. Please try again.";
         public const string ME006 = "Password and Confirm password don’t match. Please try again.";
         public const string ME007 = "Password must contain at least one number, one numeral, and seven characters.";
+        public const string ME007a = "Password updated successfully";
         public const string ME008 = "Field must be unique";
         public const string ME009 = "Invalid email address";
         public const string ME010 = "Posting is permitted whilst banned.";
@@ -32,7 +33,7 @@ namespace Application.Common.MessageOperations
         public const string ME027 = "Member has been unbanned";
         public const string ME028 = "Ticket verify successful";
         public const string ME029 = "You need to log in first in order to post comments.";
-        public const string ME030 = "This post is deleted. You can only view it.";
+        public const string ME030 = "This post is deleted and is now read-only.";
 
         //message chua co (da phan la validation thi them chu 'N' vao) (cai nay khong co trong BR nhung no thuoc nghiep vu)
         public const string MEN001 = "Username must not exceed 50 characters";
@@ -44,7 +45,8 @@ namespace Application.Common.MessageOperations
         public const string MEN007 = "OTP expired";
         public const string MEN008 = "Username taken";
         public const string MEN009 = "Post title must be at least 2 characters.";
-       
+        public const string MEN010 = "Must be loggeed in to do this action";
+        public const string MEN011 = "Invalid phone number format";
 
         //message nay dung de debug chu khong lien quan gi den BR hay nghiep vu
         public const string MEO001 = "Error reading expiry date";

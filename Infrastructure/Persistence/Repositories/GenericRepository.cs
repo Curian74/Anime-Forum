@@ -13,6 +13,10 @@ namespace Infrastructure.Persistence.Repositories
             return await _dbSet.FindAsync(id);
         }
 
+        public async Task<List<T>> GetAllWhereAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.Where(predicate).ToListAsync();
+        }
         public async Task<T?> GetSingleWhereAsync(Expression<Func<T, bool>> predicate)
         {
             return await _dbSet.FirstOrDefaultAsync(predicate);

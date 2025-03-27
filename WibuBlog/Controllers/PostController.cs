@@ -82,34 +82,49 @@ namespace WibuBlog.Controllers
             var comments = await _commentService
                 .GetPagedComments(page, pageSize, "postId", id.ToString(), "createdAt", true);
 
-            User? user = null;
+            var visibleComments = comments.Items.Where(x => !x.IsHidden).ToList();
+            var totalVisibleComments = visibleComments.Count();
 
+            var pagedComments = visibleComments
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var pagedCommentResult = new PagedResult<Comment>(
+                pagedComments,
+                totalVisibleComments,
+                page,
+                pageSize
+            );
+
+            User? user = null;
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (!string.IsNullOrEmpty(userId))
             {
                 user = await _userService.GetUserById(Guid.Parse(userId));
 
-                if(Guid.Parse(userId) != post.UserId && post.IsHidden) //Khong phai post cua minh va inactive thi k cho xem 
+                if (Guid.Parse(userId) != post.UserId && post.IsHidden)
                 {
                     return NotFound();
                 }
             }
 
-            if(user == null && post.IsHidden) //Chua dang nhap va post inactive
+            if (user == null && post.IsHidden)
             {
                 return NotFound();
             }
 
             var postDetailVM = new PostDetailVM
             {
-                Comments = comments,
+                Comments = pagedCommentResult,
                 Post = post,
                 User = user,
             };
 
             return View(postDetailVM);
         }
+
 
 
         [HttpGet]
@@ -183,6 +198,8 @@ namespace WibuBlog.Controllers
             if (userId != null)
             {
                 user = await _userService.GetUserById(Guid.Parse(userId));
+
+                if (Guid.Parse(userId) != post.UserId) return NotFound();
             }
 
             var data = new EditPostVM

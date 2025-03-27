@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Application.Services;
-using Application.DTO;
 using System.Security.Claims;
-using Infrastructure.External;
-using Application.Interfaces.Email;
+using Domain.Entities;
+using Application.DTO;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace WibuBlogAPI.Controllers
 {
@@ -16,10 +14,14 @@ namespace WibuBlogAPI.Controllers
     {
         private readonly UserService _userService = userService;
 
+
         [HttpGet]
-        public async Task<IActionResult> GetAccountDetails()
+        public async Task<IActionResult> GetAccountDetails(Guid? userId)
         {
-            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            if (userId == null)
+            {
+                userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            }
 
             var result = await _userService.GetProfileDetails(userId);
 
@@ -43,7 +45,7 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUserByEmailAsync(string email)
+        public async Task<IActionResult> GetUserByEmail(string email)
         {
             var result = await _userService.GetUserByEmail(email);
             if (result == null)
@@ -54,7 +56,7 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUserByUsernameAsync(string username)
+        public async Task<IActionResult> GetUserByUsername(string username)
         {
             var result = await _userService.GetUserByUsername(username);
             if (result == null)
@@ -65,10 +67,56 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPagedUsersAsync(int page, int size)
+        public async Task<IActionResult> GetPagedUsers(int page, int size)
         {
             var result = await _userService.GetPagedUsersAsync(page, size);
             return new JsonResult(Ok(result));
         }
-    }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateUser([FromBody]UpdateUserDto updateUserDTO)
+        {
+            try
+            {
+                var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);       
+                if (currentUserId == updateUserDTO.Id.ToString()) await _userService.UpdateUserAsync(updateUserDTO);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new JsonResult(NotFound($"{ex.GetType().Name}: {ex.Message}"));
+            }
+
+            return new JsonResult(Accepted(updateUserDTO));
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdatePassword([FromBody]UpdatePasswordDTO updatePasswordDTO)
+        {
+			try
+			{
+				var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+				if (currentUserId == updatePasswordDTO.UserId.ToString())
+                return new JsonResult(await _userService.UpdatePasswordAsync(updatePasswordDTO));
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return new JsonResult(NotFound($"{ex.GetType().Name}: {ex.Message}"));
+			}
+            return new JsonResult(BadRequest());
+		}
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateProfilePhoto([FromBody] Media media)
+        {
+			try
+            {
+				var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);			 
+                return new JsonResult(await _userService.UpdateProfilePhotoAsync(media, currentUserId));  
+            }
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"file/server error: {ex.Message}");
+			}
+		}
+	}
 }

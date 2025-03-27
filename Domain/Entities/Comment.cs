@@ -16,8 +16,8 @@ namespace Domain.Entities
         public bool IsHidden { get; set; } = false;
 
         // Navigation properties
-        public User User { get; set; } = null!;
+        public virtual User? User { get; set; }
 
-        public Post Post { get; set; } = null!;
+        public virtual Post? Post { get; set; }
     }
 }

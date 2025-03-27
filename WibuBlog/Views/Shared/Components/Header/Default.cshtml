@@ -1,4 +1,5 @@
 ﻿@using System.Security.Claims;
+@model Application.DTO.UserProfileDto;
 @if (ViewData["ShowHeader"] as bool? != false)
 {
     <link rel="stylesheet" href="~/css/header.css" />
@@ -43,10 +44,17 @@
                         <div class="dropdown">
                             <button class="btn dropdown-toggle border-0 d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 <div class="text-white text-start me-2">
-                                    <p class="mb-0 fw-bold">@username</p>
-                                    <p class="mb-0 text-secondary" style="font-size: 0.85rem;">@roleName</p>
+                                    <p class="mb-0 fw-bold">@Model.UserName</p>
+                                    <p class="mb-0 text-secondary" style="font-size: 0.85rem;">@Model.Roles.FirstOrDefault()</p>
                                 </div>
-                                <img src="~/images/defaults/user/default_avatar.jpg" class="rounded-circle" width="40" height="40" alt="User Avatar">
+                            @if (Model.ProfilePhoto == null || String.IsNullOrEmpty(Model.ProfilePhoto.Url))
+                            {
+                                            <img id="avatarImage" src="~/images/defaults/user/default_avatar.jpg" class="rounded-circle" width="40" height="40" alt="User Avatar">
+                            }
+                            else
+                            {
+                                            <img id="avatarImage" src="@Url.Content(Model.ProfilePhoto.Url)" class="rounded-circle" width="40" height="40" alt="User Avatar">
+                            }
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li><a class="dropdown-item" href="/User/UserProfile">Profile</a></li>
