@@ -27,7 +27,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Validate main comment submission
     const validateComment = () => {
-        if (!mainEditor || !mainEditor.getText().trim()) {
+        if (!mainEditor) return false;
+
+        const htmlContent = mainEditor.getHTML().trim();
+        const textContent = mainEditor.getText().trim();
+
+        if (!htmlContent || (!textContent && !htmlContent.includes("<img"))) {
             Swal.fire({
                 title: "Warning!",
                 text: "Content is required.",
@@ -37,8 +42,10 @@ document.addEventListener("DOMContentLoaded", function () {
             });
             return false;
         }
+
         return true;
     };
+
 
     if (submitBtn) {
         submitBtn.addEventListener("click", async (e) => {
@@ -145,14 +152,17 @@ const replyComment = async (parentId, id) => {
     try {
         const editorId = `reply-cmt-${id}`;
         const editor = window.getEditor(editorId);
-        console.log(id);
-        console.log(parentId);
+
+        if (!editor) return false;
+
+        const htmlContent = editor.getHTML().trim();
+        const textContent = editor.getText().trim();
 
         // Validate the editor content
-        if (!editor || !editor.getHTML().trim()) {
+        if (!htmlContent || (!textContent && !htmlContent.includes("<img"))) {
             Swal.fire({
                 title: "Warning!",
-                text: "Comment content cannot be empty.",
+                text: "Content is required.",
                 icon: "warning",
                 confirmButtonColor: "#3085d6",
                 cancelButtonColor: "#d33",
@@ -192,11 +202,16 @@ const editComment = async (cmtId) => {
         const editorId = `edit-cmt-${cmtId}`;
         const editor = window.getEditor(editorId);
 
+        if (!editor) return;
+
+        const htmlContent = editor.getHTML().trim();
+        const textContent = editor.getText().trim();
+
         // Validate the editor content
-        if (!editor || !editor.getText().trim()) {
+        if (!htmlContent || (!textContent && !htmlContent.includes("<img"))) {
             Swal.fire({
                 title: "Warning!",
-                text: "Comment content cannot be empty.",
+                text: "Content is required.",
                 icon: "warning",
                 confirmButtonColor: "#3085d6",
                 cancelButtonColor: "#d33",
@@ -476,13 +491,16 @@ async function renderComments(data, currentPage, size) {
                         </div>
                         <div class="mb-1 comment-text" id="comment-text-${c.id}">${c.content}</div>
 
-                        <button onclick="openReplyCmt('${c.id}')">Reply</button>
+                        <button onclick="openReplyCmt('${c.id}')">
+                            <i style="font-size: 10px; margin-right: 5px;" class="fa-solid fa-reply"></i>
+                            Reply
+                        </button>
 
                         <div id="reply-comment-section-${c.id}" style="display: none;">
                             <textarea id="reply-cmt-${c.id}" class="form-control"></textarea>
                             <div class="d-flex justify-content-end mt-2">
-                                <button type="button" class="btn btn-secondary me-2" onclick="cancelReply('${c.id}')">Cancel</button>
-                                <button type="button" class="btn btn-primary" onclick="replyComment('${c.id}', '${c.id}')">Save</button>
+                                <button type="button" class="me-2" onclick="cancelReply('${c.id}')">Cancel</button>
+                                <button type="button" style="background-color: #003584; color: white;" onclick="replyComment('${c.id}', '${c.id}')">Save</button>
                             </div>
                         </div>
 
@@ -490,8 +508,8 @@ async function renderComments(data, currentPage, size) {
                         <div id="edit-comment-section-${c.id}" style="display: none;">
                             <textarea id="edit-cmt-${c.id}" class="form-control">${c.content}</textarea>
                             <div class="d-flex justify-content-end mt-2">
-                                <button type="button" class="btn btn-secondary me-2" onclick="cancelEdit('${c.id}')">Cancel</button>
-                                <button type="button" class="btn btn-primary" onclick="editComment('${c.id}')">Save</button>
+                                <button type="button" class="me-2" onclick="cancelEdit('${c.id}')">Cancel</button>
+                                <button type="button" style="background-color: #003584; color: white;" onclick="editComment('${c.id}')">Save</button>
                             </div>
                         </div>
 
@@ -550,8 +568,8 @@ function renderChildComments(childComments, parentId) {
                     <div id="edit-comment-section-${child.id}" style="display: none;">
                         <textarea id="edit-cmt-${child.id}" class="form-control">${child.content}</textarea>
                         <div class="d-flex justify-content-end mt-2">
-                            <button type="button" class="btn btn-secondary me-2" onclick="cancelEdit('${child.id}')">Cancel</button>
-                            <button type="button" class="btn btn-primary" onclick="editComment('${child.id}')">Save</button>
+                            <button type="button" class="me-2" onclick="cancelEdit('${child.id}')">Cancel</button>
+                            <button type="button" onclick="editComment('${child.id}')">Save</button>
                         </div>
                     </div>
                 </div>
