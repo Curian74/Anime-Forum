@@ -83,8 +83,8 @@ namespace Application.Services
         }
 
         public async Task<IEnumerable<ReportDto>> GetReportsWithDetailsAsync(
-            Expression<Func<Report, bool>>? filter = null,
-            Func<IQueryable<Report>, IOrderedQueryable<Report>>? orderBy = null)
+    Expression<Func<Report, bool>>? filter = null,
+    Func<IQueryable<Report>, IOrderedQueryable<Report>>? orderBy = null)
         {
             var reports = await _reportRepository.GetAllAsync(filter, orderBy);
             var reportDtos = new List<ReportDto>();
@@ -96,13 +96,14 @@ namespace Application.Services
                 var user = await _userRepository.GetByIdAsync(report.UserId);
                 if (user != null)
                 {
-                    reportDto.Username = user.UserName; 
+                    reportDto.Username = user.UserName;
                 }
 
                 var post = await _postRepository.GetByIdAsync(report.PostId);
                 if (post != null)
                 {
-                    reportDto.PostTitle = post.Title; 
+                    reportDto.PostTitle = post.Title;
+                    reportDto.PostCategoryId = post.PostCategoryId; 
                 }
 
                 reportDtos.Add(reportDto);
@@ -112,10 +113,10 @@ namespace Application.Services
         }
 
         public async Task<IPagedResult<ReportDto>> GetPagedReportsWithDetailsAsync(
-            int page = 1,
-            int size = 10,
-            Expression<Func<Report, bool>>? filter = null,
-            Func<IQueryable<Report>, IOrderedQueryable<Report>>? orderBy = null)
+    int page = 1,
+    int size = 10,
+    Expression<Func<Report, bool>>? filter = null,
+    Func<IQueryable<Report>, IOrderedQueryable<Report>>? orderBy = null)
         {
             var (items, totalCount) = await _reportRepository.GetPagedAsync(page, size, filter, orderBy);
             var reportDtos = new List<ReportDto>();
@@ -127,13 +128,13 @@ namespace Application.Services
                 var user = await _userRepository.GetByIdAsync(report.UserId);
                 if (user != null)
                 {
-                    reportDto.Username = user.UserName; 
+                    reportDto.Username = user.UserName;
                 }
 
                 var post = await _postRepository.GetByIdAsync(report.PostId);
                 if (post != null)
                 {
-                    reportDto.PostTitle = post.Title; 
+                    reportDto.PostTitle = post.Title;
                 }
 
                 reportDtos.Add(reportDto);

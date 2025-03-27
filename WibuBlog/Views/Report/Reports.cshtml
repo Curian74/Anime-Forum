@@ -14,45 +14,25 @@
         <div class="card-body">
             <div class="row mb-3">
                 <div class="col-md-4">
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-search"></i></span>
-                        <input type="text"
-                               class="form-control"
-                               id="searchInput"
-                               placeholder="Search reports..."
-                               name="SearchTerm"
-                               value="@Context.Request.Query["SearchTerm"]">
-                    </div>
+                    <select class="form-select"
+                            asp-items="@Model.CategoryList"
+                            asp-for="@Model.PostCategoryId"
+                            name="PostCategoryId">
+                        <option value="">--Select a category--</option>
+                    </select>
                 </div>
                 <div class="col-md-4">
                     <select class="form-select" id="statusFilter" name="FilterBy">
                         <option value="">All Statuses</option>
-                        <option value="pending"
-                        @(Context.Request.Query["FilterBy"] == "pending" ? "selected" : "")>
-                            Pending
-                        </option>
-                        <option value="approved"
-                        @(Context.Request.Query["FilterBy"] == "approved" ? "selected" : "")>
-                            Approved
-                        </option>
-                        <option value="rejected"
-                        @(Context.Request.Query["FilterBy"] == "rejected" ? "selected" : "")>
-                            Rejected
-                        </option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
                     </select>
                 </div>
                 <div class="col-md-4">
                     <select class="form-select" id="sortBy" name="OrderBy">
-                        <option value="CreatedAt-true"
-                        @(Context.Request.Query["OrderBy"] == "CreatedAt" &&
-                            Context.Request.Query["Descending"] == "true" ? "selected" : "")>
-                            Newest First
-                        </option>
-                        <option value="CreatedAt-false"
-                        @(Context.Request.Query["OrderBy"] == "CreatedAt" &&
-                            Context.Request.Query["Descending"] == "false" ? "selected" : "")>
-                            Oldest First
-                        </option>
+                        <option value="CreatedAt-true">Newest First</option>
+                        <option value="CreatedAt-false">Oldest First</option>
                     </select>
                 </div>
             </div>
@@ -97,14 +77,14 @@
                                         @if (!report.IsApproved.HasValue)
                                         {
                                             <div class="btn-group btn-group-sm" role="group">
-                                                <button type="button" 
-                                                        class="btn btn-success approve-btn" 
+                                                <button type="button"
+                                                        class="btn btn-success approve-btn"
                                                         data-report-id="@report.Id"
                                                         title="Approve Report">
                                                     <i class="fas fa-check"></i> Approve
                                                 </button>
-                                                <button type="button" 
-                                                        class="btn btn-danger reject-btn" 
+                                                <button type="button"
+                                                        class="btn btn-danger reject-btn"
                                                         data-report-id="@report.Id"
                                                         title="Reject Report">
                                                     <i class="fas fa-times"></i> Reject
@@ -113,8 +93,8 @@
                                         }
                                         else
                                         {
-                                            <button type="button" 
-                                                    class="btn btn-info btn-sm view-details-btn" 
+                                            <button type="button"
+                                                    class="btn btn-info btn-sm view-details-btn"
                                                     data-report-id="@report.Id">
                                                 <i class="fas fa-eye"></i> View Details
                                             </button>
@@ -130,37 +110,50 @@
                 @if (Model.Reports.TotalPages > 1)
                 {
                     <nav aria-label="Report pagination">
-                        <ul class="pagination justify-content-center">
+                        <ul class="pagination pagination-sm justify-content-center">
                             @if (Model.Reports.PageNumber > 1)
                             {
-                                <li class="page-item">
+                                <li class="page-item me-2">
                                     <a class="page-link"
                                        asp-action="ViewReports"
+                                       asp-route-FilterBy="@Context.Request.Query["FilterBy"]"
+                                       asp-route-OrderBy="@Context.Request.Query["OrderBy"]"
+                                       asp-route-Descending="@Context.Request.Query["Descending"]"
                                        asp-route-Page="@(Model.Reports.PageNumber - 1)"
-                                       asp-route-Size="@Model.Reports.PageSize">
-                                        <i class="fas fa-chevron-left"></i> Previous
+                                       asp-route-pageSize="@Model.Reports.PageSize"
+                                       aria-label="Previous">
+                                        <span aria-hidden="true">Prev</span>
                                     </a>
                                 </li>
                             }
+
                             @for (int i = 1; i <= Model.Reports.TotalPages; i++)
                             {
                                 <li class="page-item @(i == Model.Reports.PageNumber ? "active" : "")">
                                     <a class="page-link"
                                        asp-action="ViewReports"
+                                       asp-route-FilterBy="@Context.Request.Query["FilterBy"]"
+                                       asp-route-OrderBy="@Context.Request.Query["OrderBy"]"
+                                       asp-route-Descending="@Context.Request.Query["Descending"]"
                                        asp-route-Page="@i"
-                                       asp-route-Size="@Model.Reports.PageSize">
+                                       asp-route-pageSize="@Model.Reports.PageSize">
                                         @i
                                     </a>
                                 </li>
                             }
+
                             @if (Model.Reports.PageNumber < Model.Reports.TotalPages)
                             {
-                                <li class="page-item">
+                                <li class="page-item ms-2">
                                     <a class="page-link"
                                        asp-action="ViewReports"
+                                       asp-route-FilterBy="@Context.Request.Query["FilterBy"]"
+                                       asp-route-OrderBy="@Context.Request.Query["OrderBy"]"
+                                       asp-route-Descending="@Context.Request.Query["Descending"]"
                                        asp-route-Page="@(Model.Reports.PageNumber + 1)"
-                                       asp-route-Size="@Model.Reports.PageSize">
-                                        Next <i class="fas fa-chevron-right"></i>
+                                       asp-route-pageSize="@Model.Reports.PageSize"
+                                       aria-label="Next">
+                                        <span aria-hidden="true">Next</span>
                                     </a>
                                 </li>
                             }
@@ -197,26 +190,34 @@
     </div>
 </div>
 
+
+
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.all.min.js"></script>
     <script>
-        $(document).ready(function() {
+                $(document).ready(function () {
             let currentReportId = null;
             let currentAction = null;
-            const $reportsTableBody = $('#reportsTableBody');
-            const $searchInput = $('#searchInput');
-            const $statusFilter = $('#statusFilter');
-            const $sortBy = $('#sortBy');
 
-            // Approve/Reject Report Buttons
-            $(document).on('click', '.approve-btn, .reject-btn', function() {
+            function preserveFilterSelection() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const filterBy = urlParams.get('FilterBy') || "";
+                const orderBy = urlParams.get('OrderBy') || "CreatedAt";
+                const descending = urlParams.get('Descending') === "true";
+
+                $('#statusFilter').val(filterBy);
+                $('#sortBy').val(`${orderBy}-${descending}`);
+            }
+
+            preserveFilterSelection();
+
+            $(document).on('click', '.approve-btn, .reject-btn', function () {
                 currentReportId = $(this).data('report-id');
                 currentAction = $(this).hasClass('approve-btn');
                 $('#noteModal').modal('show');
             });
 
-            // Submit Note and Approve/Reject
-            $('#submitNoteBtn').on('click', function() {
+            $('#submitNoteBtn').on('click', function () {
                 if (!currentReportId || currentAction === null) {
                     Swal.fire({
                         title: 'Error',
@@ -236,7 +237,7 @@
                         approval: currentAction,
                         note: note
                     },
-                    success: function(response) {
+                    success: function (response) {
                         if (response.success) {
                             Swal.fire({
                                 title: 'Success',
@@ -256,7 +257,7 @@
                             });
                         }
                     },
-                    error: function() {
+                    error: function () {
                         Swal.fire({
                             title: 'Error',
                             text: 'An unexpected error occurred.',
@@ -271,17 +272,32 @@
                 $('#noteModal').modal('hide');
             });
 
-            // Handle filter changes
-            $('#searchInput, #statusFilter, #sortBy').on('change', function() {
-                // Parse the sort value
-                const sortValue = $('#sortBy').val().split('-');
+            function debounce(func, delay) {
+                let timeoutId;
+                return function () {
+                    const context = this;
+                    const args = arguments;
+                    clearTimeout(timeoutId);
+                    timeoutId = setTimeout(() => {
+                        func.apply(context, args);
+                    }, delay);
+                };
+            }
 
-                // Create a form submission
+            const submitFilterForm = debounce(function () {
+                const selectedStatus = $('#statusFilter').val();
+                const sortValue = $('#sortBy').val().split('-');
+                const descendingValue = sortValue[1];
+
                 const form = $('<form>')
                     .attr('method', 'get')
-                    .attr('action', '@Url.Action("ViewReports", "Report")');
+                    .attr('action', '/Report/ViewReports');
+                        $('<input>')
+        .attr('type', 'hidden')
+        .attr('name', 'PostCategoryId')
+        .val($('select[name="PostCategoryId"]').val())
+        .appendTo(form);
 
-                // Add filter parameters
                 $('<input>')
                     .attr('type', 'hidden')
                     .attr('name', 'SearchTerm')
@@ -291,7 +307,7 @@
                 $('<input>')
                     .attr('type', 'hidden')
                     .attr('name', 'FilterBy')
-                    .val($('#statusFilter').val())
+                    .val(selectedStatus)
                     .appendTo(form);
 
                 $('<input>')
@@ -303,23 +319,100 @@
                 $('<input>')
                     .attr('type', 'hidden')
                     .attr('name', 'Descending')
-                    .val(sortValue[1])
+                    .val(descendingValue)
                     .appendTo(form);
 
                 form.appendTo('body').submit();
-            });
+            }, 300);
 
-            // View Details Button Handler
-            $(document).on('click', '.view-details-btn', function() {
+            $('#searchInput').on('input', submitFilterForm);
+            $('#statusFilter').on('change', submitFilterForm);
+            $('#sortBy').on('change', submitFilterForm);
+
+                    $(document).on('click', '.page-link', function (e) {
+            e.preventDefault();
+            const page = new URL($(this).attr('href'), window.location.origin).searchParams.get("Page") || 1;
+
+            const form = $('<form>')
+                .attr('method', 'get')
+                .attr('action', '/Report/ViewReports');
+
+            $('<input>')
+                .attr('type', 'hidden')
+                .attr('name', 'SearchTerm')
+                .val($('#searchInput').val())
+                .appendTo(form);
+
+            $('<input>')
+                .attr('type', 'hidden')
+                .attr('name', 'FilterBy')
+                .val($('#statusFilter').val())
+                .appendTo(form);
+
+            const sortValue = $('#sortBy').val().split('-');
+            $('<input>')
+                .attr('type', 'hidden')
+                .attr('name', 'OrderBy')
+                .val(sortValue[0])
+                .appendTo(form);
+
+            $('<input>')
+                .attr('type', 'hidden')
+                .attr('name', 'Descending')
+                .val(sortValue[1])
+                .appendTo(form);
+
+            $('<input>')
+                .attr('type', 'hidden')
+                .attr('name', 'Page')
+                .val(page)
+                .appendTo(form);
+
+            form.appendTo('body').submit();
+        });
+
+            $(document).on('click', '.view-details-btn', function () {
                 const reportId = $(this).data('report-id');
 
-                // You might want to implement an AJAX call to fetch report details
-                Swal.fire({
-                    title: 'Report Details',
-                    text: 'Detailed view for Report ID: ' + reportId,
-                    icon: 'info'
+                $.ajax({
+                    url: `/Report/GetReportDetails/${reportId}`,
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: 'Report Details',
+                                html: `
+                                    <div class="text-left">
+                                        <p><strong>Username:</strong> ${response.username}</p>
+                                        <p><strong>Post Title:</strong> ${response.postTitle}</p>
+                                        <p><strong>Reason:</strong> ${response.reason}</p>
+                                        <p><strong>Status:</strong> ${response.status}</p>
+                                        <p><strong>Submitted At:</strong> ${response.createdAt}</p>
+                                        ${response.note ? `<p><strong>Moderator Note:</strong> ${response.note}</p>` : ''}
+                                    </div>
+                                `,
+                                icon: 'info',
+                                confirmButtonText: 'Close'
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error',
+                                text: response.message,
+                                icon: 'error'
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Unable to fetch report details.',
+                            icon: 'error'
+                        });
+                    }
                 });
             });
         });
+
     </script>
 }
+

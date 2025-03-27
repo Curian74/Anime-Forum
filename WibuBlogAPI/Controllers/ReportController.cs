@@ -54,16 +54,34 @@ namespace WibuBlogAPI.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Policy = "ModeratorPolicy")]
         [HttpGet("WithDetails")]
         public async Task<IActionResult> GetAllWithDetails(
-            string? filterBy = null,
-            string? searchTerm = null,
-            string? orderBy = null,
-            bool descending = false)
+    string? filterBy = null,
+    string? searchTerm = null,
+    string? orderBy = null,
+    bool descending = false,
+    Guid? PostCategoryId = null) // Thêm tham số PostCategoryId
         {
             Expression<Func<Report, bool>>? filter = ExpressionBuilder.BuildFilterExpression<Report>(filterBy, searchTerm);
+
+            // Nếu có PostCategoryId, thêm điều kiện lọc
+            if (PostCategoryId.HasValue)
+            {
+                Expression<Func<Report, bool>> categoryFilter = r => r.Post.PostCategoryId == PostCategoryId.Value;
+
+                if (filter == null)
+                {
+                    filter = categoryFilter;
+                }
+                else
+                {
+                    var parameter = filter.Parameters[0]; // Lấy parameter từ filter hiện có
+                    var body = Expression.AndAlso(filter.Body, Expression.Invoke(categoryFilter, parameter));
+                    filter = Expression.Lambda<Func<Report, bool>>(body, parameter);
+                }
+            }
+
+
             Func<IQueryable<Report>, IOrderedQueryable<Report>>? orderExpression = ExpressionBuilder.BuildOrderExpression<Report>(orderBy, descending);
-
             var result = await _reportService.GetReportsWithDetailsAsync(filter, orderExpression);
-
             return Ok(result);
         }
 
@@ -74,9 +92,29 @@ namespace WibuBlogAPI.Controllers
             string? filterBy = null,
             string? searchTerm = null,
             string? orderBy = null,
-            bool descending = false)
+            bool descending = false,
+            Guid? PostCategoryId = null) // Thêm tham số PostCategoryId
         {
             Expression<Func<Report, bool>>? filter = ExpressionBuilder.BuildFilterExpression<Report>(filterBy, searchTerm);
+
+            // Nếu có PostCategoryId, thêm điều kiện lọc
+            if (PostCategoryId.HasValue)
+            {
+                Expression<Func<Report, bool>> categoryFilter = r => r.Post.PostCategoryId == PostCategoryId.Value;
+
+                if (filter == null)
+                {
+                    filter = categoryFilter;
+                }
+                else
+                {
+                    var parameter = filter.Parameters[0]; // Lấy parameter từ filter hiện có
+                    var body = Expression.AndAlso(filter.Body, Expression.Invoke(categoryFilter, parameter));
+                    filter = Expression.Lambda<Func<Report, bool>>(body, parameter);
+                }
+            }
+
+
             Func<IQueryable<Report>, IOrderedQueryable<Report>>? orderExpression = ExpressionBuilder.BuildOrderExpression<Report>(orderBy, descending);
             var result = await _reportService.GetPagedReportsWithDetailsAsync(page, size, filter, orderExpression);
             return Ok(result);
