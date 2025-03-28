@@ -141,7 +141,8 @@
                         foreach (var p in Model.Posts
                             .Where(p => !p.IsHidden)
                             .Where(p => p.Category?.IsRestricted == false)
-                            .Where(p => (DateTime.Now - p.CreatedAt).TotalDays <= 7)
+                            .Where(p => (DateTime.Now - p.CreatedAt).TotalDays <= 30)
+                            .Where(p => p.Comments.Count() > 0)
                             .Take(postSize)
                             .OrderByDescending(x => x.Comments.Count)
                             .ThenByDescending(p => p.CreatedAt))

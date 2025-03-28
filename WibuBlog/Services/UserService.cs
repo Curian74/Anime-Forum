@@ -23,14 +23,15 @@ namespace WibuBlog.Services
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 		private readonly FileService _fileService = fileService;
         private readonly MediaService _mediaService = mediaService;
-		public async Task<UserProfileDto> GetUserProfile()
+
+		public async Task<UserProfileDto> GetUserProfile(Guid? userId = null)
         {
             var token = _httpContextAccessor.HttpContext?.Request.Cookies[_authTokenOptions.Name];
             if (string.IsNullOrEmpty(token))
             {
                 return null; 
             }
-            var response = await _apiService.GetAsync<ApiResponse<UserProfileDto>>($"User/GetAccountDetails/");
+            var response = await _apiService.GetAsync<ApiResponse<UserProfileDto>>($"User/GetAccountDetails/{userId}");
             return response.Value!;
         }     
 		public async Task<User> GetUserById(Guid userId)

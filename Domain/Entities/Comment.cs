@@ -11,6 +11,8 @@ namespace Domain.Entities
         [ForeignKey(nameof(Post))]
         public Guid PostId { get; set; }
 
+        public Guid? ParentCommentId { get; set; }
+
         public string Content { get; set; } = string.Empty;
 
         public bool IsHidden { get; set; } = false;
@@ -19,5 +21,6 @@ namespace Domain.Entities
         public virtual User? User { get; set; }
 
         public virtual Post? Post { get; set; }
+
     }
 }

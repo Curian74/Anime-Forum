@@ -10,7 +10,7 @@ namespace Domain.Interfaces
         Task<T?> GetSingleWhereAsync(Expression<Func<T, bool>> predicate);
         Task<(IEnumerable<T> Items, int TotalCount)> GetAllAsync(Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null);
         Task<(IEnumerable<T> Items, int TotalCount)> GetPagedAsync(int page, int size, Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null);
-        Task<int> CountAsync(Expression<Func<T, bool>>? filter);
+        Task<int> CountAsync(Expression<Func<T, bool>>? filter = null);
         Task AddAsync(T entity);
         Task AddRangeAsync(IEnumerable<T> entities);
         Task UpdateAsync(T entity);

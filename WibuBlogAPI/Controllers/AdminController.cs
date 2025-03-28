@@ -66,6 +66,11 @@ namespace WibuBlogAPI.Controllers
             return new JsonResult(NoContent());
         }
 
-
+        [HttpGet]
+        public async Task<IActionResult> GetStats(int days = 7)
+        {
+            var webStats = await _adminService.GetStats(days);
+            return new JsonResult(Ok(webStats));
+        }
     }
 }

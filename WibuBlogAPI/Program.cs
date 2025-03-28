@@ -38,19 +38,18 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddScoped<ApplicationDbContext>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Service classes
 builder.Services.AddScoped<PostService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AdminService>();
-builder.Services.AddScoped<CommentSerivce>();
+builder.Services.AddScoped<CommentService>();
 builder.Services.AddScoped<TicketService>();
 builder.Services.AddScoped<TemplateBody>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<PostCategoryService>();
-builder.Services.AddScoped<CommentSerivce>();
+builder.Services.AddScoped<CommentService>();
 builder.Services.AddScoped<VoteService>();
 builder.Services.AddScoped<MediaService>();
 builder.Services.AddScoped<FileService>();
@@ -261,9 +260,9 @@ using (var scope = app.Services.CreateScope())
     {
         var categories = new List<PostCategory>
         {
-            new() { Id = Guid.NewGuid(), Name = "Thông báo"},
+            new() { Id = Guid.NewGuid(), Name = "Thông báo", IsRestricted = true},
             new() { Id = Guid.NewGuid(), Name = "Góp ý"},
-            new() { Id = Guid.NewGuid(), Name = "Tin tức"},
+            new() { Id = Guid.NewGuid(), Name = "Tin tức", IsRestricted = true},
             new() { Id = Guid.NewGuid(), Name = "Chia sẻ kiến thức"},
             new() { Id = Guid.NewGuid(), Name = "Review linh tinh"},
             new() { Id = Guid.NewGuid(), Name = "Review manga"},
@@ -272,6 +271,7 @@ using (var scope = app.Services.CreateScope())
             new() { Id = Guid.NewGuid(), Name = "Thời trang Nhật"},
             new() { Id = Guid.NewGuid(), Name = "Ẩm thực Nhật"},
             new() { Id = Guid.NewGuid(), Name = "Giáo dục"},
+            new() { Id = Guid.NewGuid(), Name = "Hỏi đáp"},
         };
 
         db.PostCategories.AddRange(categories);

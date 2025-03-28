@@ -6,7 +6,10 @@ namespace Application.DTO.Comment
     {
         public required Guid UserId { get; set; }
         public required Guid PostId { get; set; }
+
         [Required]
         public required string Content { get; set; }
+
+        public Guid? ParentCommentId { get; set; }
     }
 }
