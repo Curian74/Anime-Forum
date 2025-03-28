@@ -2,19 +2,26 @@
 using Application.Common.Pagination;
 using Application.DTO;
 using Application.DTO.Comment;
+using Application.Hubs;
 using Application.Interfaces.Pagination;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Hosting;
 using System.Linq.Expressions;
+using System.Security.Claims;
 
 namespace Application.Services
 {
-    public class CommentService(IUnitOfWork unitOfWork, IMapper mapper)
+    public class CommentService(IUnitOfWork unitOfWork, IMapper mapper, IHubContext<NotificationHub> hubContext)
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IGenericRepository<Comment> _commentGenericRepository = unitOfWork.GetRepository<Comment>();
+        private readonly IGenericRepository<Notification> _notificationGenericRepository = unitOfWork.GetRepository<Notification>();
+        private readonly IGenericRepository<Post> _postGenericRepository = unitOfWork.GetRepository<Post>();
         private readonly IMapper _mapper = mapper;
+        private readonly IHubContext<NotificationHub> _hubContext = hubContext;
 
         public async Task<(IEnumerable<Comment> Items, int TotalCount)> GetAllAsync(
             Expression<Func<Comment, bool>>? filter = null,
@@ -36,9 +43,26 @@ namespace Application.Services
         public async Task<int> PostCommentAsync(PostCommentDto dto)
         {
             var comment = _mapper.Map<Comment>(dto);
-
             await _commentGenericRepository.AddAsync(comment);
+            var post = await _postGenericRepository.GetByIdAsync(dto.PostId);
+           
+            if (post.UserId != dto.UserId)
+            {
+                var targetUserIdNotification = post.UserId;
+                string notiContent = Application.Common.MessageOperations.NotificationService.GetNotification("NOTI04", "Quoc anh", post.Title);
+                Notification noti = new Notification()
+                {
+                    Content = notiContent,
+                    UserId = targetUserIdNotification,
+                    PostId = dto.PostId,
+                    IsDeleted = false
 
+                };
+                await _notificationGenericRepository.AddAsync(noti);
+                await _hubContext.Clients.All.SendAsync("ReceiveNotification", notiContent);
+
+            }
+            
             return await _unitOfWork.SaveChangesAsync();
         }
 

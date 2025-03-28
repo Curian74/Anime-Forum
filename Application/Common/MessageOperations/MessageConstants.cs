@@ -48,9 +48,14 @@ namespace Application.Common.MessageOperations
         public const string MEN009 = "Post title must be at least 2 characters.";
         public const string MEN010 = "Must be loggeed in to do this action";
         public const string MEN011 = "Invalid phone number format";
+        public const string MEN012 = "Invalid login credentials";
+		public const string MEN013 = "Successfully reset password, pleasse login again";
+		public const string MEN014 = "Password must be from 6 - 20 characters";
+		public const string MEN015 = "Password must have 1 digit, 1 special character and 1 uppercase letter";
+		public const string MEN016 = "OTP has been sent to ";
 
-        //message nay dung de debug chu khong lien quan gi den BR hay nghiep vu
-        public const string MEO001 = "Error reading expiry date";
+		//message nay dung de debug chu khong lien quan gi den BR hay nghiep vu
+		public const string MEO001 = "Error reading expiry date";
         public const string MEO002 = "Missing session data";
         public const string MEO003 = "Bio must not exceed 255 characters";
     }

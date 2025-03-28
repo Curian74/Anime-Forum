@@ -1,5 +1,6 @@
 using Application.Common.EmailTemplate;
 using Application.Common.File;
+using Application.Hubs;
 using Application.Interfaces.Email;
 using Domain.Common.Roles;
 using Domain.Interfaces;
@@ -46,9 +47,10 @@ namespace WibuBlog
 			builder.Services.AddScoped<AdminService>();
             builder.Services.AddScoped<Application.Services.MediaService>();
             builder.Services.AddScoped<ReportService>();
+            builder.Services.AddScoped<RankService>();
             builder.Services.AddScoped<IEmailService,EmailService>();
-            //
-            builder.Services.AddDistributedMemoryCache();
+			//
+			builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30); 
@@ -106,6 +108,10 @@ namespace WibuBlog
 
             builder.Services.AddHttpContextAccessor();
 
+            builder.Services.AddSignalR();
+            builder.Services.AddAuthentication();
+            builder.Services.AddAuthorization();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -148,6 +154,8 @@ namespace WibuBlog
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            app.MapHub<NotificationHub>("/notificationHub");
 
             app.MapControllerRoute(
                 name: "default",

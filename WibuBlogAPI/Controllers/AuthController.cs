@@ -28,7 +28,7 @@ namespace WibuBlogAPI.Controllers
 
             if (result == false)
             {
-                return new JsonResult(Challenge("Invalid credentials"));
+                return new JsonResult(Ok("Invalid credentials"));
             }
 
             var user = await _userService.FindByLoginAsync(dto);
@@ -60,6 +60,21 @@ namespace WibuBlogAPI.Controllers
             var result = await _userService.Register(dto);
 
             return result.Succeeded ? Ok(result) : BadRequest(result);
+
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)
+        {
+            if (IsLoggedIn())
+            {
+                return new JsonResult(BadRequest("User is already logged in"));
+            }
+
+            var result = await _userService.ResetPassword(dto);
+
+            return new JsonResult(Ok(result));
 
         }
 
