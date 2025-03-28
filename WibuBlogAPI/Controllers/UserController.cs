@@ -5,6 +5,7 @@ using Domain.Entities;
 using Application.DTO;
 using Infrastructure.Extensions;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace WibuBlogAPI.Controllers
@@ -130,5 +131,21 @@ namespace WibuBlogAPI.Controllers
 				return StatusCode(500, $"file/server error: {ex.Message}");
 			}
 		}
-	}
+
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> GetAll(
+            string? filterBy = null,
+            string? searchTerm = null,
+            string? orderBy = null,
+            bool descending = false)
+        {
+            Expression<Func<User, bool>>? filter = ExpressionBuilder.BuildFilterExpression<User>(filterBy, searchTerm);
+            Func<IQueryable<User>, IOrderedQueryable<User>>? orderExpression = ExpressionBuilder.BuildOrderExpression<User>(orderBy, descending);
+
+            var result = await _userService.GetAllAsync(filter, orderExpression);
+
+            return new JsonResult(Ok(result.Items));
+        }
+    }
 }

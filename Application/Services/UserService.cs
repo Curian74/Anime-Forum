@@ -31,6 +31,13 @@ namespace Application.Services
             return user;
         }
 
+        public async Task<(IEnumerable<User> Items, int TotalCount)> GetAllAsync(
+            Expression<Func<User, bool>>? filter = null,
+            Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null)
+        {
+            return await _userGenericRepository.GetAllAsync(filter, orderBy);
+        }
+
         public async Task<User?> GetUserByEmail(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
