@@ -43,6 +43,10 @@
                     {
                         <a href="@Url.Action("Dashboard", "Admin")" class="forum-dropdown btn">Dashboard</a>
                     }
+                    @if (roleName == "Moderator")
+                    {
+                        <a href="@Url.Action("ViewReports", "Report")" class="forum-dropdown btn">Reports</a>
+                    }
                 </div>
                 @if (User.Identity.IsAuthenticated && Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId))
                 {
