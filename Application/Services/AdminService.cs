@@ -13,6 +13,7 @@ namespace Application.Services
         private readonly IGenericRepository<Comment> _commentRepository = unitOfWork.GetRepository<Comment>();
         private readonly IGenericRepository<Vote> _voteRepository = unitOfWork.GetRepository<Vote>();
         private readonly IGenericRepository<PostCategory> _categoryRepository = unitOfWork.GetRepository<PostCategory>();
+        private readonly IGenericRepository<Ticket> _ticketRepository = unitOfWork.GetRepository<Ticket>();
         private readonly IMapper _mapper = mapper;
 
         public async Task<(IEnumerable<User> Items, int TotalCount)> GetAllUsersAsync()
