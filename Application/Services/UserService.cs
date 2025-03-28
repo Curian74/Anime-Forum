@@ -1,6 +1,7 @@
 ﻿using Application.Common.File;
 using Application.Common.Pagination;
 using Application.DTO;
+using Application.Interfaces.Pagination;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using System.Linq.Expressions;
 
 namespace Application.Services
 {
@@ -98,9 +100,13 @@ namespace Application.Services
         }
 
 
-        public async Task<PagedResult<User>> GetPagedUsersAsync(int page, int size)
+        public async Task<IPagedResult<User>> GetPagedAsync(
+            int page = 1,
+            int size = 10,
+            Expression<Func<User, bool>>? filter = null,
+            Func<IQueryable<User>, IOrderedQueryable<User>>? orderBy = null)
         {
-            var (items, totalCount) = await _userGenericRepository.GetPagedAsync(page, size);
+            var (items, totalCount) = await _userGenericRepository.GetPagedAsync(page, size, filter, orderBy);
             return new PagedResult<User>(items, totalCount, page, size);
         }
 

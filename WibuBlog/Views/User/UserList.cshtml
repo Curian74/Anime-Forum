@@ -1,80 +1,100 @@
-﻿@model Application.Common.Pagination.PagedResult<User>
-@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+﻿<link rel="stylesheet" href="~/fontawesome/css/all.css" />
+<link rel="stylesheet" href="~/css/postDetail.css" />
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.min.css" rel="stylesheet">
 
-<link rel="stylesheet" href="~/css/userList.css" />
-<link rel="stylesheet" href="~/fontawesome/css/all.css" />
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header p-3 bg-primary text-white">
+            <h4 class="mb-0 text-center">User Management</h4>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <select class="form-select" name="PostCategoryId">
+                        <option value="">--Select a category--</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select class="form-select" id="statusFilter" name="FilterBy">
+                        <option value="">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select class="form-select" id="sortBy" name="OrderBy">
+                        <option value="CreatedAt-true">Newest First</option>
+                        <option value="CreatedAt-false">Oldest First</option>
+                    </select>
+                </div>
+            </div>
 
-<div class="d-flex flex-column">
-    <div class="d-flex justify-content-between">
-        <h1 class="user-list-title">User List</h1>
-        <a class="btn btn-danger user-register-btn mt-1" href="/Authentication/Register"> 
-            <i class="fa-regular fa-pen-to-square"></i> Register
-        </a>
-    </div>
-    <nav>
-        <ul class="pagination pagination-sm">
-            @if (Model.HasPreviousPage)
-            {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Username</th>
+                            <th>Category</th>
+                            <th>Post Title</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th>Note</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportsTableBody">
+                        <tr>
+                            <td>ExampleUser</td>
+                            <td>ExampleCategory</td>
+                            <td>Example Post Title</td>
+                            <td>Example Reason</td>
+                            <td><span class="badge bg-warning">Pending</span></td>
+                            <td>N/A</td>
+                            <td>01/01/2024 12:00</td>
+                            <td>
+                                <a href="#" class="btn btn-info view-post-btn" title="View Post">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button type="button" class="btn btn-success approve-btn" title="Approve Report">
+                                        <i class="fas fa-check"></i> Approve
+                                    </button>
+                                    <button type="button" class="btn btn-danger reject-btn" title="Reject Report">
+                                        <i class="fas fa-times"></i> Reject
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <nav aria-label="Report pagination">
+                <ul class="pagination pagination-sm justify-content-center">
                     <li class="page-item me-2">
-                        <a class="page-link" asp-action="UserList" asp-route-page="@(Model.PageNumber - 1)"
-                           asp-route-pageSize="@Model.PageSize" aria-label="Previous">
+                        <a class="page-link" href="#" aria-label="Previous">
                             <span aria-hidden="true">Prev</span>
                         </a>
                     </li>
-            }
-
-            @for (int i = 1; i <= Model.TotalPages; i++)
-            {
-                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                        <a class="page-link" asp-action="UserList" asp-route-page="@i"
-                           asp-route-pageSize="@Model.PageSize">@i</a>
+                    <li class="page-item active">
+                        <a class="page-link" href="#">1</a>
                     </li>
-            }
-
-            @if (Model.HasNextPage)
-            {
+                    <li class="page-item">
+                        <a class="page-link" href="#">2</a>
+                    </li>
                     <li class="page-item ms-2">
-                        <a class="page-link" asp-action="UserList" asp-route-page="@(Model.PageNumber + 1)"
-                           asp-route-pageSize="@Model.PageSize" aria-label="Next">
+                        <a class="page-link" href="#" aria-label="Next">
                             <span aria-hidden="true">Next</span>
                         </a>
                     </li>
-            }
-        </ul>
-    </nav>
-    @foreach (var user in Model.Items)
-    {
-            <div class="user-card">
-                <div class="row mt-2 mb-2">
-                    <div class="col-12 col-md-7">
-                        <div class="d-flex gap-3 align-items-center">
-                            <img class="rounded-circle user-avatar" 
-                                 src="@(user.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
-                            <div>
-                                <a class="user-name" href="#">@user.UserName</a>
-                                <p class="user-info">
-                                    <span class="user-email">@user.Email</span>
-                                    <span class="user-role">@user.Rank</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-1 user-stat">
-                        <p>Points:</p>
-                        <p>Rank:</p>
-                    </div>
-                    <div class="col-6 col-md-2">
-                        <p>@user.Points</p>
-                        <p>@user.Rank</p>
-                    </div>
-                    <div class="col-12 col-md-2">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <p class="mb-0">ID: @user.Id</p>
-                            <img class="rounded-circle user-avatar-small" 
-                                 src="@(user.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-    }
+                </ul>
+            </nav>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.all.min.js"></script>
+}

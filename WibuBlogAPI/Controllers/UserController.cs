@@ -3,6 +3,8 @@ using Application.Services;
 using System.Security.Claims;
 using Domain.Entities;
 using Application.DTO;
+using Infrastructure.Extensions;
+using System.Linq.Expressions;
 
 
 namespace WibuBlogAPI.Controllers
@@ -67,9 +69,19 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPagedUsers(int page, int size)
+        public async Task<IActionResult> GetPaged(
+            int page = 1,
+            int size = 10,
+            string? filterBy = null,
+            string? searchTerm = null,
+            string? orderBy = null,
+            bool descending = false)
         {
-            var result = await _userService.GetPagedUsersAsync(page, size);
+            Expression<Func<User, bool>>? filter = ExpressionBuilder.BuildFilterExpression<User>(filterBy, searchTerm);
+            Func<IQueryable<User>, IOrderedQueryable<User>>? orderExpression = ExpressionBuilder.BuildOrderExpression<User>(orderBy, descending);
+
+            var result = await _userService.GetPagedAsync(page, size, filter, orderExpression);
+
             return new JsonResult(Ok(result));
         }
 
