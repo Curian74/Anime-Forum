@@ -34,7 +34,16 @@ namespace WibuBlog.Controllers
         [HttpGet]
         public IActionResult Add()
         {
-            return View("AddTicket");
+            var userEmail = User.FindFirst(ClaimTypes.Email)?.Value ?? "Unknown";
+
+            var model = new AddTicketVM
+            {
+                Email = userEmail,
+                Tag = string.Empty,
+                Content = string.Empty
+            };
+
+            return View("AddTicket", model);
         }
 
         [HttpPost]
