@@ -1,4 +1,5 @@
-﻿using Application.DTO;
+﻿
+using Application.DTO;
 using Application.DTO.Comment;
 using Application.Services;
 using Domain.Entities;
@@ -87,7 +88,6 @@ namespace WibuBlogAPI.Controllers
 
         }
 
-        [AllowAnonymous]
         [HttpPut("{commentId}")]
         public async Task<IActionResult> Delete(Guid commentId)
         {
