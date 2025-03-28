@@ -130,7 +130,12 @@
 					<tr>
 						<td>@userIndex</td>
 						<td>@user.UserName</td>
-						<td>@user.Rank.Name</td>
+						<td>@{
+							if (@user.Rank != null)
+							{
+								@user.Rank.Name
+							}
+						}</td>
 						<td>@user.Points</td>
 					</tr>
 					userIndex++;
@@ -211,7 +216,7 @@
 		new Chart(ctx, {
 			type: 'pie',
 			data: {
-				labels: ['ActiveUser', 'TotalUser'],
+				labels: ['ActiveUser', 'InactiveUser'],
 				datasets: [{
 					label: 'Activity',
 					data: [@Model.ActiveAccountPercentage, 100 - @Model.ActiveAccountPercentage],
