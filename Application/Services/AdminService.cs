@@ -70,7 +70,7 @@ namespace Application.Services
 
             var totalComments = await _commentRepository.CountAsync();
             var totalVotes = await _voteRepository.CountAsync();
-            var engagementRate = (float)(totalVotes + totalComments) / totalPosts;
+            var engagementRate = totalPosts == 0 ? 0 : (float)(totalVotes + totalComments) / totalPosts;
 
             var allPosts = await _postRepository.GetAllWhereAsync(p => p.CreatedAt >= startDate);
             var topPosts = allPosts

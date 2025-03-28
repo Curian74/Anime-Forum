@@ -10,6 +10,8 @@ const commentForm = document.getElementById('commentForm');
 const editCmtField = document.getElementById('edit-comment-section');
 const commentSection = document.getElementById('comment-section');
 
+const isHiddenPost = document.getElementById('isHiddenPost').value;
+
 const PAGE_SIZE = 10;
 
 let isCommentFieldOpen = false;
@@ -400,7 +402,6 @@ async function fetchComments(filterBy, searchTerm, orderBy, descending = false) 
         }
 
         if (allComments.length > 0) {
-            console.log("ALi")
             paginateComments(1, PAGE_SIZE); // Start with page 1
             return allComments.length;
         }
@@ -428,7 +429,6 @@ async function fetchComments(filterBy, searchTerm, orderBy, descending = false) 
         return 0;
     }
 }
-
 
 function paginateComments(page, size) {
     const totalComments = allComments.length;
@@ -500,7 +500,7 @@ async function renderComments(data, currentPage, size) {
                                     ${new Date(c.createdAt).toLocaleString()}
                                 </small>
                             </div>
-                            ${c.userId === userId.value ? `
+                            ${(c.userId === userId.value && !isHiddenPost) ? `
                                 <div class="dropdown">
                                     <button class="btn btn-sm" type="button" data-bs-toggle="dropdown">
                                         <i class="fa-solid fa-ellipsis"></i>
@@ -515,10 +515,13 @@ async function renderComments(data, currentPage, size) {
                         </div>
                         <div class="mb-1 comment-text" id="comment-text-${c.id}">${c.content}</div>
 
-                        <button onclick="openReplyCmt('${c.id}')">
-                            <i style="font-size: 10px; margin-right: 5px;" class="fa-solid fa-reply"></i>
-                            Reply
-                        </button>
+                         ${!isHiddenPost ? `
+                            <button onclick="openReplyCmt('${c.id}')">
+                                <i style="font-size: 10px; margin-right: 5px;" class="fa-solid fa-reply"></i>
+                                Reply
+                            </button>
+                         ` : ''}
+
 
                         <div id="reply-comment-section-${c.id}" style="display: none;">
                             <textarea id="reply-cmt-${c.id}" class="form-control"></textarea>
@@ -573,7 +576,7 @@ function renderChildComments(childComments, parentId) {
                                 ${new Date(child.createdAt).toLocaleString()}
                             </small>
                         </div>
-                        ${child.userId === userId.value ? `
+                        ${(child.userId === userId.value && !isHiddenPost) ? `
                             <div class="dropdown">
                                 <button class="btn btn-sm" type="button" data-bs-toggle="dropdown">
                                     <i class="fa-solid fa-ellipsis"></i>
@@ -726,7 +729,7 @@ $(document).ready(function () {
     }
 
     // Event listeners
-    if (userId.value) {
+    if (userId.value && !isHiddenPost) {
         $('.upvote-btn').click(function (e) {
             e.preventDefault();
             toggleVote(true);

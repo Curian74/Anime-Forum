@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Domain.Interfaces;
+using System.Linq.Expressions;
 
 namespace Application.Services
 {
@@ -8,6 +9,13 @@ namespace Application.Services
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IGenericRepository<User> _userRepository = unitOfWork.GetRepository<User>();
         private readonly IGenericRepository<Rank> _rankRepository = unitOfWork.GetRepository<Rank>();
+
+        public async Task<(IEnumerable<Rank> Items, int TotalCount)> GetAllAsync(
+            Expression<Func<Rank, bool>>? filter = null,
+            Func<IQueryable<Rank>, IOrderedQueryable<Rank>>? orderBy = null)
+        {
+            return await _rankRepository.GetAllAsync(filter, orderBy);
+        }
 
         public async Task UpdateUserRankAsync(Guid? userId)
         {
