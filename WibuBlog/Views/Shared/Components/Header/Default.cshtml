@@ -41,6 +41,7 @@
 
                     @if (roleName == "Admin")
                     {
+                        <a href="@Url.Action("Index", "Ticket")" class="forum-dropdown btn">Tickets</a>
                         <a href="@Url.Action("Dashboard", "Admin")" class="forum-dropdown btn">Dashboard</a>
                     }
                     @if (roleName == "Moderator")
