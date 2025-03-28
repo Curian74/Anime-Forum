@@ -88,7 +88,6 @@ namespace WibuBlog.Services
             var resp = await _apiService.PostAsync<ApiResponse<Media>>($"Media/Add/", media);
             Notification notification = new Notification()
             {
-                NotiType = NotiType.Profile,
                 Content = Application.Common.MessageOperations.NotificationService.GetNotification("NOTIN01"),
                 UserId = Guid.Parse(userId),
                 IsDeleted = false,
@@ -103,5 +102,11 @@ namespace WibuBlog.Services
 			var response = await _apiService.GetAsync<ApiResponse<HeaderViewDto>>($"User/GetUserNotifications/");
 			return response.Value!;
 		}
+
+        public async Task<User> GetUserByEmail(string email)
+        {
+            var response = await _apiService.GetAsync<ApiResponse<User>>($"User/GetUserNotifications/?email={email}");
+            return response.Value!;
+        }
 	}
 }

@@ -79,14 +79,8 @@ namespace Application.Services
                     var change = dto.IsUpvote ? 2 : -2; // +1 to -1, -1 to +1
                     post.TotalVotes += change;
                     user.Points += change;
-                    if (dto.IsUpvote)
-                    {
-                        notiContent = Application.Common.MessageOperations.NotificationService.GetNotification("NOTIN02", post.Title);
-                    }
-                    else
-                    {
-                        notiContent = Application.Common.MessageOperations.NotificationService.GetNotification("NOTIN03", post.Title);
-                    }
+                    notiContent = Application.Common.MessageOperations.NotificationService.GetNotification(
+                                  dto.IsUpvote ? "NOTIN02" : "NOTIN03", post.Title);
                 }
             }
             else
@@ -99,28 +93,22 @@ namespace Application.Services
 
                 var increment = dto.IsUpvote ? 1 : -1;
                 post.TotalVotes += increment;
-                user.Points += increment;
-                if (dto.IsUpvote)
-                {
-                    notiContent = Application.Common.MessageOperations.NotificationService.GetNotification("NOTIN02", post.Title);
-                }
-                else
-                {
-                    notiContent = Application.Common.MessageOperations.NotificationService.GetNotification("NOTIN03", post.Title);
-                }
+                user.Points += increment;               
+                notiContent = Application.Common.MessageOperations.NotificationService.GetNotification(
+                                  dto.IsUpvote ? "NOTIN02" : "NOTIN03", post.Title);
             }
-
-            Notification noti = new Notification()
+            if(post.UserId != userId)
             {
-                NotiType = NotiType.Post,
-                Content = notiContent,
-                UserId = post.UserId,
-                PostId = dto.PostId,
-                IsDeleted = false
-            };
+                Notification noti = new Notification()
+                {
+                    Content = notiContent,
+                    UserId = post.UserId,
+                    PostId = dto.PostId,
+                    IsDeleted = false
+                };
 
-            await _notificationGenericRepository.AddAsync(noti);
-
+                await _notificationGenericRepository.AddAsync(noti);
+            }
             await _inventoryService.UpdateFlairsAsync(userId);
             await _rankService.UpdateUserRankAsync(userId);
 

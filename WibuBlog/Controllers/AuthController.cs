@@ -55,6 +55,7 @@ namespace WibuBlog.Controllers
 
             if (!result)
             {
+                TempData["LoginRequired"] = MessageConstants.MEN012;
                 return RedirectToAction(nameof(Login));
             }
 
@@ -73,9 +74,9 @@ namespace WibuBlog.Controllers
         [HttpPost]
         public async Task<ActionResult> RegisterAuthentication(RegisterVM registerVM)
         {
-            if (!ModelState.IsValid) 
-            { 
-                return View(nameof(Register), registerVM); 
+            if (!ModelState.IsValid)
+            {
+                return View(nameof(Register), registerVM);
             }
 
             if (await _userService.GetUserByEmailAsync(registerVM.email) != null)
@@ -93,9 +94,9 @@ namespace WibuBlog.Controllers
         [HttpPost]
         public async Task<ActionResult> OTPAuthentication(string OTP)
         {
-            if (!ModelState.IsValid) 
-            { 
-                return View(nameof(OTPAuthentication)); 
+            if (!ModelState.IsValid)
+            {
+                return View(nameof(OTPAuthentication));
             }
 
             string savedOtp = HttpContext.Session.GetString("OTP");
@@ -124,6 +125,17 @@ namespace WibuBlog.Controllers
         public IActionResult AccessDenied()
         {
             return View(NotFound());
+        }
+
+        [HttpPost]
+        public IActionResult ForgotPassword(string email)
+        {
+            if (_userService.GetUserByEmail(email) == null)
+            {
+                TempData["ErrorMessage"] = MessageConstants.ME006;
+                return RedirectToAction(nameof(ForgotPassword));
+            }
+            return View("ForgotPasswordConfirmation");
         }
     }
 }

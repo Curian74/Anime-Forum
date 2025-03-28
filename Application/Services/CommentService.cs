@@ -45,19 +45,24 @@ namespace Application.Services
             var comment = _mapper.Map<Comment>(dto);
             await _commentGenericRepository.AddAsync(comment);
             var post = await _postGenericRepository.GetByIdAsync(dto.PostId);
-            var targetUserIdNotification = post.UserId;
-            string notiContent = Application.Common.MessageOperations.NotificationService.GetNotification("NOTI04", "Quoc anh", post.Title);
-            Notification noti = new Notification()
+           
+            if (post.UserId != dto.UserId)
             {
-                NotiType = NotiType.Post,
-                Content = notiContent,
-                UserId = targetUserIdNotification,
-                PostId = dto.PostId,
-                IsDeleted = false
-            };
+                var targetUserIdNotification = post.UserId;
+                string notiContent = Application.Common.MessageOperations.NotificationService.GetNotification("NOTI04", "Quoc anh", post.Title);
+                Notification noti = new Notification()
+                {
+                    Content = notiContent,
+                    UserId = targetUserIdNotification,
+                    PostId = dto.PostId,
+                    IsDeleted = false
 
-            await _notificationGenericRepository.AddAsync(noti);
-            await _hubContext.Clients.All.SendAsync("ReceiveNotification", notiContent);
+                };
+                await _notificationGenericRepository.AddAsync(noti);
+                await _hubContext.Clients.All.SendAsync("ReceiveNotification", notiContent);
+
+            }
+            
             return await _unitOfWork.SaveChangesAsync();
         }
 

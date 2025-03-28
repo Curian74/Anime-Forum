@@ -73,12 +73,9 @@
                                                          <span>🔔</span>
                                     @if (@Model.Notifications.Count > 0)
                                     {
-                                        @if (@Model.Notifications.Count < 10)
-                                        {
                                             <span id="notificationCount" style="color: red">
                                                 @(Model.Notifications.Count < 10 ? Model.Notifications.Count.ToString() : "9+")
                                             </span>
-                                        }
                                     }
                                    
                                         </button>
