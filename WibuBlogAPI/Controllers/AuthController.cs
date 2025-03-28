@@ -28,7 +28,7 @@ namespace WibuBlogAPI.Controllers
 
             if (result == false)
             {
-                return new JsonResult(Challenge("Invalid credentials"));
+                return new JsonResult(Ok("Invalid credentials"));
             }
 
             var user = await _userService.FindByLoginAsync(dto);

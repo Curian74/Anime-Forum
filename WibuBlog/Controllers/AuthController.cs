@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using WibuBlog.Services;
 using WibuBlog.ViewModels.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 
 namespace WibuBlog.Controllers
 {
@@ -51,6 +52,11 @@ namespace WibuBlog.Controllers
         [HttpPost]
         public async Task<IActionResult> LoginAuthentication(LoginVM loginVM)
         {
+            if (!ModelState.IsValid)
+            {
+                TempData["LoginRequired"] = MessageConstants.MEN012;
+                return RedirectToAction(nameof(Login));
+            }
             var result = await _authenticationService.AuthorizeLogin(loginVM);
 
             if (!result)
@@ -128,13 +134,15 @@ namespace WibuBlog.Controllers
         }
 
         [HttpPost]
-        public IActionResult ForgotPassword(string email)
+        public async Task<IActionResult> ForgotPassword(string email)
         {
-            if (_userService.GetUserByEmail(email) == null)
+            var user = await _userService.GetUserByEmail(email);
+            if (user == null)
             {
-                TempData["ErrorMessage"] = MessageConstants.ME006;
+                TempData["ErrorMessage"] = MessageConstants.ME005;
                 return RedirectToAction(nameof(ForgotPassword));
             }
+            await _otpService.SendOtp(user.UserName, email);
             return View("ForgotPasswordConfirmation");
         }
     }

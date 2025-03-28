@@ -105,7 +105,7 @@ namespace WibuBlog.Services
 
         public async Task<User> GetUserByEmail(string email)
         {
-            var response = await _apiService.GetAsync<ApiResponse<User>>($"User/GetUserNotifications/?email={email}");
+            var response = await _apiService.GetAsync<ApiResponse<User>>($"User/GetUserByEmail?email={email}");
             return response.Value!;
         }
 	}
