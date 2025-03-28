@@ -1,0 +1,291 @@
+﻿@using Application.DTO;
+@model WebStatsDto;
+
+<link rel="stylesheet" href="~/fontawesome/css/all.css" />
+<link rel="stylesheet" href="~/css/postDetail.css" />
+<link rel="stylesheet" href="~/richtexteditor/rte_theme_default.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+@{
+	ViewData["Title"] = "Dashboard";
+}
+
+<h1>Dashboard</h1>
+
+<div class="container mx-auto p-6">
+	<div class="d-flex justify-content-between align-items-center mb-4">
+		@* <h2 class="text-xl">Web Stats Dashboard</h2> *@
+		<select id="daysFilter" class="form-select w-auto" onchange="filterStats()">
+			<option value="7">Last 7 Days</option>
+			<option value="30">Last 30 Days</option>
+			<option value="90">Last 90 Days</option>
+		</select>
+	</div>
+
+	<div class="row g-4">
+		<!-- User Stats -->
+		<div class="col-md-4">
+			<div class="card p-3 shadow">
+				<h5>👤 Total Users</h5>
+				<p class="fs-3">@Model.TotalUserCount</p>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="card p-3 shadow">
+				<h5>🆕 New Users</h5>
+				<p class="fs-3">@Model.NewUserCount</p>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="card p-3 shadow">
+				<h5>📈 Retention Rate</h5>
+				<p class="fs-3">@Model.RetentionRate%</p>
+			</div>
+		</div>
+	</div>
+
+	<div class="row g-4 mt-2">
+		<!-- Post Stats -->
+		<div class="col-md-4">
+			<div class="card p-3 shadow">
+				<h5>📝 Daily active users</h5>
+				<p class="fs-3">@Model.DailyActiveUserCount</p>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="card p-3 shadow">
+				<h5>🆕 Weekly active users</h5>
+				<p class="fs-3">@Model.WeeklyActiveUserCount</p>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="card p-3 shadow">
+				<h5>📊 Monthly active users</h5>
+				<p class="fs-3">@Model.MonthlyActiveUserCount</p>
+			</div>
+		</div>
+	</div>
+
+	<div class="row g-4 mt-2">
+		<!-- Post Stats -->
+		<div class="col-md-4">
+			<div class="card p-3 shadow">
+				<h5>📝 Total Posts</h5>
+				<p class="fs-3">@Model.TotalPostCount</p>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="card p-3 shadow">
+				<h5>🆕 New Posts</h5>
+				<p class="fs-3">@Model.NewPostCount</p>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="card p-3 shadow">
+				<h5>📊 Total comments</h5>
+				<p class="fs-3">@Model.TotalCommentCount</p>
+			</div>
+		</div>
+	</div>
+
+	<div class="d-flex justify-content-between flex-wrap">
+		<!-- Activity Overview -->
+		<div class="card p-3 shadow" style="width: 48%;">
+			<h5>📊 Activity Overview</h5>
+			<canvas id="activityChart" style="max-width: 100%; height: 200px;"></canvas>
+		</div>
+
+		<!-- Engagement Overview -->
+		<div class="card p-3 shadow" style="width: 24%;">
+			<h5>📊 Engagement Overview</h5>
+			<canvas id="engagementChart" style="max-width: 100%; height: 580px;"></canvas>
+		</div>
+
+		<div class="card p-3 shadow" style="width: 24%;">
+			<h5>📊 Post Overview</h5>
+			<canvas id="postChart" style="max-width: 100%; height: 580px;"></canvas>
+		</div>
+	</div>
+
+	<div class="card p-4 mt-4 shadow">
+		<h5>🔥 Top Users</h5>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Username</th>
+					<th>Rank</th>
+					<th>Points</th>
+				</tr>
+			</thead>
+			<tbody>
+				@{
+					int userIndex = 1;
+				}
+				@foreach (var user in Model.TopUsers)
+				{
+					<tr>
+						<td>@userIndex</td>
+						<td>@user.UserName</td>
+						<td>@{
+							if (@user.Rank != null)
+							{
+								@user.Rank.Name
+							}
+						}</td>
+						<td>@user.Points</td>
+					</tr>
+					userIndex++;
+				}
+			</tbody>
+		</table>
+	</div>
+
+	<!-- Top Posts Table -->
+	<div class="card p-4 mt-4 shadow">
+		<h5>🔥 Top Posts</h5>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Title</th>
+					<th>Author</th>
+					<th>Votes</th>
+					<th>Comments</th>
+				</tr>
+			</thead>
+			<tbody>
+				@{
+					int postIndex = 1;
+				}
+				@foreach (var post in Model.TopPosts)
+				{
+					<tr>
+						<td>@postIndex</td>
+						<td>@post.Title</td>
+						<td>@post.User.UserName</td>
+						<td>@post.TotalVotes</td>
+						<td>@post.Comments.Count</td>
+					</tr>
+					postIndex++;
+				}
+			</tbody>
+		</table>
+	</div>
+
+
+	<div class="card p-4 mt-4 shadow">
+		<h5>🔥 Top Categories</h5>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Category</th>
+					<th>Posts count</th>
+				</tr>
+			</thead>
+			<tbody>
+				@{
+					int categoryIndex = 1;
+				}
+				@foreach (var category in Model.TopCategories)
+				{
+					<tr>
+						<td>@categoryIndex</td>
+						<td>@category.Name</td>
+						<td>@category.Posts.Count</td>
+					</tr>
+					categoryIndex++;
+				}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<script>
+	function filterStats() {
+		var selectedDays = document.getElementById("daysFilter").value;
+		window.location.href = '?days=' + selectedDays;
+	}
+
+	document.addEventListener("DOMContentLoaded", function () {
+		const ctx = document.getElementById('activityChart').getContext('2d');
+		new Chart(ctx, {
+			type: 'pie',
+			data: {
+				labels: ['ActiveUser', 'InactiveUser'],
+				datasets: [{
+					label: 'Activity',
+					data: [@Model.ActiveAccountPercentage, 100 - @Model.ActiveAccountPercentage],
+					backgroundColor: ['#3498db', '#e74c3c']
+				}]
+			},
+			options: {
+				responsive: true,
+				plugins: {
+				tooltip: {
+					callbacks: {
+						label: function(tooltipItem) {
+							let value = tooltipItem.raw.toFixed(1);
+							return `${value}%`;
+						}
+					}
+				}
+			}
+			}
+		});
+	});
+
+		document.addEventListener("DOMContentLoaded", function () {
+		const ctx = document.getElementById('engagementChart').getContext('2d');
+		new Chart(ctx, {
+			type: 'bar',
+			data: {
+				labels: ['Engagement Rate (%)'],
+				datasets: [{
+					label: 'Engagement',
+					data: [@Model.PostEngagementRate],
+					backgroundColor: ['#3498db', '#e74c3c']
+				}]
+			},
+			options: {
+				responsive: true,
+				scales: {
+					y: {
+						beginAtZero: true,
+						min: 0, // Ensure y-axis starts at 0
+						max: 100 // Ensure y-axis goes up to 100
+					}
+				}
+			}
+		});
+	});
+
+		document.addEventListener("DOMContentLoaded", function () {
+		const ctx = document.getElementById('postChart').getContext('2d');
+		new Chart(ctx, {
+			type: 'bar',
+			data: {
+				labels: ['Posts per day'],
+				datasets: [{
+					label: 'Posts per day',
+					data: [@Model.AveragePostsPerDay],
+					backgroundColor: ['#3498db']
+				}]
+			},
+			options: {
+				responsive: true,
+				scales: {
+					y: {
+						beginAtZero: true,
+						suggestedMin: 0,
+						suggestedMax: Math.max(5, @Model.AveragePostsPerDay + 2)
+					}
+				}
+			}
+		});
+	});
+</script>
