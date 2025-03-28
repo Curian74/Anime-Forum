@@ -14,6 +14,7 @@ namespace Domain.Entities
         public string? Bio { get; set; }
 
         public DateTime? CreatedAt { get; set; } = DateTime.Now;
+
         public DateTime? LastActive { get; set; } = DateTime.Now;
 
         [ForeignKey(nameof(Rank))]
