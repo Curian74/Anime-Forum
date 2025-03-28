@@ -46,9 +46,9 @@
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
                             <li><a asp-action="UserList" asp-controller="User" class="dropdown-item" style="cursor:pointer;">Users</a></li>
+                            <li><a href="@Url.Action("Index", "Ticket")" class="dropdown-item" style="cursor:pointer;">Tickets</a></li>
+                            <li><a href="@Url.Action("Dashboard", "Admin")" class="dropdown-item" style="cursor:pointer;">Dashboard</a></li>
                         </ul>
-                        <a href="@Url.Action("Index", "Ticket")" class="forum-dropdown btn">Tickets</a>
-                        <a href="@Url.Action("Dashboard", "Admin")" class="forum-dropdown btn">Dashboard</a>
                     }
                     @if (roleName == "Moderator")
                     {

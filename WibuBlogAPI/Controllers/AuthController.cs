@@ -78,7 +78,6 @@ namespace WibuBlogAPI.Controllers
 
         }
 
-        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPost]
         public async Task<IActionResult> Logout()
         {

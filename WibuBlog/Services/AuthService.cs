@@ -32,8 +32,9 @@ namespace WibuBlog.Services
             };
 
             var response = await _httpClient.PostAsJsonAsync($"Login", loginDTO);
+            var responseContent = await response.Content.ReadAsStringAsync();
 
-            if (!response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode || responseContent.Contains("Invalid credentials", StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
