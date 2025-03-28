@@ -71,8 +71,8 @@ namespace Application.Services
             var totalVotes = await _voteRepository.CountAsync();
             var engagementRate = (float)(totalVotes + totalComments) / totalPosts;
 
-            var allPosts = await _postRepository.GetAllAsync();
-            var topPosts = allPosts.Items
+            var allPosts = await _postRepository.GetAllWhereAsync(p => p.CreatedAt >= startDate);
+            var topPosts = allPosts
                 .OrderByDescending(p => p.Votes.Count)
                 .Take(10)
                 .ToList();

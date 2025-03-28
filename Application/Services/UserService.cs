@@ -67,6 +67,8 @@ namespace Application.Services
             }
 
             var result = await _userManager.CheckPasswordAsync(user, dto.Password);
+            user.LastActive = DateTime.Now;
+            await _unitOfWork.SaveChangesAsync();
 
             return result;
         }
