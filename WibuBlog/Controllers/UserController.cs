@@ -58,10 +58,8 @@ namespace WibuBlog.Controllers
 
             //filteredUsers = filteredUsers.Where(x => x.IsActive == query.IsInactive).ToList();
 
-            if (query.IsBanned.HasValue && query.IsBanned.Value)
-            {
-                filteredUsers = filteredUsers.Where(x => x.IsBanned == query.IsBanned).ToList();
-            }
+
+            filteredUsers = filteredUsers.Where(x => x.IsBanned == query.IsBanned).ToList();
 
             int totalItems = filteredUsers.Count();
             int totalPages = (int)Math.Ceiling(totalItems / (double)query.PageSize);
@@ -83,24 +81,24 @@ namespace WibuBlog.Controllers
         }
 
         [HttpPost]
-		public async Task<IActionResult> UpdateUser(UpdateUserVM updateUserVM)
+        public async Task<IActionResult> UpdateUser(UpdateUserVM updateUserVM)
         {
-			if (!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return RedirectToAction(nameof(UserProfile));
             }
-			
-			var user = await _userService.UpdateUserAsync(updateUserVM);
+
+            var user = await _userService.UpdateUserAsync(updateUserVM);
             return RedirectToAction(nameof(UserProfile));
         }
 
-		[HttpPost]
-		public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordVM model)
-		{
+        [HttpPost]
+        public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordVM model)
+        {
             if (model.NewPassword != model.ConfirmPassword)
-			{
-				return BadRequest(MessageConstants.ME006);
-			}
+            {
+                return BadRequest(MessageConstants.ME006);
+            }
             var response = await _userService.UpdatePassword(model);
             if (response.Succeeded)
             {
@@ -112,9 +110,14 @@ namespace WibuBlog.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateProfilePhoto(IFormFile file)
         {
-			var response = await _userService.UpdateProfilePhoto(file);
+            var response = await _userService.UpdateProfilePhoto(file);
             return RedirectToAction(nameof(UserProfile));
-                        
         }
+
+        //[HttpGet]
+        //public async Task<IActionResult> BanUser(Guid id)
+        //{
+
+        //}
     }
 }

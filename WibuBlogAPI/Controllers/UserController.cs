@@ -147,5 +147,21 @@ namespace WibuBlogAPI.Controllers
 
             return new JsonResult(Ok(result.Items));
         }
+
+        [HttpPut("{userId}")]
+        public async Task<IActionResult> ToggleBan(Guid userId)
+        {
+            try
+            {
+                await _userService.ToggleBanAsync(userId);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new JsonResult(NotFound($"{ex.GetType().Name}: {ex.Message}"));
+            }
+
+            return new JsonResult(NoContent());
+
+        }
     }
 }

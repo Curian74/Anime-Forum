@@ -137,5 +137,14 @@ namespace Application.Services
             await _unitOfWork.SaveChangesAsync();
             return media;
 		}
-	}
+
+        public async Task<int> ToggleBanAsync(Guid userId)
+        {
+            var user = await _userGenericRepository.GetByIdAsync(userId) ?? throw new KeyNotFoundException("Could not find requested user.");
+
+            user.IsBanned = !user.IsBanned;
+
+            return await _unitOfWork.SaveChangesAsync();
+        }
+    }
 }

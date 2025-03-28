@@ -71,7 +71,16 @@
                                     <td class="text-@(u.IsBanned ? "danger" : "success") fw-bold">@u.IsBanned</td>
                                     <td>
                                         <button class="btn btn-primary">View Detail</button>
-                                        <button class="btn btn-danger">Delete</button>
+                                        @{
+                                            if (!u.IsBanned)
+                                            {
+                                                <button onclick="confirmBanUser('@u.Id')" class="btn btn-danger">BAN</button>
+                                            }
+                                            else
+                                            {
+                                                <button onclick="confirmBanUser('@u.Id')" class="btn btn-success">UNBAN</button>
+                                            }
+                                        }
                                     </td>
                                 </tr>
                                 count++;
@@ -148,4 +157,5 @@
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.all.min.js"></script>
+    <script src="~/js/userList.js"></script>
 }

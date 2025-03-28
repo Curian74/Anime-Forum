@@ -88,7 +88,6 @@ namespace WibuBlogAPI.Controllers
 
         }
 
-        [AllowAnonymous]
         [HttpPut("{commentId}")]
         public async Task<IActionResult> Delete(Guid commentId)
         {
