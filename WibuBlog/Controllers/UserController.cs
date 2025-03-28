@@ -7,6 +7,7 @@ using WibuBlog.Helpers;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Application.Common.Pagination;
 using Domain.Entities;
+using System.Security.Claims;
 
 namespace WibuBlog.Controllers
 {
@@ -36,13 +37,16 @@ namespace WibuBlog.Controllers
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = "Bearer", Policy = "AdminPolicy")]
         public async Task<IActionResult> UserList(UserQueryVM? query)
         {
             var usersList = await _userService.GetAllAsync("", "", false);
 
             var ranksList = await _rankService.GetAllAsync("", "", "name", false);
 
-            var filteredUsers = usersList;
+            var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var filteredUsers = usersList.Where(x => x.Id != Guid.Parse(currentUserId));
 
             if (!string.IsNullOrEmpty(query.SearchTerm))
             {
