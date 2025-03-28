@@ -74,7 +74,7 @@ namespace WibuBlogAPI.Controllers
         {
             var result = await _ticketService.UpdateTicketAsync(ticketId, dto);
             if (result == 0) return NotFound("Ticket not found or unauthorized");
-            return Ok("Ticket updated successfully");
+            return Ok(new { success = true, message = Application.Common.MessageOperations.MessageConstants.ME020 });
         }
 
         [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
@@ -83,7 +83,7 @@ namespace WibuBlogAPI.Controllers
         {
             var result = await _ticketService.DeleteTicketAsync(ticketId);
             if (result == 0) return NotFound("Ticket not found");
-            return Ok("Ticket deleted successfully");
+            return Ok(new { success = true, message = Application.Common.MessageOperations.MessageConstants.ME020 });
         }
 
         [Authorize(AuthenticationSchemes = "Bearer", Policy = "AdminPolicy")]
@@ -103,7 +103,7 @@ namespace WibuBlogAPI.Controllers
         {
             var result = await _ticketService.ApproveTicketAsync(ticketId, dto.Approval, dto.Note);
             if (result == 0) return NotFound("Ticket not found");
-            return Ok("Ticket approved");
+            return Ok(new { success = true, message = Application.Common.MessageOperations.MessageConstants.ME020 });
         }
 
         [HttpPut("Close/{ticketId}")]
@@ -120,8 +120,7 @@ namespace WibuBlogAPI.Controllers
 
             var result = await _ticketService.CloseTicketAsync(ticketId);
             if (result == 0) return NotFound("Ticket not found");
-
-            return Ok("Ticket closed successfully");
+            return Ok(new { success = true, message = Application.Common.MessageOperations.MessageConstants.ME020 });
         }
     }
 }
