@@ -140,9 +140,11 @@ namespace WibuBlog.Controllers
             if (user == null)
             {
                 TempData["ErrorMessage"] = MessageConstants.ME005;
+
                 return RedirectToAction(nameof(ForgotPassword));
             }
             await _otpService.SendOtp(user.UserName, email);
+            TempData["SentMessage"] = MessageConstants.MEN016 + email;
             return View("ForgotPasswordConfirmation");
         }
 
@@ -170,22 +172,21 @@ namespace WibuBlog.Controllers
         [HttpPost]
         public async Task<IActionResult> ChangePassword(ChangePasswordVM changePasswordVM)
         {
-            string email = HttpContext.Session.GetString("Email");
+            string email = HttpContext.Session.GetString("Email");      
+            changePasswordVM.Email = email;
             if (!ModelState.IsValid)
             {            
                 return View(changePasswordVM);
             }
-            if(changePasswordVM.NewPassword != changePasswordVM.ConfirmPassword)
+            else if(!changePasswordVM.NewPassword.Equals(changePasswordVM.ConfirmPassword))
             {
                 TempData["ErrorMessage"] = MessageConstants.ME006;
-                return View();
-                
+                return View(); 
             }
             var result = await _authenticationService.ResetPassword(changePasswordVM);
             TempData["ResetPasswordSuccessMessage"] = MessageConstants.ME007a;
+            HttpContext.Session.Clear();
             return RedirectToAction(nameof(Login));
-
-
         }
 	}
 }

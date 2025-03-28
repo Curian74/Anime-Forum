@@ -51,6 +51,7 @@ namespace Application.Common.MessageOperations
 		public const string MEN013 = "Successfully reset password, pleasse login again";
 		public const string MEN014 = "Password must be from 6 - 20 characters";
 		public const string MEN015 = "Password must have 1 digit, 1 special character and 1 uppercase letter";
+		public const string MEN016 = "OTP has been sent to ";
 
 		//message nay dung de debug chu khong lien quan gi den BR hay nghiep vu
 		public const string MEO001 = "Error reading expiry date";

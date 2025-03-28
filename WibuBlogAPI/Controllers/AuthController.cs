@@ -65,7 +65,7 @@ namespace WibuBlogAPI.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)
         {
             if (IsLoggedIn())
             {
