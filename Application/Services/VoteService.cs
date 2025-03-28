@@ -2,6 +2,7 @@
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Application.Services
 {
@@ -13,6 +14,7 @@ namespace Application.Services
         private readonly IMapper _mapper = mapper;
         private readonly InventoryService _inventoryService = inventoryService;
         private readonly RankService _rankService = rankService;
+        private readonly IGenericRepository<Notification> _notificationGenericRepository = unitOfWork.GetRepository<Notification>();
 
         public async Task<int> GetTotalPostVotesAsync(Guid postId)
         {
@@ -54,7 +56,7 @@ namespace Application.Services
             {
                 throw new ArgumentNullException(nameof(post), "Post not found.");
             }
-
+            string notiContent = Application.Common.MessageOperations.NotificationService.GetNotification("NOTIN02", post.Title);
             var existingVote = await _voteRepository.GetSingleWhereAsync(v => v.PostId == dto.PostId && v.UserId == userId);
             var user = post.User ?? throw new InvalidOperationException("Post author not found.");
 
@@ -67,7 +69,7 @@ namespace Application.Services
 
                     var decrement = existingVote.IsUpvote ? -1 : 1;
                     post.TotalVotes += decrement;
-                    user.Points += decrement;
+                    user.Points += decrement;              
                 }
                 else
                 {
@@ -77,6 +79,14 @@ namespace Application.Services
                     var change = dto.IsUpvote ? 2 : -2; // +1 to -1, -1 to +1
                     post.TotalVotes += change;
                     user.Points += change;
+                    if (dto.IsUpvote)
+                    {
+                        notiContent = Application.Common.MessageOperations.NotificationService.GetNotification("NOTIN02", post.Title);
+                    }
+                    else
+                    {
+                        notiContent = Application.Common.MessageOperations.NotificationService.GetNotification("NOTIN03", post.Title);
+                    }
                 }
             }
             else
@@ -90,7 +100,26 @@ namespace Application.Services
                 var increment = dto.IsUpvote ? 1 : -1;
                 post.TotalVotes += increment;
                 user.Points += increment;
+                if (dto.IsUpvote)
+                {
+                    notiContent = Application.Common.MessageOperations.NotificationService.GetNotification("NOTIN02", post.Title);
+                }
+                else
+                {
+                    notiContent = Application.Common.MessageOperations.NotificationService.GetNotification("NOTIN03", post.Title);
+                }
             }
+
+            Notification noti = new Notification()
+            {
+                NotiType = NotiType.Post,
+                Content = notiContent,
+                UserId = post.UserId,
+                PostId = dto.PostId,
+                IsDeleted = false
+            };
+
+            await _notificationGenericRepository.AddAsync(noti);
 
             await _inventoryService.UpdateFlairsAsync(userId);
             await _rankService.UpdateUserRankAsync(userId);

@@ -64,9 +64,12 @@
                                                          <span>🔔</span>
                                     @if (@Model.Notifications.Count > 0)
                                     {
-                                        <span id="notificationCount" style="color: red">
-                                                                @(Model.Notifications.Count < 10 ? Model.Notifications.Count.ToString() : "9+")
-                                        </span>
+                                        @if (@Model.Notifications.Count < 10)
+                                        {
+                                            <span id="notificationCount" style="color: red">
+                                                @(Model.Notifications.Count < 10 ? Model.Notifications.Count.ToString() : "9+")
+                                            </span>
+                                        }
                                     }
                                    
                                         </button>
@@ -79,9 +82,17 @@
                                     <img src="@(notification.User.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" 
                                          class="rounded-circle" width="40" height="40" style="margin-right: 10px;">
                                     <div>
-                                        <a class="notification-content" href="#" style="text-decoration: none; font-weight: bold; color: #333;">
+                                        @if(@notification.PostId != null){
+                                           <a class="notification-content" href="/Post/Detail/@notification.PostId" style="text-decoration: none; font-weight: bold; color: #333;">
+                                                            @Html.Raw(notification.Content)
+                                            </a>
+                                        }
+                                        else{
+                                             <a class="notification-content" href="/User/UserProfile" style="text-decoration: none; font-weight: bold; color: #333;">
                                                         @notification.Content
-                                        </a>
+                                              </a>
+                                        }
+                                         
                                         <div class="text-muted" style="font-size: 12px;">@notification.CreatedAt.ToString("dd/MM/yyyy - HH:mm")</div>
                                     </div>
                                 </li>
@@ -141,7 +152,7 @@
         .build();
 
     connection.start().catch(err => console.error(err.toString()));
-
+        console.log("Successfully connected signalR");
     connection.on("ReceiveNotification", function (message) {
         console.log("Received Notification");
 
@@ -155,7 +166,7 @@
 
         let newNotification = document.createElement("li");
         newNotification.classList.add("dropdown-item");
-        newNotification.innerHTML = `<a href="#">🔔 ${message}</a>`;
+        newNotification.innerHTML = `<a href="#">${message}</a>`;
         notificationList.prepend(newNotification);
 
         newNotification.style.backgroundColor = "#f0f8ff";

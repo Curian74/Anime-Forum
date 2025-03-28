@@ -46,7 +46,7 @@ namespace Application.Services
             await _commentGenericRepository.AddAsync(comment);
             var post = await _postGenericRepository.GetByIdAsync(dto.PostId);
             var targetUserIdNotification = post.UserId;
-            string notiContent = Application.Common.MessageOperations.NotificationService.GetNotification("NOTI04", "Quoc anh", "test post");
+            string notiContent = Application.Common.MessageOperations.NotificationService.GetNotification("NOTI04", "Quoc anh", post.Title);
             Notification noti = new Notification()
             {
                 NotiType = NotiType.Post,
@@ -57,11 +57,7 @@ namespace Application.Services
             };
 
             await _notificationGenericRepository.AddAsync(noti);
-            //await _hubContext.Clients.Group(targetUserIdNotification.ToString())
-            //.SendAsync("ReceiveNotification", notiContent);
             await _hubContext.Clients.All.SendAsync("ReceiveNotification", notiContent);
-            Console.WriteLine("---------------------------------------------------------");
-            Console.WriteLine(dto.UserId + " Sent " + notiContent + " to " + targetUserIdNotification);
             return await _unitOfWork.SaveChangesAsync();
         }
 
