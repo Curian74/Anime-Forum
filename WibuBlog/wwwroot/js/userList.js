@@ -1,20 +1,20 @@
 ﻿const confirmBanUser = (userId) => {
     Swal.fire({
         title: "Are you sure?",
-        text: "You won't be able to revert this!",
+        text: "Are you sure you want to continue?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!"
+        confirmButtonText: "Yes"
     }).then(async (result) => {
         if (result.isConfirmed) {
             const result = await banUser(userId);
             console.log(result);
             if (result) {
                 Swal.fire({
-                    title: "Banned!",
-                    text: "This user has been banned.",
+                    title: "Success!",
+                    text: "Success.",
                     confirmButtonText: "OK",
                     icon: "success"
                 }).then((res) => {
@@ -27,7 +27,7 @@
             else {
                 Swal.fire({
                     title: "Error!",
-                    text: "Failed to delete post.",
+                    text: "Failed to ban user.",
                     icon: "error"
                 });
             }
