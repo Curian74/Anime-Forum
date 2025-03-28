@@ -71,6 +71,7 @@ namespace Application.Services
 
             return await _unitOfWork.SaveChangesAsync();
         }
+
         public async Task<int> CloseTicketAsync(Guid ticketId)
         {
             var ticket = await _ticketRepository.GetByIdAsync(ticketId);
@@ -86,6 +87,5 @@ namespace Application.Services
         {
             return await _ticketRepository.GetAllAsync();
         }
-
     }
 }
