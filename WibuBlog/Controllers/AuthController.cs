@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using WibuBlog.Services;
 using WibuBlog.ViewModels.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 
 namespace WibuBlog.Controllers
 {
@@ -51,10 +52,16 @@ namespace WibuBlog.Controllers
         [HttpPost]
         public async Task<IActionResult> LoginAuthentication(LoginVM loginVM)
         {
+            if (!ModelState.IsValid)
+            {
+                TempData["LoginRequired"] = MessageConstants.MEN012;
+                return RedirectToAction(nameof(Login));
+            }
             var result = await _authenticationService.AuthorizeLogin(loginVM);
 
             if (!result)
             {
+                TempData["LoginRequired"] = MessageConstants.MEN012;
                 return RedirectToAction(nameof(Login));
             }
 
@@ -73,9 +80,9 @@ namespace WibuBlog.Controllers
         [HttpPost]
         public async Task<ActionResult> RegisterAuthentication(RegisterVM registerVM)
         {
-            if (!ModelState.IsValid) 
-            { 
-                return View(nameof(Register), registerVM); 
+            if (!ModelState.IsValid)
+            {
+                return View(nameof(Register), registerVM);
             }
 
             if (await _userService.GetUserByEmailAsync(registerVM.email) != null)
@@ -93,9 +100,9 @@ namespace WibuBlog.Controllers
         [HttpPost]
         public async Task<ActionResult> OTPAuthentication(string OTP)
         {
-            if (!ModelState.IsValid) 
-            { 
-                return View(nameof(OTPAuthentication)); 
+            if (!ModelState.IsValid)
+            {
+                return View(nameof(OTPAuthentication));
             }
 
             string savedOtp = HttpContext.Session.GetString("OTP");
@@ -125,5 +132,61 @@ namespace WibuBlog.Controllers
         {
             return View(NotFound());
         }
-    }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            var user = await _userService.GetUserByEmail(email);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = MessageConstants.ME005;
+
+                return RedirectToAction(nameof(ForgotPassword));
+            }
+            await _otpService.SendOtp(user.UserName, email);
+            TempData["SentMessage"] = MessageConstants.MEN016 + email;
+            return View("ForgotPasswordConfirmation");
+        }
+
+        [HttpPost]
+		public async Task<IActionResult> ForgotPasswordAuthentication(string OTP)
+		{
+			string savedOtp = HttpContext.Session.GetString("OTP");
+			string expiryTimeStr = HttpContext.Session.GetString("OTP_Expiry");
+
+			var errors = _otpService.ValidateOTP(savedOtp, OTP, expiryTimeStr);
+
+			if (errors.Count == 0)
+			{
+                return View("ChangePassword");
+            }
+
+			foreach (var x in errors)
+			{
+				ModelState.AddModelError(x.Key, x.Value);
+			}
+            return View("ForgotPasswordConfirmation");
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordVM changePasswordVM)
+        {
+            string email = HttpContext.Session.GetString("Email");      
+            changePasswordVM.Email = email;
+            if (!ModelState.IsValid)
+            {            
+                return View(changePasswordVM);
+            }
+            else if(!changePasswordVM.NewPassword.Equals(changePasswordVM.ConfirmPassword))
+            {
+                TempData["ErrorMessage"] = MessageConstants.ME006;
+                return View(); 
+            }
+            var result = await _authenticationService.ResetPassword(changePasswordVM);
+            TempData["ResetPasswordSuccessMessage"] = MessageConstants.ME007a;
+            HttpContext.Session.Clear();
+            return RedirectToAction(nameof(Login));
+        }
+	}
 }

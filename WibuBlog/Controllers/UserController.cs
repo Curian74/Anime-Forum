@@ -114,14 +114,11 @@ namespace WibuBlog.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateProfilePhoto(IFormFile file)
         {
-            var response = await _userService.UpdateProfilePhoto(file);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var response = await _userService.UpdateProfilePhoto(file,userId);
+
             return RedirectToAction(nameof(UserProfile));
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> BanUser(Guid id)
-        //{
-
-        //}
     }
 }

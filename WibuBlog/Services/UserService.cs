@@ -9,6 +9,9 @@ using Microsoft.Extensions.Options;
 using WibuBlog.Common.ApiResponse;
 using WibuBlog.Interfaces.Api;
 using WibuBlog.ViewModels.Users;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Hosting;
+using Application.Common.MessageOperations;
 
 namespace WibuBlog.Services
 {
@@ -29,9 +32,8 @@ namespace WibuBlog.Services
             }
             var response = await _apiService.GetAsync<ApiResponse<UserProfileDto>>($"User/GetAccountDetails/{userId}");
             return response.Value!;
-        }
-
-        public async Task<User> GetUserById(Guid userId)
+        }     
+		public async Task<User> GetUserById(Guid userId)
         {
             var response = await _apiService.GetAsync<ApiResponse<User>>($"User/GetUserById/{userId}");
             return response.Value!;
@@ -89,13 +91,32 @@ namespace WibuBlog.Services
 			return response;
 		}
 
-		public async Task<Media> UpdateProfilePhoto(IFormFile file)
+		public async Task<Media> UpdateProfilePhoto(IFormFile file, string userId)
         {
-			Media media = await _fileService.UploadImage(file);
+            Media media = await _fileService.UploadImage(file);
             //await _fileService.DeleteCurrentProfilePhoto();
             var resp = await _apiService.PostAsync<ApiResponse<Media>>($"Media/Add/", media);
-			var response = await _apiService.PutAsync<ApiResponse<Media>>("User/UpdateProfilePhoto/", media);
+            Notification notification = new Notification()
+            {
+                Content = Application.Common.MessageOperations.NotificationService.GetNotification("NOTIN01"),
+                UserId = Guid.Parse(userId),
+                IsDeleted = false,
+            };
+            var noti = await apiService.PostAsync<ApiResponse<Notification>>($"Notification/Add/", notification);      
+            var response = await _apiService.PutAsync<ApiResponse<Media>>("User/UpdateProfilePhoto/", media);
             return response.Value!;
 		}
+
+		public async Task<HeaderViewDto> GetUserNotifications()
+		{
+			var response = await _apiService.GetAsync<ApiResponse<HeaderViewDto>>($"User/GetUserNotifications/");
+			return response.Value!;
+		}
+
+        public async Task<User> GetUserByEmail(string email)
+        {
+            var response = await _apiService.GetAsync<ApiResponse<User>>($"User/GetUserByEmail?email={email}");
+            return response.Value!;
+        }
 	}
 }

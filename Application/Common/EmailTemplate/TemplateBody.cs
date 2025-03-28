@@ -28,7 +28,7 @@ namespace Application.Common.EmailTemplate
                     sb.AppendLine("<div class='container'>");
                     sb.AppendLine("<div class='content'>");
                     sb.AppendLine("<h2>Hello</h2>");
-                    sb.AppendLine("<p>We've received a registration request for {Name}</p>");
+                    sb.AppendLine("<p>We've received a registration request for <b>{Name}</b> </p>");
                     sb.AppendLine("<p>Please use this OTP to complete the process</p>");
                     sb.AppendLine("<p><strong>{OTP}</strong></p>");
                     sb.AppendLine("<p>Thanks & Regards!</p>");
@@ -53,9 +53,9 @@ namespace Application.Common.EmailTemplate
                     sb2.AppendLine("<div class='container'>");
                     sb2.AppendLine("<div class='content'>");
                     sb2.AppendLine("<h2>Hello</h2>");
-                    sb2.AppendLine("<p>We have just received a password reset request for {name}</p>");
-                    sb2.AppendLine("<p>Please click <a href=\"{link}\">here</a> to reset your password.</p>");
-                    sb2.AppendLine("<p>For your security, the link will expire in 24 hours or immediately after you reset your password.</p>");
+                    sb2.AppendLine("<p>We have just received a password reset request for <b>{name}</b> </p>");
+                    sb2.AppendLine("<p>Please use this OTP to complete the process</p>");
+                    sb2.AppendLine("<p><strong>{OTP}</strong></p>");
                     sb2.AppendLine("<p>Thanks & Regards!</p>");
                     sb2.AppendLine("<p>WBB Team.</p>");
                     sb2.AppendLine("</div>");

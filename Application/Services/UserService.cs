@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
 
 namespace Application.Services
@@ -20,6 +21,7 @@ namespace Application.Services
         private readonly IMapper _mapper = mapper;
         private readonly IGenericRepository<User> _userGenericRepository = unitOfWork.GetRepository<User>();
         private readonly IGenericRepository<Post> _postGenericRepository = unitOfWork.GetRepository<Post>();
+        private readonly IGenericRepository<Notification> _notificationGenericRepository = unitOfWork.GetRepository<Notification>();
         private readonly RankService _rankService = rankService;
 
 		public async Task<User?> FindByLoginAsync(LoginDto dto)
@@ -130,7 +132,15 @@ namespace Application.Services
             return await _userManager.ChangePasswordAsync(updateUser, updatePasswordDTO.OldPassword, updatePasswordDTO.NewPassword);
 		}
 
-		public async Task<Media> UpdateProfilePhotoAsync(Media media, string currentUserId)
+        public async Task<ResetPasswordDto> ResetPassword(ResetPasswordDto dto)
+        {
+            var updateUser = await _userManager.FindByEmailAsync(dto.Email);
+            var token = await _userManager.GeneratePasswordResetTokenAsync(updateUser);
+            await _userManager.ResetPasswordAsync(updateUser, token, dto.NewPassword);
+            return dto;
+        }
+
+        public async Task<Media> UpdateProfilePhotoAsync(Media media, string currentUserId)
         {
             var updateUser = await _userManager.FindByIdAsync(currentUserId);
             updateUser.ProfilePhoto = media;
@@ -138,6 +148,29 @@ namespace Application.Services
             return media;
 		}
 
+        public async Task<HeaderViewDto> GetUserNotification(Guid currentUserId)
+        {
+			var user = await _userManager.FindByIdAsync(currentUserId.ToString());
+
+			if (user == null)
+			{
+				return null;
+			}
+			await _rankService.UpdateUserRankAsync(currentUserId);
+			var result = _mapper.Map<UserProfileDto>(user);
+			result.PostList = await _postGenericRepository.GetAllWhereAsync(m => m.UserId == currentUserId);
+			result.Roles = await _userManager.GetRolesAsync(user);
+            var notifications = await _notificationGenericRepository.GetAllWhereAsync(n => n.User.Id == currentUserId);
+            HeaderViewDto headerViewDto = new HeaderViewDto()
+            {
+                User = result,
+                Notifications = notifications
+            };
+            return headerViewDto;
+		}
+
+
+	}
         public async Task<int> ToggleBanAsync(Guid userId)
         {
             var user = await _userGenericRepository.GetByIdAsync(userId) ?? throw new KeyNotFoundException("Could not find requested user.");

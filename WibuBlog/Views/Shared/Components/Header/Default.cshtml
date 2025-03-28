@@ -1,5 +1,5 @@
 ﻿@using System.Security.Claims;
-@model Application.DTO.UserProfileDto;
+@model Application.DTO.HeaderViewDto;
 @if (ViewData["ShowHeader"] as bool? != false)
 {
     <link rel="stylesheet" href="~/css/header.css" />
@@ -59,18 +59,65 @@
                         <div class="dropdown">
                             <button class="btn dropdown-toggle border-0 d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 <div class="text-white text-start me-2">
-                                    <p class="mb-0 fw-bold">@Model.UserName</p>
-                                    <p class="mb-0 text-secondary" style="font-size: 0.85rem;">@Model.Roles.FirstOrDefault()</p>
+                                    <p class="mb-0 fw-bold">@Model.User.UserName</p>
+                                    <p class="mb-0 text-secondary" style="font-size: 0.85rem;">@Model.User.Roles.FirstOrDefault()</p>
                                 </div>
-                            @if (Model.ProfilePhoto == null || String.IsNullOrEmpty(Model.ProfilePhoto.Url))
+                            @if (Model.User.ProfilePhoto == null || String.IsNullOrEmpty(Model.User.ProfilePhoto.Url))
                             {
                                             <img id="avatarImage" src="~/images/defaults/user/default_avatar.jpg" class="rounded-circle" width="40" height="40" alt="User Avatar">
                             }
                             else
                             {
-                                            <img id="avatarImage" src="@Url.Content(Model.ProfilePhoto.Url)" class="rounded-circle" width="40" height="40" alt="User Avatar">
+                                                        <img id="avatarImage" src="@Url.Content(Model.User.ProfilePhoto.Url)" class="rounded-circle" width="40" height="40" alt="User Avatar">
                             }
                             </button>
+
+                        @if (User.Identity.IsAuthenticated && Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var currentUserId))
+                        {
+                                    <div class="dropdown">
+                                        <button class="btn dropdown-toggle" id="notificationDropdown" data-bs-toggle="dropdown">
+                                                         <span>🔔</span>
+                                    @if (@Model.Notifications.Count > 0)
+                                    {
+                                            <span id="notificationCount" style="color: red">
+                                                @(Model.Notifications.Count < 10 ? Model.Notifications.Count.ToString() : "9+")
+                                            </span>
+                                    }
+                                   
+                                        </button>
+                                     <ul class="dropdown-menu" id="notificationList" style="width: 600px;">
+                                    @if (Model.Notifications.Any())
+                                    {
+                                        @foreach (var notification in Model.Notifications)
+                                        {
+                                <li class="notification-item d-flex align-items-center p-2" style="border-bottom: 1px solid #ddd;">
+                                    <img src="@(notification.User.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" 
+                                         class="rounded-circle" width="40" height="40" style="margin-right: 10px;">
+                                    <div>
+                                        @if(@notification.PostId != null){
+                                           <a class="notification-content" href="/Post/Detail/@notification.PostId" style="text-decoration: none; font-weight: bold; color: #333;">
+                                                            @Html.Raw(notification.Content)
+                                            </a>
+                                        }
+                                        else{
+                                             <a class="notification-content" href="/User/UserProfile" style="text-decoration: none; font-weight: bold; color: #333;">
+                                                        @notification.Content
+                                              </a>
+                                        }
+                                         
+                                        <div class="text-muted" style="font-size: 12px;">@notification.CreatedAt.ToString("dd/MM/yyyy - HH:mm")</div>
+                                    </div>
+                                </li>
+                                        }
+                                    }
+                                    else
+                                    {
+                        <li class="text-muted p-2">No new notifications</li>
+                                    }
+            </ul>
+                                    </div>
+                                    }
+
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li><a class="dropdown-item" href="/User/UserProfile">Profile</a></li>
                                 <li><a class="dropdown-item" href="/Ticket/Add">Ticket</a></li>
@@ -87,7 +134,7 @@
                             </div>
                             <div class="modal-body">
                                 Are you sure you want to log out?
-                            </div>
+                            </div> 
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                 <form id="logoutForm" action="/Auth/Logout" method="POST">
@@ -109,4 +156,36 @@
             </div>
         </div>
     </header>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script>
+         var connection = new signalR.HubConnectionBuilder()
+        .withUrl("/notificationHub")
+        .build();
+
+    connection.start().catch(err => console.error(err.toString()));
+        console.log("Successfully connected signalR");
+    connection.on("ReceiveNotification", function (message) {
+        console.log("Received Notification");
+
+        let notificationList = document.getElementById("notificationList");
+        let count = document.getElementById("notificationCount");
+
+        if (!notificationList || !count) {
+            console.error("Notification elements not found in DOM!");
+            return;
+        }
+
+        let newNotification = document.createElement("li");
+        newNotification.classList.add("dropdown-item");
+        newNotification.innerHTML = `<a href="#">${message}</a>`;
+        notificationList.prepend(newNotification);
+
+        newNotification.style.backgroundColor = "#f0f8ff";
+        setTimeout(() => newNotification.style.backgroundColor = "transparent", 3000);
+
+        let currentCount = parseInt(count.innerText) || 0;
+        count.innerText = currentCount < 9 ? currentCount + 1 : "9+";
+    });
+    </script>
 }
