@@ -6,7 +6,6 @@ using Domain.Entities;
 using Infrastructure.Configurations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using System.Security.Claims;
 using WibuBlog.Common.ApiResponse;
 using WibuBlog.Interfaces.Api;
 using WibuBlog.ViewModels.Users;
@@ -50,9 +49,20 @@ namespace WibuBlog.Services
             var response = await _apiService.GetAsync<ApiResponse<User>>($"User/GetUserByUsername?username={username}");
             return response.Value!;
         }
-        public async Task<PagedResult<User>> GetPagedUsersAsync(int page, int size)
+
+        public async Task<PagedResult<User>> GetPagedUserAsync(int? page, int? pageSize, string? filterBy, string? searchTerm, string? orderBy, bool? descending)
         {
-            var response = await _apiService.GetAsync<ApiResponse<PagedResult<User>>>($"User/GetPagedUsers?page={page}&size={size}");
+            var response = await _apiService.GetAsync<ApiResponse<PagedResult<User>>>
+                ($"User/GetPaged?page={page}&size={pageSize}" +
+                $"&filterBy={filterBy}&searchTerm={searchTerm}&orderBy={orderBy}&descending={descending}");
+
+            return response.Value!;
+        }
+
+        public async Task<List<User>> GetAllAsync(string? filterBy, string? searchTerm, bool? isDesc)
+        {
+            var response = await _apiService.GetAsync<ApiResponse<List<User>>>(
+                $"User/GetAll?filterBy={filterBy}&searchTerm={searchTerm}&descending={isDesc}");
             return response.Value!;
         }
 

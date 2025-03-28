@@ -272,16 +272,12 @@ using (var scope = app.Services.CreateScope())
         var categories = new List<PostCategory>
         {
             new() { Id = Guid.NewGuid(), Name = "Thông báo", IsRestricted = true},
-            new() { Id = Guid.NewGuid(), Name = "Góp ý"},
             new() { Id = Guid.NewGuid(), Name = "Tin tức", IsRestricted = true},
             new() { Id = Guid.NewGuid(), Name = "Chia sẻ kiến thức"},
             new() { Id = Guid.NewGuid(), Name = "Review linh tinh"},
             new() { Id = Guid.NewGuid(), Name = "Review manga"},
             new() { Id = Guid.NewGuid(), Name = "Review anime"},
             new() { Id = Guid.NewGuid(), Name = "Văn hóa Nhật"},
-            new() { Id = Guid.NewGuid(), Name = "Thời trang Nhật"},
-            new() { Id = Guid.NewGuid(), Name = "Ẩm thực Nhật"},
-            new() { Id = Guid.NewGuid(), Name = "Giáo dục"},
             new() { Id = Guid.NewGuid(), Name = "Hỏi đáp"},
         };
 

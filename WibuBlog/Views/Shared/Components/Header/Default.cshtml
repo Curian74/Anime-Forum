@@ -41,6 +41,12 @@
 
                     @if (roleName == "Admin")
                     {
+                        <button class="forum-dropdown btn dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
+                            Manage
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                            <li><a asp-action="UserList" asp-controller="User" class="dropdown-item" style="cursor:pointer;">Users</a></li>
+                        </ul>
                         <a href="@Url.Action("Dashboard", "Admin")" class="forum-dropdown btn">Dashboard</a>
                     }
                     @if (roleName == "Moderator")
