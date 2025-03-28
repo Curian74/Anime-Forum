@@ -282,6 +282,7 @@ using (var scope = app.Services.CreateScope())
             new() { Id = Guid.NewGuid(), Name = "Thời trang Nhật"},
             new() { Id = Guid.NewGuid(), Name = "Ẩm thực Nhật"},
             new() { Id = Guid.NewGuid(), Name = "Giáo dục"},
+            new() { Id = Guid.NewGuid(), Name = "Hỏi đáp"},
         };
 
         db.PostCategories.AddRange(categories);

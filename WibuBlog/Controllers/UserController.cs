@@ -19,14 +19,15 @@ namespace WibuBlog.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> UserProfile()
+        public async Task<IActionResult> UserProfile(Guid? userId = null)
         {
-            var result = await _userService.GetUserProfile();
+            var result = await _userService.GetUserProfile(userId);
 
             if (result is null)
             {
                 return NotFound();
             }
+
             return View(result);
         }
 
