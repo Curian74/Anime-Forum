@@ -111,7 +111,6 @@ namespace ServiceLayerUnitTests
             _notificationRepositoryMock.Setup(repo => repo.AddAsync(It.IsAny<Notification>())).Returns(Task.CompletedTask);
             _unitOfWorkMock.Setup(uow => uow.SaveChangesAsync()).ReturnsAsync(1);
 
-            // Mock SignalR
             var hubClientsMock = new Mock<IHubClients>();
             var clientProxyMock = new Mock<IClientProxy>();
 
