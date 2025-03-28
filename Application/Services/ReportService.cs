@@ -37,7 +37,7 @@ namespace Application.Services
                 if (report == null)
                 {
                     Console.WriteLine($"Report not found: {reportId}");
-                    return 0; // Or throw an exception
+                    return 0; 
                 }
 
                 report.IsApproved = approval;
@@ -45,6 +45,11 @@ namespace Application.Services
 
                 await _reportRepository.UpdateAsync(report);
                 int result = await _unitOfWork.SaveChangesAsync();
+
+                if (approval)
+                {
+                    await CheckAndDeactivatePostsWithMultipleReports();
+                }
 
                 Console.WriteLine($"Report updated. SaveChanges result: {result}");
                 return result;
@@ -103,7 +108,10 @@ namespace Application.Services
                 if (post != null)
                 {
                     reportDto.PostTitle = post.Title;
-                    reportDto.PostCategoryId = post.PostCategoryId; 
+                    reportDto.PostCategoryId = post.PostCategoryId;
+
+                    var category = await _unitOfWork.GetRepository<PostCategory>().GetByIdAsync(post.PostCategoryId);
+                    reportDto.CategoryName = category?.Name ?? "Unknown";
                 }
 
                 reportDtos.Add(reportDto);
@@ -113,10 +121,10 @@ namespace Application.Services
         }
 
         public async Task<IPagedResult<ReportDto>> GetPagedReportsWithDetailsAsync(
-    int page = 1,
-    int size = 10,
-    Expression<Func<Report, bool>>? filter = null,
-    Func<IQueryable<Report>, IOrderedQueryable<Report>>? orderBy = null)
+            int page = 1,
+            int size = 10,
+            Expression<Func<Report, bool>>? filter = null,
+            Func<IQueryable<Report>, IOrderedQueryable<Report>>? orderBy = null)
         {
             var (items, totalCount) = await _reportRepository.GetPagedAsync(page, size, filter, orderBy);
             var reportDtos = new List<ReportDto>();
@@ -135,6 +143,10 @@ namespace Application.Services
                 if (post != null)
                 {
                     reportDto.PostTitle = post.Title;
+                    reportDto.PostCategoryId = post.PostCategoryId;
+
+                    var category = await _unitOfWork.GetRepository<PostCategory>().GetByIdAsync(post.PostCategoryId);
+                    reportDto.CategoryName = category?.Name ?? "Unknown";
                 }
 
                 reportDtos.Add(reportDto);
@@ -142,6 +154,26 @@ namespace Application.Services
 
             return new PagedResult<ReportDto>(reportDtos, totalCount, page, size);
         }
+        public async Task CheckAndDeactivatePostsWithMultipleReports(int acceptedReportThreshold = 3)
+        {
+            var approvedReports = await _reportRepository.GetAllAsync(r => r.IsApproved == true);
 
+            var postReportCounts = approvedReports.Items
+                .GroupBy(r => r.PostId)
+                .Where(g => g.Count() >= acceptedReportThreshold)
+                .ToList();
+
+            foreach (var postReportGroup in postReportCounts)
+            {
+                var post = await _postRepository.GetByIdAsync(postReportGroup.Key);
+                if (post != null)
+                {
+                    post.IsHidden = true;
+                    await _postRepository.UpdateAsync(post);
+                }
+            }
+
+            await _unitOfWork.SaveChangesAsync();
+        }
     }
 }

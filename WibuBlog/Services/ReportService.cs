@@ -35,11 +35,11 @@ namespace WibuBlog.Services
      string? searchTerm,
      string? orderBy,
      bool? isDescending,
-     Guid? postCategoryId = null) // Thêm tham số PostCategoryId
+     Guid? postCategoryId = null) 
         {
             var response = await _apiService.GetAsync<ApiResponse<PagedResult<ReportDto>>>(
                 $"Report/GetPagedWithDetails?page={page}&size={pageSize}&filterBy={filterBy}" +
-                $"&searchTerm={searchTerm}&orderBy={orderBy}&descending={isDescending}&PostCategoryId={postCategoryId}"); // Thêm PostCategoryId vào query
+                $"&searchTerm={searchTerm}&orderBy={orderBy}&descending={isDescending}&PostCategoryId={postCategoryId}"); 
             return response.Value!;
         }
         public async Task<bool> ApproveReportAsync(Guid reportId, bool approval, string? note = null)

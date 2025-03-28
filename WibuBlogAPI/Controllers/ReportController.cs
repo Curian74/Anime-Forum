@@ -93,11 +93,10 @@ namespace WibuBlogAPI.Controllers
             string? searchTerm = null,
             string? orderBy = null,
             bool descending = false,
-            Guid? PostCategoryId = null) // Thêm tham số PostCategoryId
+            Guid? PostCategoryId = null) 
         {
             Expression<Func<Report, bool>>? filter = ExpressionBuilder.BuildFilterExpression<Report>(filterBy, searchTerm);
 
-            // Nếu có PostCategoryId, thêm điều kiện lọc
             if (PostCategoryId.HasValue)
             {
                 Expression<Func<Report, bool>> categoryFilter = r => r.Post.PostCategoryId == PostCategoryId.Value;
@@ -108,7 +107,7 @@ namespace WibuBlogAPI.Controllers
                 }
                 else
                 {
-                    var parameter = filter.Parameters[0]; // Lấy parameter từ filter hiện có
+                    var parameter = filter.Parameters[0];
                     var body = Expression.AndAlso(filter.Body, Expression.Invoke(categoryFilter, parameter));
                     filter = Expression.Lambda<Func<Report, bool>>(body, parameter);
                 }

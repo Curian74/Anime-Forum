@@ -58,12 +58,10 @@ namespace WibuBlog.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Policy = "ModeratorPolicy")]
         public async Task<IActionResult> ViewReports([FromQuery] QueryObject queryObject)
         {
-            // Fetch all categories
             var categories = await _postcategoryService.GetAllCategories(null, null, false);
 
             var reportList = await _reportService.GetAllReportWithDetailsAsync(null, null, false);
 
-            // Category filtering with correct null handling
             if (queryObject.PostCategoryId != Guid.Empty)
             {
                 reportList = reportList
@@ -71,7 +69,6 @@ namespace WibuBlog.Controllers
                     .ToList();
             }
 
-            // Existing search term filtering
             if (!string.IsNullOrEmpty(queryObject.SearchTerm))
             {
                 reportList = reportList
@@ -83,7 +80,6 @@ namespace WibuBlog.Controllers
                     .ToList();
             }
 
-            // Existing status filtering
             if (!string.IsNullOrEmpty(queryObject.FilterBy))
             {
                 reportList = queryObject.FilterBy.ToLower() switch
@@ -95,7 +91,6 @@ namespace WibuBlog.Controllers
                 };
             }
 
-            // Existing sorting logic
             reportList = (queryObject.OrderBy?.ToLower(), queryObject.Descending) switch
             {
                 ("createdat", true) => reportList.OrderByDescending(x => x.CreatedAt).ToList(),

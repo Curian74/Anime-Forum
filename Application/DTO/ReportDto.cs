@@ -16,6 +16,6 @@
         public DateTime? LastModifiedAt { get; set; }
         public string LastModifiedBy { get; set; }
         public Guid? PostCategoryId { get; set; }
-
+        public string CategoryName { get; set; } = string.Empty;
     }
 }

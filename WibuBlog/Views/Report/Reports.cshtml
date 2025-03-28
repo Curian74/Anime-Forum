@@ -44,9 +44,11 @@
                         <thead class="table-light">
                             <tr>
                                 <th>Username</th>
+                                <th>Category</th>
                                 <th>Post Title</th>
                                 <th>Reason</th>
                                 <th>Status</th>
+                                <th>Note</th>
                                 <th>Created At</th>
                                 <th>Actions</th>
                             </tr>
@@ -56,6 +58,7 @@
                             {
                                 <tr data-report-id="@report.Id">
                                     <td>@report.Username</td>
+                                    <td>@report.CategoryName</td>
                                     <td>@report.PostTitle</td>
                                     <td>@report.Reason</td>
                                     <td>
@@ -72,8 +75,14 @@
                                                 break;
                                         }
                                     </td>
+                                    <td>@(report.Note ?? "N/A")</td>
                                     <td>@report.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
                                     <td>
+                                        <a href="/Post/Detail/@report.PostId"
+                                           class="btn btn-info view-post-btn"
+                                           title="View Post">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
                                         @if (!report.IsApproved.HasValue)
                                         {
                                             <div class="btn-group btn-group-sm" role="group">
@@ -90,14 +99,6 @@
                                                     <i class="fas fa-times"></i> Reject
                                                 </button>
                                             </div>
-                                        }
-                                        else
-                                        {
-                                            <button type="button"
-                                                    class="btn btn-info btn-sm view-details-btn"
-                                                    data-report-id="@report.Id">
-                                                <i class="fas fa-eye"></i> View Details
-                                            </button>
                                         }
                                     </td>
                                 </tr>
@@ -169,33 +170,12 @@
             }
         </div>
     </div>
-
-    <!-- Modal for Adding Notes -->
-    <div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="noteModalLabel">Add Note</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <textarea id="reportNote" class="form-control" rows="3" placeholder="Optional note..."></textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="submitNoteBtn">Submit</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
-
-
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.all.min.js"></script>
     <script>
-                $(document).ready(function () {
+        $(document).ready(function () {
             let currentReportId = null;
             let currentAction = null;
 
@@ -214,62 +194,61 @@
             $(document).on('click', '.approve-btn, .reject-btn', function () {
                 currentReportId = $(this).data('report-id');
                 currentAction = $(this).hasClass('approve-btn');
-                $('#noteModal').modal('show');
-            });
 
-            $('#submitNoteBtn').on('click', function () {
-                if (!currentReportId || currentAction === null) {
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'Invalid report selection. Please try again.',
-                        icon: 'error'
-                    });
-                    return;
-                }
+                Swal.fire({
+                    title: 'Add Note (Optional)',
+                    input: 'textarea',
+                    inputLabel: 'Optional Note',
+                    inputPlaceholder: 'Type your note here...',
+                    showCancelButton: true,
+                    confirmButtonText: 'Submit',
+                    confirmButtonColor: currentAction ? '#28a745' : '#dc3545',
+                    cancelButtonText: 'Cancel',
+                    inputAttributes: {
+                        'aria-label': 'Type your optional note here'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const note = result.value || null;
 
-                const note = $('#reportNote').val() || null;
-
-                $.ajax({
-                    url: `/Report/ApproveReport/${currentReportId}`,
-                    type: 'POST',
-                    data: {
-                        reportId: currentReportId,
-                        approval: currentAction,
-                        note: note
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            Swal.fire({
-                                title: 'Success',
-                                text: response.message,
-                                icon: 'success',
-                                confirmButtonText: 'OK'
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    location.reload();
+                        $.ajax({
+                            url: `/Report/ApproveReport/${currentReportId}`,
+                            type: 'POST',
+                            data: {
+                                reportId: currentReportId,
+                                approval: currentAction,
+                                note: note
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire({
+                                        title: 'Success',
+                                        text: response.message,
+                                        icon: 'success',
+                                        confirmButtonText: 'OK'
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            location.reload();
+                                        }
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'Error',
+                                        text: response.message,
+                                        icon: 'error'
+                                    });
                                 }
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Error',
-                                text: response.message,
-                                icon: 'error'
-                            });
-                        }
-                    },
-                    error: function () {
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'An unexpected error occurred.',
-                            icon: 'error'
+                            },
+                            error: function () {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: 'An unexpected error occurred.',
+                                    icon: 'error'
+                                });
+                            }
                         });
                     }
                 });
-
-                $('#reportNote').val('');
-                currentReportId = null;
-                currentAction = null;
-                $('#noteModal').modal('hide');
             });
 
             function debounce(func, delay) {
@@ -292,11 +271,12 @@
                 const form = $('<form>')
                     .attr('method', 'get')
                     .attr('action', '/Report/ViewReports');
-                        $('<input>')
-        .attr('type', 'hidden')
-        .attr('name', 'PostCategoryId')
-        .val($('select[name="PostCategoryId"]').val())
-        .appendTo(form);
+
+                $('<input>')
+                    .attr('type', 'hidden')
+                    .attr('name', 'PostCategoryId')
+                    .val($('select[name="PostCategoryId"]').val())
+                    .appendTo(form);
 
                 $('<input>')
                     .attr('type', 'hidden')
@@ -329,47 +309,47 @@
             $('#statusFilter').on('change', submitFilterForm);
             $('#sortBy').on('change', submitFilterForm);
 
-                    $(document).on('click', '.page-link', function (e) {
-            e.preventDefault();
-            const page = new URL($(this).attr('href'), window.location.origin).searchParams.get("Page") || 1;
+            $(document).on('click', '.page-link', function (e) {
+                e.preventDefault();
+                const page = new URL($(this).attr('href'), window.location.origin).searchParams.get("Page") || 1;
 
-            const form = $('<form>')
-                .attr('method', 'get')
-                .attr('action', '/Report/ViewReports');
+                const form = $('<form>')
+                    .attr('method', 'get')
+                    .attr('action', '/Report/ViewReports');
 
-            $('<input>')
-                .attr('type', 'hidden')
-                .attr('name', 'SearchTerm')
-                .val($('#searchInput').val())
-                .appendTo(form);
+                $('<input>')
+                    .attr('type', 'hidden')
+                    .attr('name', 'SearchTerm')
+                    .val($('#searchInput').val())
+                    .appendTo(form);
 
-            $('<input>')
-                .attr('type', 'hidden')
-                .attr('name', 'FilterBy')
-                .val($('#statusFilter').val())
-                .appendTo(form);
+                $('<input>')
+                    .attr('type', 'hidden')
+                    .attr('name', 'FilterBy')
+                    .val($('#statusFilter').val())
+                    .appendTo(form);
 
-            const sortValue = $('#sortBy').val().split('-');
-            $('<input>')
-                .attr('type', 'hidden')
-                .attr('name', 'OrderBy')
-                .val(sortValue[0])
-                .appendTo(form);
+                const sortValue = $('#sortBy').val().split('-');
+                $('<input>')
+                    .attr('type', 'hidden')
+                    .attr('name', 'OrderBy')
+                    .val(sortValue[0])
+                    .appendTo(form);
 
-            $('<input>')
-                .attr('type', 'hidden')
-                .attr('name', 'Descending')
-                .val(sortValue[1])
-                .appendTo(form);
+                $('<input>')
+                    .attr('type', 'hidden')
+                    .attr('name', 'Descending')
+                    .val(sortValue[1])
+                    .appendTo(form);
 
-            $('<input>')
-                .attr('type', 'hidden')
-                .attr('name', 'Page')
-                .val(page)
-                .appendTo(form);
+                $('<input>')
+                    .attr('type', 'hidden')
+                    .attr('name', 'Page')
+                    .val(page)
+                    .appendTo(form);
 
-            form.appendTo('body').submit();
-        });
+                form.appendTo('body').submit();
+            });
 
             $(document).on('click', '.view-details-btn', function () {
                 const reportId = $(this).data('report-id');
@@ -412,7 +392,5 @@
                 });
             });
         });
-
     </script>
 }
-
