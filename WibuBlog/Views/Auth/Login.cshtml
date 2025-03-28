@@ -35,6 +35,12 @@
                                                     @TempData["LoginRequired"]
                                                     </div>
                                             }
+                                            @if (TempData["ResetPasswordSuccessMessage"] != null)
+                                            {
+                                                   <div class="alert alert-success" style="color:green">
+                                                    @TempData["ResetPasswordSuccessMessage"]
+                                                        </div>
+                                            }
                                             <form asp-action="LoginAuthentication" asp-controller="Auth" method="post">
                                                 <div class="form-group">
                                                     <label class="font-weight-semibold" for="userName">Username:</label>

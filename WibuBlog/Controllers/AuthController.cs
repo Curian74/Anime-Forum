@@ -145,5 +145,47 @@ namespace WibuBlog.Controllers
             await _otpService.SendOtp(user.UserName, email);
             return View("ForgotPasswordConfirmation");
         }
-    }
+
+        [HttpPost]
+		public async Task<IActionResult> ForgotPasswordAuthentication(string OTP)
+		{
+			string savedOtp = HttpContext.Session.GetString("OTP");
+			string expiryTimeStr = HttpContext.Session.GetString("OTP_Expiry");
+
+			var errors = _otpService.ValidateOTP(savedOtp, OTP, expiryTimeStr);
+
+			if (errors.Count == 0)
+			{
+                return View("ChangePassword");
+            }
+
+			foreach (var x in errors)
+			{
+				ModelState.AddModelError(x.Key, x.Value);
+			}
+            return View("ForgotPasswordConfirmation");
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordVM changePasswordVM)
+        {
+            string email = HttpContext.Session.GetString("Email");
+            if (!ModelState.IsValid)
+            {            
+                return View(changePasswordVM);
+            }
+            if(changePasswordVM.NewPassword != changePasswordVM.ConfirmPassword)
+            {
+                TempData["ErrorMessage"] = MessageConstants.ME006;
+                return View();
+                
+            }
+            var result = await _authenticationService.ResetPassword(changePasswordVM);
+            TempData["ResetPasswordSuccessMessage"] = MessageConstants.ME007a;
+            return RedirectToAction(nameof(Login));
+
+
+        }
+	}
 }

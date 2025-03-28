@@ -63,6 +63,21 @@ namespace WibuBlogAPI.Controllers
 
         }
 
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+        {
+            if (IsLoggedIn())
+            {
+                return new JsonResult(BadRequest("User is already logged in"));
+            }
+
+            var result = await _userService.ResetPassword(dto);
+
+            return new JsonResult(Ok(result));
+
+        }
+
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPost]
         public async Task<IActionResult> Logout()

@@ -65,6 +65,17 @@ namespace WibuBlog.Services
             return true;
         }
 
+        public async Task<ResetPasswordDto> ResetPassword(ChangePasswordVM changePasswordVM)
+        {
+            ResetPasswordDto resetPasswordDto = new ResetPasswordDto()
+            {
+                Email = changePasswordVM.Email,
+                NewPassword = changePasswordVM.NewPassword,
+                ConfirmPassword = changePasswordVM.ConfirmPassword,
+            };
+            var response = await _apiService.PostAsync<ApiResponse<ResetPasswordDto>>($"Auth/ResetPassword", resetPasswordDto);
+            return response.Value!;
+        }
         public async Task<IdentityResult> AuthorizeRegister(RegisterVM registerVM)
         {
             var RegisterDTO = new RegisterDto

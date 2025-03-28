@@ -32,12 +32,13 @@ namespace WibuBlog.Services
         {
             var otp = OTPGenerator.GenerateOTP();
             _httpContextAccessor.HttpContext?.Session.SetString("OTP", otp);
+            _httpContextAccessor.HttpContext?.Session.SetString("Email", email);
             _httpContextAccessor.HttpContext?.Session.SetString("OTP_Expiry", DateTime.UtcNow.AddMinutes(5).ToString());
             var model = new Dictionary<string, string>
             {
                 { "name", username},
                 { "OTP", otp  }
-                };
+            };
             await _emailService.SendEmailAsync(email, "Reset password OTP", EmailTemplateEnum.ForgotPassword, model);
         }
 

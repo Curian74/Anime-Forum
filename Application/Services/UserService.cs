@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Application.Services
 {
@@ -118,7 +119,15 @@ namespace Application.Services
             return await _userManager.ChangePasswordAsync(updateUser, updatePasswordDTO.OldPassword, updatePasswordDTO.NewPassword);
 		}
 
-		public async Task<Media> UpdateProfilePhotoAsync(Media media, string currentUserId)
+        public async Task<ResetPasswordDto> ResetPassword(ResetPasswordDto dto)
+        {
+            var updateUser = await _userManager.FindByEmailAsync(dto.Email);
+            var token = await _userManager.GeneratePasswordResetTokenAsync(updateUser);
+            await _userManager.ResetPasswordAsync(updateUser, token, dto.NewPassword);
+            return dto;
+        }
+
+        public async Task<Media> UpdateProfilePhotoAsync(Media media, string currentUserId)
         {
             var updateUser = await _userManager.FindByIdAsync(currentUserId);
             updateUser.ProfilePhoto = media;
