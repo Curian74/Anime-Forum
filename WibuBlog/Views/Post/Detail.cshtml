@@ -132,14 +132,21 @@
                 <!-- Sort Dropdown -->
                 <div class="d-flex justify-content-between">
                     <div>
-                        <button class="sort-btn" type="button" data-bs-toggle="dropdown">
-                            <small>Sort By <i class="fa-solid fa-angle-down"></i></small>
+                        <button class="sort-btn" type="button" data-bs-toggle="dropdown" id="sortButton">
+                            <small id="sortText">Sort By <i class="fa-solid fa-angle-down"></i></small>
                         </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item"
-                                    onclick="fetchComments('postId', '@Model.Post?.Id', 'createdAt', true)">Latest</a></li>
-                            <li><a class="dropdown-item"
-                                   onclick="fetchComments('postId', '@Model.Post?.Id', 'createdAt', false)">Oldest</a>
+                        <ul class="dropdown-menu" id="sortDropdown">
+                            <li>
+                                <a class="dropdown-item" id="sort-latest"
+                                   onclick="setSortOption('latest'); fetchComments('postId', '@Model.Post?.Id', 'createdAt', true)">
+                                    Latest
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" id="sort-oldest"
+                                   onclick="setSortOption('oldest'); fetchComments('postId', '@Model.Post?.Id', 'createdAt', false)">
+                                    Oldest
+                                </a>
                             </li>
                         </ul>
                     </div>
@@ -156,11 +163,43 @@
         </div>
     </div>
 </section>
+
+<style>
+    .active-sort {
+        font-weight: bold;
+        color: #007bff; /* Bootstrap primary color */
+    }
+</style>
+
 @section Scripts {
     <div id="post" data-post-id="@Model.Post.Id"></div>
     <script src="~/js/postDetail.js?v=1.0"></script>
     <partial name="_ValidationScriptsPartial"></partial>
     <partial name="_RichTextEditorInit"></partial>
+    <script>
+        function setSortOption(option) {
+            localStorage.setItem("selectedSort", option);
+
+            const sortText = option === "latest" ? "Latest" : "Oldest";
+            document.getElementById("sortText").innerHTML = `${sortText} <i class="fa-solid fa-angle-down"></i>`;
+
+            document.querySelectorAll(".dropdown-item").forEach(item => {
+                item.classList.remove("active-sort");
+            });
+
+            document.getElementById(`sort-${option}`).classList.add("active-sort");
+        }
+
+        function applySortSelection() {
+            const savedSort = localStorage.getItem("selectedSort") || "latest"; // Default to 'latest'
+            document.getElementById(`sort-${savedSort}`).classList.add("active-sort");
+
+            const sortText = savedSort === "latest" ? "Latest" : "Oldest";
+            document.getElementById("sortText").innerHTML = `${sortText} <i class="fa-solid fa-angle-down"></i>`;
+        }
+
+        document.addEventListener("DOMContentLoaded", applySortSelection);
+    </script>
     <script>
         async function showReportDialog(postId, userId) {
             const { value: text } = await Swal.fire({
