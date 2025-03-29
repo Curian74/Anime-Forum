@@ -730,9 +730,9 @@ $(document).ready(function () {
             }
         });
     }
-
+    console.log(isBanned);
     // Event listeners
-    if (userId.value && !isHiddenPost && !isBanned.value) {
+    if (userId.value && !isHiddenPost && isBanned?.value === false) {
         $('.upvote-btn').click(function (e) {
             e.preventDefault();
             toggleVote(true);
