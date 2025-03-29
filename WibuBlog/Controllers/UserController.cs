@@ -3,19 +3,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using WibuBlog.ViewModels.Users;
 using Application.Common.MessageOperations;
-using WibuBlog.Helpers;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Application.Common.Pagination;
 using Domain.Entities;
 using System.Security.Claims;
+using Application.Services;
 
 namespace WibuBlog.Controllers
 {
     [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
-    public class UserController(UserService userService, IWebHostEnvironment webHostEnvironment, RankService rankService) : Controller
+    public class UserController(Services.UserService userService, IWebHostEnvironment webHostEnvironment,
+        Services.RankService rankService, Services.RoleService roleService) : Controller
     {
-        private readonly UserService _userService = userService;
-        private readonly RankService _rankService = rankService;
+        private readonly Services.UserService _userService = userService;
+        private readonly Services.RankService _rankService = rankService;
+        private readonly Services.RoleService _roleService = roleService;
         private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
 
         public IActionResult Index()
@@ -55,7 +57,12 @@ namespace WibuBlog.Controllers
                 .Contains(query.SearchTerm.Trim())).ToList();
             }
 
-            if (query.SelectedRankId.HasValue)
+            if (!string.IsNullOrEmpty(query.SortBy))
+            {
+                filteredUsers = filteredUsers.OrderByDescending(x => x.Points);
+            }
+
+                if (query.SelectedRankId.HasValue)
             {
                 filteredUsers = filteredUsers.Where(x => x.RankId == query.SelectedRankId).ToList();
             }
@@ -71,6 +78,8 @@ namespace WibuBlog.Controllers
 
             var pagedUsers = filteredUsers.Skip(skip).Take(query.PageSize).ToList();
 
+
+
             var userListVM = new UserListVM
             {
                 UsersList = new PagedResult<User>(pagedUsers, filteredUsers.Count(), query.Page, query.PageSize),
@@ -80,6 +89,17 @@ namespace WibuBlog.Controllers
                     Value = x.Id.ToString()
                 }).ToList(),
             };
+
+            var userRoles = new Dictionary<Guid, List<string>>();
+
+            // Load roles for each user
+            foreach (var user in pagedUsers)
+            {
+                var roles = await _roleService.GetUserRoleAsync(user.Id);
+                userRoles[user.Id] = roles;
+            }
+
+            userListVM.UserRoles = userRoles;
 
             return View(userListVM);
         }
