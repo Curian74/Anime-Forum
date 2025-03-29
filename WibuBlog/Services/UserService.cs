@@ -118,5 +118,18 @@ namespace WibuBlog.Services
             var response = await _apiService.GetAsync<ApiResponse<User>>($"User/GetUserByEmail?email={email}");
             return response.Value!;
         }
-	}
+
+        public async Task<bool> ToggleModeratorRoleAsync(Guid userId)
+        {
+            var response = await _apiService.PostAsync<ApiResponse<bool>>($"Admin/ToggleModeratorRole/", userId);
+            return response.Value!;
+        }
+
+        public async Task<List<string>> GetUserRolesAsync(Guid userId)
+        {
+            var response = await _apiService.GetAsync<ApiResponse<List<string>>>($"User/GetUserRoles/{userId}");
+
+            return response?.Value ?? [];
+        }
+    }
 }

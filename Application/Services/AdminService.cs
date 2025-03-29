@@ -2,10 +2,11 @@
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace Application.Services
 {
-    public class AdminService(IUnitOfWork unitOfWork, IMapper mapper)
+    public class AdminService(IUnitOfWork unitOfWork, UserManager<User> userManager, IMapper mapper)
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IGenericRepository<User> _userRepository = unitOfWork.GetRepository<User>();
@@ -14,6 +15,7 @@ namespace Application.Services
         private readonly IGenericRepository<Vote> _voteRepository = unitOfWork.GetRepository<Vote>();
         private readonly IGenericRepository<PostCategory> _categoryRepository = unitOfWork.GetRepository<PostCategory>();
         private readonly IGenericRepository<Ticket> _ticketRepository = unitOfWork.GetRepository<Ticket>();
+        private readonly UserManager<User> _userManager = userManager;
         private readonly IMapper _mapper = mapper;
 
         public async Task<(IEnumerable<User> Items, int TotalCount)> GetAllUsersAsync()
@@ -110,6 +112,23 @@ namespace Application.Services
             };
 
             return webStats;
+        }
+
+        public async Task<int?> ToggleModeratorRoleAsync(Guid userId)
+        {
+            var user = await _userRepository.GetByIdAsync(userId)
+                       ?? throw new KeyNotFoundException("Could not find requested user.");
+            
+            if (_userManager.IsInRoleAsync(user, "Moderator").Result)
+            {
+                await _userManager.RemoveFromRoleAsync(user, "Moderator");
+            }
+            else
+            {
+                await _userManager.AddToRoleAsync(user, "Moderator");
+            }
+
+            return await _unitOfWork.SaveChangesAsync();
         }
     }
 }

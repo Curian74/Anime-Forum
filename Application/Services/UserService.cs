@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 using System.Linq.Expressions;
 
 namespace Application.Services
@@ -50,6 +51,13 @@ namespace Application.Services
         {
             var user = await _userManager.FindByNameAsync(username);
             return user;
+        }
+
+        public async Task<List<string>> GetUserRolesAsync(Guid userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString()) ?? throw new KeyNotFoundException("User not found");
+            var roles = await _userManager.GetRolesAsync(user);
+            return (List<string>)roles;
         }
 
         public async Task<IdentityResult> Register(RegisterDto dto) 

@@ -41,27 +41,21 @@ namespace WibuBlog.Controllers
         public async Task<IActionResult> UserList(UserQueryVM? query)
         {
             var usersList = await _userService.GetAllAsync("", "", false);
-
             var ranksList = await _rankService.GetAllAsync("", "", "name", false);
 
             var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
             var filteredUsers = usersList.Where(x => x.Id != Guid.Parse(currentUserId));
 
             if (!string.IsNullOrEmpty(query.SearchTerm))
             {
-                filteredUsers = filteredUsers.Where(x => x.UserName
-                .Contains(query.SearchTerm.Trim()) || x.Email
-                .Contains(query.SearchTerm.Trim())).ToList();
+                filteredUsers = filteredUsers.Where(x => x.UserName.Contains(query.SearchTerm.Trim())
+                                                       || x.Email.Contains(query.SearchTerm.Trim())).ToList();
             }
 
             if (query.SelectedRankId.HasValue)
             {
                 filteredUsers = filteredUsers.Where(x => x.RankId == query.SelectedRankId).ToList();
             }
-
-            //filteredUsers = filteredUsers.Where(x => x.IsActive == query.IsInactive).ToList();
-
 
             filteredUsers = filteredUsers.Where(x => x.IsBanned == query.IsBanned).ToList();
 
@@ -71,6 +65,13 @@ namespace WibuBlog.Controllers
 
             var pagedUsers = filteredUsers.Skip(skip).Take(query.PageSize).ToList();
 
+            // Retrieve roles for each user
+            var userRoles = new Dictionary<Guid, List<string>>();
+            foreach (var user in pagedUsers)
+            {
+                userRoles[user.Id] = await _userService.GetUserRolesAsync(user.Id);
+            }
+
             var userListVM = new UserListVM
             {
                 UsersList = new PagedResult<User>(pagedUsers, filteredUsers.Count(), query.Page, query.PageSize),
@@ -79,6 +80,7 @@ namespace WibuBlog.Controllers
                     Text = x.Name,
                     Value = x.Id.ToString()
                 }).ToList(),
+                UserRoles = userRoles
             };
 
             return View(userListVM);
@@ -120,5 +122,13 @@ namespace WibuBlog.Controllers
             return RedirectToAction(nameof(UserProfile));
         }
 
+        [HttpPost]
+        [Authorize(AuthenticationSchemes = "Bearer", Policy = "AdminPolicy")]
+        public async Task<IActionResult> ToggleModeratorAsync(Guid userId)
+        {
+            await _userService.ToggleModeratorRoleAsync(userId);
+
+            return RedirectToAction(nameof(UserList));
+        }
     }
 }

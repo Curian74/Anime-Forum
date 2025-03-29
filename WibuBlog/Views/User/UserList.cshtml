@@ -45,6 +45,7 @@
                             <th>#</th>
                             <th>Avatar</th>
                             <th>Username</th>
+                            <th>Role</th>
                             <th>Email</th>
                             <th>Rank</th>
                             <th>Created At</th>
@@ -65,12 +66,35 @@
                                         alt="Avatar" class="avatar rounded-circle" style="width: 40px; height: 40px;">
                                     </td>
                                     <td>@u.UserName</td>
+                                    <td>
+                                        @if (Model.UserRoles != null && Model.UserRoles.ContainsKey(u.Id))
+                                        {
+                                            var roles = Model.UserRoles[u.Id];
+                                            if (roles.Contains("Moderator"))
+                                            {
+                                                <span>Moderator</span>
+                                            }
+                                            else if (roles.Any())
+                                            {
+                                                <span>@roles.First()</span>
+                                            }
+                                            else
+                                            {
+                                                <span>No Role</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span>No Role</span>
+                                        }
+                                    </td>
                                     <td>@u.Email</td>
                                     <td>@u.Rank?.Name</td>
                                     <td>@DateFormatHelper.GetDateFormat((DateTime)u.CreatedAt)</td>
                                     <td class="text-@(u.IsBanned ? "danger" : "success") fw-bold">@u.IsBanned</td>
                                     <td>
                                         <button class="btn btn-primary">View Detail</button>
+                                        <button onclick="toggleModerator('@u.Id')" class="btn btn-primary">Toggle Moderator</button>
                                         @{
                                             if (!u.IsBanned)
                                             {
