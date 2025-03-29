@@ -20,5 +20,11 @@ namespace WibuBlog.Services
             var response = await _apiService.GetAsync<ApiResponse<IEnumerable<Ticket>>>("Admin/GetAllTickets");
             return response.Value!;
         }
+
+        public async Task<bool> ToggleModeratorRoleAsync(Guid userId)
+        {
+            var response = await _apiService.PostAsync<ApiResponse<bool>>($"Admin/ToggleModeratorRole/", userId);
+            return response.Value!;
+        }
     }
 }

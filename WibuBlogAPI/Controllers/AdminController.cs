@@ -72,5 +72,18 @@ namespace WibuBlogAPI.Controllers
             var webStats = await _adminService.GetStats(days);
             return new JsonResult(Ok(webStats));
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ToggleModeratorRole(Guid userId)
+        {
+            int? result;
+            try { result = await _adminService.ToggleModeratorRoleAsync(userId); }
+            catch (KeyNotFoundException ex)
+            {
+                return new JsonResult(NotFound($"{ex.GetType().Name}: {ex.Message}"));
+            }
+
+            return new JsonResult(Ok(result));
+        }
     }
 }
