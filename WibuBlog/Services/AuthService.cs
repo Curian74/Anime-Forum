@@ -81,7 +81,7 @@ namespace WibuBlog.Services
         {
             var RegisterDTO = new RegisterDto
             {
-                UserName = registerVM.username,
+                Username = registerVM.username,
                 Email = registerVM.email,
                 Password = registerVM.password
 

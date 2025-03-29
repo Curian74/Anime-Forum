@@ -59,7 +59,7 @@ namespace WibuBlogAPI.Controllers
 
             var result = await _userService.Register(dto);
 
-            return result.Succeeded ? Ok(result) : BadRequest(result);
+            return new JsonResult(Ok(result));
 
         }
 

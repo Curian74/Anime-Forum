@@ -38,6 +38,7 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpGet("{userId}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetUserById(Guid userId)
         {
             var user = await _userService.FindByIdAsync(userId);
@@ -49,6 +50,7 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetUserByEmail(string email)
         {
             var result = await _userService.GetUserByEmail(email);
@@ -60,6 +62,7 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetUserByUsername(string username)
         {
             var result = await _userService.GetUserByUsername(username);
