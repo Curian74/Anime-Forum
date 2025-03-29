@@ -492,7 +492,7 @@ async function renderComments(data, currentPage, size) {
                 <div class="d-flex align-items-start">
                     <img class="rounded-circle avatar me-2"
                         src="${c.user?.profilePhoto?.url || '/images/defaults/user/default_avatar.jpg'}" 
-                        alt="${c.user?.userName}'s avatar" />
+                        alt="${c.user?.userName}'s avatar"  onclick="window.location.href='/MemberProfile/${c.user.id}'" />
                     <div class="w-100">
                         <div class="d-flex justify-content-between">
                             <div>
@@ -569,7 +569,7 @@ function renderChildComments(childComments, parentId) {
             <div class="d-flex align-items-start">
                 <img class="rounded-circle avatar me-2"
                     src="${child.user?.profilePhoto?.url || '/images/defaults/user/default_avatar.jpg'}" 
-                    alt="${child.user?.userName}'s avatar" />
+                    alt="${child.user?.userName}'s avatar" onclick="window.location.href='/MemberProfile/${child.user.id}'" />
                 <div class="w-100">
                     <div class="d-flex justify-content-between">
                         <div>

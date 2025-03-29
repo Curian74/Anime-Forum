@@ -56,7 +56,8 @@
                                 @if (latestPost != null)
                                 {
                                     <div class="avt col-1">
-                                        <img class="rounded-circle" src="@(latestPost?.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
+                                        <img class="rounded-circle" src="@(latestPost?.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" 
+                                                                         onclick="window.location.href='/MemberProfile/@latestPost?.User?.Id'"/>
                                     </div>
                                     var latestTime = DateFormatHelper.GetDateFormat(latestPost.CreatedAt);
                                     <div class="post-info col-3">
@@ -108,7 +109,8 @@
                                 @if (latestPost != null)
                                 {
                                     <div class="avt col-1">
-                                        <img class="rounded-circle" src="@(latestPost?.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
+                                        <img class="rounded-circle" src="@(latestPost?.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))"
+                                                         onclick="window.location.href='/MemberProfile/@latestPost?.User?.Id'"/>
                                     </div>
                                     var latestTime = DateFormatHelper.GetDateFormat(latestPost.CreatedAt);
                                     <div class="post-info col-3">
@@ -149,7 +151,8 @@
                         {
                             var latestTime = DateFormatHelper.GetDateFormat(p.CreatedAt);
                             <div class="d-flex">
-                                <img class="rounded-circle" src="@(p?.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
+                                <img class="rounded-circle" src="@(p?.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" 
+                                                                     onclick="window.location.href='/MemberProfile/@p?.User?.Id'"/>
                                 <div class="trending-content-detail">
                                     <a asp-action="Detail" asp-controller="Post" asp-route-id="@p.Id" id="trending-content-title">@TruncateStringHelper.Truncate(@p.Title, stringLength)</a>
                                     <p>@p.User?.UserName - @latestTime</p>
@@ -174,7 +177,8 @@
                         {
                             var latestTime = DateFormatHelper.GetDateFormat(p.CreatedAt);
                             <div class="d-flex">
-                                <img class="rounded-circle" src="@(p?.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" />
+                                <img class="rounded-circle" src="@(p?.User?.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))"
+                                                                                            onclick="window.location.href='/MemberProfile/@p?.User?.Id'" />
                                 <div class="trending-content-detail">
                                     <a asp-action="Detail" asp-controller="Post" asp-route-id="@p.Id" id="trending-content-title">@TruncateStringHelper.Truncate(@p.Title, stringLength)</a>
                                     <p>@p.User?.UserName - @latestTime</p>

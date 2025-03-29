@@ -24,5 +24,11 @@ namespace Application.DTO
         public Rank? Rank { get; set; }
         public IList<string>? Roles { get; set; }
         public List<Domain.Entities.Post> PostList { get; set; }
+
+        public UserInventory? Inventory { get; set; }
+
+        public List<UserFlair> UserFlairs { get; set; } = [];
+
+        public UserFlair? SelectedFlair { get; set; }
     }
 }

@@ -43,11 +43,9 @@ namespace WibuBlog.Controllers
         public async Task<IActionResult> UserList(UserQueryVM? query)
         {
             var usersList = await _userService.GetAllAsync("", "", false);
-
             var ranksList = await _rankService.GetAllAsync("", "", "name", false);
 
             var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
             var filteredUsers = usersList.Where(x => x.Id != Guid.Parse(currentUserId));
 
             if (!string.IsNullOrEmpty(query.SearchTerm))
@@ -62,13 +60,15 @@ namespace WibuBlog.Controllers
                 filteredUsers = filteredUsers.OrderByDescending(x => x.Points);
             }
 
+            if (!string.IsNullOrEmpty(query.SortBy))
+            {
+                filteredUsers = filteredUsers.OrderByDescending(x => x.Points);
+            }
+
                 if (query.SelectedRankId.HasValue)
             {
                 filteredUsers = filteredUsers.Where(x => x.RankId == query.SelectedRankId).ToList();
             }
-
-            //filteredUsers = filteredUsers.Where(x => x.IsActive == query.IsInactive).ToList();
-
 
             filteredUsers = filteredUsers.Where(x => x.IsBanned == query.IsBanned).ToList();
 
@@ -77,8 +77,6 @@ namespace WibuBlog.Controllers
             int skip = (query.Page - 1) * query.PageSize;
 
             var pagedUsers = filteredUsers.Skip(skip).Take(query.PageSize).ToList();
-
-
 
             var userListVM = new UserListVM
             {
@@ -135,10 +133,31 @@ namespace WibuBlog.Controllers
         public async Task<IActionResult> UpdateProfilePhoto(IFormFile file)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var response = await _userService.UpdateProfilePhoto(file,userId);
-
+            var response = await _userService.UpdateProfilePhoto(file, userId);
             return RedirectToAction(nameof(UserProfile));
+
         }
 
+        [HttpGet("MemberProfile/{userId}")]
+		[AllowAnonymous]
+		public async Task<IActionResult> MemberProfile(Guid? userId = null)
+        {
+            var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (currentUserId != null && userId.ToString() == currentUserId )
+            {
+                return RedirectToAction(nameof(UserProfile));
+            }
+            var response = await _userService.GetMemberProfile(userId);
+            return View(response);
+        }
+
+        [HttpPost]
+        [Authorize(AuthenticationSchemes = "Bearer", Policy = "AdminPolicy")]
+        public async Task<IActionResult> ToggleModeratorAsync(Guid userId)
+        {
+            await _userService.ToggleModeratorRoleAsync(userId);
+
+            return RedirectToAction(nameof(UserList));
+        }
     }
 }

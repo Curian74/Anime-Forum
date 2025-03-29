@@ -116,6 +116,7 @@
                                 <li class="page-item me-2">
                                     <a class="page-link"
                                        asp-action="ViewReports"
+                                       asp-route-PostCategoryId="@Context.Request.Query["PostCategoryId"]"
                                        asp-route-FilterBy="@Context.Request.Query["FilterBy"]"
                                        asp-route-OrderBy="@Context.Request.Query["OrderBy"]"
                                        asp-route-Descending="@Context.Request.Query["Descending"]"
@@ -132,6 +133,7 @@
                                 <li class="page-item @(i == Model.Reports.PageNumber ? "active" : "")">
                                     <a class="page-link"
                                        asp-action="ViewReports"
+                                       asp-route-PostCategoryId="@Context.Request.Query["PostCategoryId"]"
                                        asp-route-FilterBy="@Context.Request.Query["FilterBy"]"
                                        asp-route-OrderBy="@Context.Request.Query["OrderBy"]"
                                        asp-route-Descending="@Context.Request.Query["Descending"]"
@@ -147,6 +149,7 @@
                                 <li class="page-item ms-2">
                                     <a class="page-link"
                                        asp-action="ViewReports"
+                                       asp-route-PostCategoryId="@Context.Request.Query["PostCategoryId"]"
                                        asp-route-FilterBy="@Context.Request.Query["FilterBy"]"
                                        asp-route-OrderBy="@Context.Request.Query["OrderBy"]"
                                        asp-route-Descending="@Context.Request.Query["Descending"]"
@@ -183,9 +186,11 @@
                 const filterBy = urlParams.get('FilterBy') || "";
                 const orderBy = urlParams.get('OrderBy') || "CreatedAt";
                 const descending = urlParams.get('Descending') === "true";
+                const categoryId = urlParams.get('PostCategoryId') || "";
 
                 $('#statusFilter').val(filterBy);
                 $('#sortBy').val(`${orderBy}-${descending}`);
+                $('select[name="PostCategoryId"]').val(categoryId);
             }
 
             preserveFilterSelection();
@@ -266,6 +271,7 @@
                 const selectedStatus = $('#statusFilter').val();
                 const sortValue = $('#sortBy').val().split('-');
                 const descendingValue = sortValue[1];
+                const categoryId = $('select[name="PostCategoryId"]').val();
 
                 const form = $('<form>')
                     .attr('method', 'get')
@@ -274,7 +280,7 @@
                 $('<input>')
                     .attr('type', 'hidden')
                     .attr('name', 'PostCategoryId')
-                    .val($('select[name="PostCategoryId"]').val())
+                    .val(categoryId)
                     .appendTo(form);
 
                 $('<input>')
@@ -304,6 +310,7 @@
                 form.appendTo('body').submit();
             }, 300);
 
+            $('select[name="PostCategoryId"]').on('change', submitFilterForm);
             $('#searchInput').on('input', submitFilterForm);
             $('#statusFilter').on('change', submitFilterForm);
             $('#sortBy').on('change', submitFilterForm);
@@ -315,6 +322,12 @@
                 const form = $('<form>')
                     .attr('method', 'get')
                     .attr('action', '/Report/ViewReports');
+
+                $('<input>')
+                    .attr('type', 'hidden')
+                    .attr('name', 'PostCategoryId')
+                    .val($('select[name="PostCategoryId"]').val())
+                    .appendTo(form);
 
                 $('<input>')
                     .attr('type', 'hidden')

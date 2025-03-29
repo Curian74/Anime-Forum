@@ -1,0 +1,126 @@
+﻿/* Profile container */
+.profile-container {
+    max-width: 42rem;
+    margin: auto;
+    padding: 1.5rem;
+    background-color: #ffffff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* User info section */
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.profile-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid #3b82f6;
+}
+
+.profile-details h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.profile-details p {
+    color: #4b5563;
+    margin-top: 0.25rem;
+}
+
+.profile-score {
+    color: #3b82f6;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+/* User posts section */
+.user-posts {
+    margin-top: 1.5rem;
+}
+
+    .user-posts h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+.post-card {
+    background-color: #f3f4f6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0.75rem;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.post-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid #d1d5db;
+}
+
+.post-title {
+    font-weight: 600;
+    color: #374151;
+    margin-top: 0.5rem;
+}
+
+.post-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+    .post-actions button {
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        border: 1px solid transparent;
+    }
+
+.btn-like {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.btn-comment {
+    background-color: #6b7280;
+    color: white;
+}
+
+/* Làm nổi bật bio */
+.role {
+    font-size: 1.1rem;
+    color: #374151;
+    background-color: #b8bfc6;
+    padding: 0.5rem;
+    display: inline-block;
+    margin-top: 0.5rem;
+}
+
+
+/* Làm nổi bật điểm tương tác */
+.points {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #2563eb;
+    background-color: #eff6ff;
+    padding: 0.5rem 1rem;
+    display: inline-block;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+}
+

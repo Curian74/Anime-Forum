@@ -6,9 +6,6 @@
     <div class="card shadow">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="mb-0">Create New Ticket</h3>
-            <a asp-action="Index" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-2"></i>Back to List
-            </a>
         </div>
         <div class="card-body">
             <form asp-action="Add" asp-controller="Ticket" method="post" id="ticketForm">
@@ -18,9 +15,10 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="Email" class="form-label fw-bold">Email</label>
-                            <input asp-for="Email" class="form-control" placeholder="Enter your email">
+                            <input asp-for="Email" class="form-control" placeholder="Enter your email" readonly>
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
+
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
