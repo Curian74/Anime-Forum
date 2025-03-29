@@ -495,12 +495,14 @@ async function renderComments(data, currentPage, size) {
                         alt="${c.user?.userName}'s avatar" />
                     <div class="w-100">
                         <div class="d-flex justify-content-between">
-                            <div class="d-flex flex-column mb-2">
-                                <strong>${c.user?.userName}</strong>
-                                <small class="fst-italic" style="font-size: 12px; color:#576f76;">
-                                    ${new Date(c.createdAt).toLocaleString()}
-                                </small>
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <strong class="m-0">${c.user?.userName}</strong>
+                                    <span class="badge bg-secondary">${c.user.rank?.name || "No Rank"}</span>
+                                </div>
+                                <small class="text-muted">${new Date(c.createdAt).toLocaleString()}</small>
                             </div>
+                            
                             ${(c.userId === userId.value && !isHiddenPost && isBanned === false) ? `
                                 <div class="dropdown">
                                     <button class="btn btn-sm" type="button" data-bs-toggle="dropdown">
@@ -570,12 +572,13 @@ function renderChildComments(childComments, parentId) {
                     alt="${child.user?.userName}'s avatar" />
                 <div class="w-100">
                     <div class="d-flex justify-content-between">
-                        <div class="d-flex flex-column mb-2">
-                            <strong>${child.user?.userName}</strong>
-                            <small class="fst-italic" style="font-size: 12px; color:#576f76;">
-                                ${new Date(child.createdAt).toLocaleString()}
-                            </small>
-                        </div>
+                        <div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <strong class="m-0">${child.user?.userName}</strong>
+                                    <span class="badge bg-secondary">${child.user.rank?.name || "No Rank"}</span>
+                                </div>
+                                <small class="text-muted">${new Date(child.createdAt).toLocaleString()}</small>
+                            </div>
                         ${(child.userId === userId.value && !isHiddenPost && isBanned === false) ? `
                             <div class="dropdown">
                                 <button class="btn btn-sm" type="button" data-bs-toggle="dropdown">
