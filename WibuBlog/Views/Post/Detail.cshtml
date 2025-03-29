@@ -19,6 +19,8 @@
                 </a>
             </div>
 
+            <input type="hidden" value="@(Model.User?.IsBanned.ToString().ToLower())" id="isBanned" />
+
             <div class="post-header d-flex justify-content-between">
                 <div class="d-flex gap-2">
                     <img src="@(Model.Post.User.ProfilePhoto != null ? Model.Post.User.ProfilePhoto.Url : Url.Content("~/images/defaults/user/default_avatar.jpg"))"
@@ -118,7 +120,7 @@
                     else
                     {
                         <p class="text-danger" style="font-style:italic">
-                            *Your account is banned. You cannot add new comments, edit the post or vote.*
+                            *Your account is banned. You cannot add new comments.*
                         </p>
                     }
                     <div id="comment-field" class="w-100">

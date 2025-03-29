@@ -51,7 +51,13 @@
 										}
 										</div>
 									}
-									</div>
+									@if (TempData["OTPSent"] != null)
+									{
+										<div class="alert alert-success">
+											@TempData["OTPSent"]
+										</div>
+									}
+								</div>
 								</div>
 							</div>
 						</div>

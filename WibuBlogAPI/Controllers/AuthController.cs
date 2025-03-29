@@ -50,6 +50,7 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
             if (IsLoggedIn())
@@ -59,7 +60,7 @@ namespace WibuBlogAPI.Controllers
 
             var result = await _userService.Register(dto);
 
-            return result.Succeeded ? Ok(result) : BadRequest(result);
+            return new JsonResult(Ok(result));
 
         }
 

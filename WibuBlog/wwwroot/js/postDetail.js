@@ -518,7 +518,7 @@ async function renderComments(data, currentPage, size) {
                         </div>
                         <div class="mb-1 comment-text" id="comment-text-${c.id}">${c.content}</div>
 
-                         ${(isBanned?.value === false && !isHiddenPost && userId?.value) ? `
+                         ${(isBanned?.value == "false" && !isHiddenPost && userId?.value) ? `
                            <button onclick="openReplyCmt('${c.id}')">
                                <i style="font-size: 10px; margin-right: 5px;" class="fa-solid fa-reply"></i>
                                Reply
@@ -579,7 +579,7 @@ function renderChildComments(childComments, parentId) {
                                 </div>
                                 <small class="text-muted">${new Date(child.createdAt).toLocaleString()}</small>
                             </div>
-                        ${(child.userId === userId.value && !isHiddenPost && isBanned === false) ? `
+                        ${(child.userId === userId.value && !isHiddenPost && isBanned.value == "false") ? `
                             <div class="dropdown">
                                 <button class="btn btn-sm" type="button" data-bs-toggle="dropdown">
                                     <i class="fa-solid fa-ellipsis"></i>
@@ -732,7 +732,7 @@ $(document).ready(function () {
     }
     console.log(isBanned);
     // Event listeners
-    if (userId.value && !isHiddenPost) {
+    if (userId.value && !isHiddenPost && isBanned?.value == "false") {
         $('.upvote-btn').click(function (e) {
             e.preventDefault();
             toggleVote(true);

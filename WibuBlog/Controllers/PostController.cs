@@ -168,7 +168,19 @@ namespace WibuBlog.Controllers
                 }
             }
 
-            var postCategories = await _postCategoryService.GetAllCategories("isRestricted", "false", false);
+            List<PostCategory> postCategories = null;
+
+            var userRole = await _userService.GetUserRolesAsync(Guid.Parse(userId));
+
+            if (userRole.FirstOrDefault() == "Admin")
+            {
+                postCategories = await _postCategoryService.GetAllCategories("", "", false);
+            }
+
+            else
+            {
+                postCategories = await _postCategoryService.GetAllCategories("isRestricted", "true", false);
+            }
 
             var data = new CreatePostVM
             {
