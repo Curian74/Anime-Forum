@@ -5,7 +5,9 @@ using Domain.Entities;
 using Application.DTO;
 using Microsoft.AspNetCore.SignalR;
 using Application.Common.MessageOperations;
-
+using Infrastructure.Extensions;
+using System.Linq.Expressions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WibuBlogAPI.Controllers
 {
@@ -68,9 +70,19 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPagedUsers(int page, int size)
+        public async Task<IActionResult> GetPaged(
+            int page = 1,
+            int size = 10,
+            string? filterBy = null,
+            string? searchTerm = null,
+            string? orderBy = null,
+            bool descending = false)
         {
-            var result = await _userService.GetPagedUsersAsync(page, size);
+            Expression<Func<User, bool>>? filter = ExpressionBuilder.BuildFilterExpression<User>(filterBy, searchTerm);
+            Func<IQueryable<User>, IOrderedQueryable<User>>? orderExpression = ExpressionBuilder.BuildOrderExpression<User>(orderBy, descending);
+
+            var result = await _userService.GetPagedAsync(page, size, filter, orderExpression);
+
             return new JsonResult(Ok(result));
         }
 
@@ -135,6 +147,38 @@ namespace WibuBlogAPI.Controllers
             {
                 return StatusCode(500, $"file/server error: {ex.Message}");
             }
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> GetAll(
+            string? filterBy = null,
+            string? searchTerm = null,
+            string? orderBy = null,
+            bool descending = false)
+        {
+            Expression<Func<User, bool>>? filter = ExpressionBuilder.BuildFilterExpression<User>(filterBy, searchTerm);
+            Func<IQueryable<User>, IOrderedQueryable<User>>? orderExpression = ExpressionBuilder.BuildOrderExpression<User>(orderBy, descending);
+
+            var result = await _userService.GetAllAsync(filter, orderExpression);
+
+            return new JsonResult(Ok(result.Items));
+        }
+
+        [HttpPut("{userId}")]
+        public async Task<IActionResult> ToggleBan(Guid userId)
+        {
+            try
+            {
+                await _userService.ToggleBanAsync(userId);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new JsonResult(NotFound($"{ex.GetType().Name}: {ex.Message}"));
+            }
+
+            return new JsonResult(NoContent());
+
         }
     }
 }
