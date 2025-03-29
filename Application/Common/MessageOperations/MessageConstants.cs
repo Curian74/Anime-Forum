@@ -34,6 +34,7 @@ namespace Application.Common.MessageOperations
         public const string ME028 = "Ticket verify successful";
         public const string ME029 = "You need to log in first in order to post comments.";
         public const string ME030 = "This post is deleted and is now read-only.";
+        public const string ME031 = "This Report have been verified";
 
         //message chua co (da phan la validation thi them chu 'N' vao) (cai nay khong co trong BR nhung no thuoc nghiep vu)
         public const string MEN001 = "Username must not exceed 50 characters";

@@ -1,64 +1,50 @@
 ﻿@model WibuBlog.ViewModels.Ticket.AddTicketVM
-
 <link rel="stylesheet" href="~/richtexteditor/rte_theme_default.css" />
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.min.css" rel="stylesheet">
 
 <div class="container mt-4">
     <div class="card shadow">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="mb-0">Create New Ticket</h3>
-            <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to List
+            </a>
         </div>
-
         <div class="card-body">
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    @TempData["SuccessMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-
-            @if (TempData["ErrorMessage"] != null)
-            {
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    @TempData["ErrorMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-
             <form asp-action="Add" asp-controller="Ticket" method="post" id="ticketForm">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <div class="col-sm-12 col-md-6">
-                                <strong>Email:</strong> <span class="badge bg-primary">@Model.Email</span>
-                            </div>
+                            <label asp-for="Email" class="form-label fw-bold">Email</label>
+                            <input asp-for="Email" class="form-control" placeholder="Enter your email">
+                            <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
                     </div>
-
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="Tag" class="form-label fw-bold">Tag</label>
                             <select asp-for="Tag" class="form-select">
+                                <option value="">Select a Tag</option>
                                 <option value="#BannedAccount">🔒 Banned Account</option>
                                 <option value="#HelpCreatePost">✍️ Help Create Post</option>
                                 <option value="#TechnicalIssue">⚙️ Technical Issue</option>
                             </select>
+                            <span asp-validation-for="Tag" class="text-danger"></span>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-group mb-3">
                     <label asp-for="Content" class="form-label fw-bold">Content</label>
-                    <textarea id="content" asp-for="Content" class="form-control" rows="6" placeholder="Add a comment"></textarea>
+                    <textarea id="content" asp-for="Content" class="form-control" rows="6" placeholder="Describe your issue in detail"></textarea>
                     <span asp-validation-for="Content" class="text-danger"></span>
                 </div>
 
                 <div class="d-flex justify-content-between">
                     <button type="button" id="submitBtn" class="btn btn-primary">
-                        🚀 Submit Ticket
+                        <i class="fas fa-paper-plane me-2"></i>Submit Ticket
                     </button>
                 </div>
             </form>
@@ -67,20 +53,67 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.all.min.js"></script>
     <partial name="_ValidationScriptsPartial"></partial>
     <partial name="_RichTextEditorInit"></partial>
-
     <script type="text/javascript">
-        document.addEventListener("DOMContentLoaded", function () {
+                document.addEventListener("DOMContentLoaded", function () {
             var editor = new RichTextEditor("#content", configs);
-        });
 
-        document.querySelector('#submitBtn').addEventListener('click', function() {
-            if (!document.querySelector('#content').value.trim()) {
-                alert('Content is required');
-                return;
-            }
-            document.querySelector('#ticketForm').submit();
+            document.querySelector('#submitBtn').addEventListener('click', function() {
+                var form = document.getElementById('ticketForm');
+                var fields = {
+                    email: document.getElementById('Email'),
+                    tag: document.getElementById('Tag'),
+                    content: document.getElementById('content')
+                };
+
+                var validationErrors = [
+                    { field: fields.email, message: 'Email is required', condition: !fields.email.value.trim() },
+                    { field: fields.tag, message: 'Please select a tag', condition: !fields.tag.value },
+                    { field: fields.content, message: 'Content is required', condition: !fields.content.value.trim() }
+                ];
+
+                for (var i = 0; i < validationErrors.length; i++) {
+                    var error = validationErrors[i];
+                    if (error.condition) {
+                        Swal.fire({
+                            title: 'Error',
+                            text: error.message,
+                            icon: 'error',
+                            confirmButtonColor: '#dc3545'
+                        });
+                        return;
+                    }
+                }
+                $.ajax({
+                    url: '@Url.Action("Add", "Ticket")',
+                    type: 'POST',
+                    data: $(form).serialize(),
+                    success: function(response) {
+                        Swal.fire({
+                            title: 'Success',
+                            text: response.message,
+                            icon: 'success',
+                            confirmButtonColor: '#28a745'
+                        }).then(() => location.reload());
+                    },
+                    error: function(xhr) {
+                        var errorMessage = 'An unexpected error occurred. Please try again.';
+                        try {
+                            var response = JSON.parse(xhr.responseText);
+                            errorMessage = response.message || response.title || errorMessage;
+                        } catch (e) {}
+
+                        Swal.fire({
+                            title: 'Error',
+                            text: errorMessage,
+                            icon: 'error',
+                            confirmButtonColor: '#dc3545'
+                        });
+                    }
+                });
+            });
         });
     </script>
 }
