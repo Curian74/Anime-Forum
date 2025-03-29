@@ -35,6 +35,35 @@
     });
 }
 
+async function toggleModerator(userId) {
+    if (!confirm("Are you sure you want to toggle this user's moderator status?")) {
+        return;
+    }
+
+    const url = `https://localhost:7186/api/Admin/ToggleModeratorRole?userId=${encodeURIComponent(userId)}`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include'
+
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to toggle moderator status.");
+        }
+
+        alert("Moderator status updated successfully!");
+        location.reload(); // Reload page to reflect changes
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Something went wrong!");
+    }
+}
+
 const banUser = async (userId) => {
     try {
         const response = await fetch(`https://localhost:7186/api/User/ToggleBan/${userId}`, {

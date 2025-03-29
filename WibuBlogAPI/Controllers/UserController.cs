@@ -8,6 +8,7 @@ using Application.Common.MessageOperations;
 using Infrastructure.Extensions;
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace WibuBlogAPI.Controllers
 {
@@ -88,6 +89,24 @@ namespace WibuBlogAPI.Controllers
             var result = await _userService.GetPagedAsync(page, size, filter, orderExpression);
 
             return new JsonResult(Ok(result));
+        }
+
+        [HttpGet("{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Policy = "AdminPolicy")]
+        public async Task<IActionResult> GetUserRoles(Guid userId)
+        {
+            List<string> roles = [];
+
+            try
+            {
+                roles = await _userService.GetUserRolesAsync(userId);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new JsonResult(NotFound($"{ex.GetType().Name}: {ex.Message}"));
+            }
+
+            return new JsonResult(Ok(roles));
         }
 
         [HttpPut]
