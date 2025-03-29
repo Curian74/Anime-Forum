@@ -54,6 +54,7 @@
                             <th>Email</th>
                             <th>Points</th>
                             <th>Rank</th>
+                            <th>Role</th>
                             <th>Created At</th>
                             <th>Is Banned</th>
                             @* <th>Is Active</th> *@
@@ -75,6 +76,7 @@
                                     <td>@u.Email</td>
                                     <td>@u.Points</td>
                                     <td>@u.Rank?.Name</td>
+                                    <td>@Model.UserRoles.Values.FirstOrDefault()?.FirstOrDefault()</td>
                                     <td>@DateFormatHelper.GetDateFormat((DateTime)u.CreatedAt)</td>
                                     <td class="text-@(u.IsBanned ? "danger" : "success") fw-bold">@u.IsBanned</td>
                                     <td>
