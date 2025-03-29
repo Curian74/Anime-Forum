@@ -62,7 +62,7 @@ namespace Application.Services
 
         public async Task<IdentityResult> Register(RegisterDto dto) 
         {
-            var user = new User { UserName = dto.UserName, Email = dto.Email };
+            var user = new User { UserName = dto.Username, Email = dto.Email };
             var result = await _userManager.CreateAsync(user, dto.Password);
 
             if (result.Succeeded)

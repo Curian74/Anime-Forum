@@ -63,8 +63,7 @@ namespace WibuBlog.Controllers
             {
                 TempData["LoginRequired"] = MessageConstants.MEN012;
                 return RedirectToAction(nameof(Login));
-            }
-
+            }         
             return RedirectToAction("Index", "Home");
         }
 
@@ -78,6 +77,7 @@ namespace WibuBlog.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<ActionResult> RegisterAuthentication(RegisterVM registerVM)
         {
             if (!ModelState.IsValid)
@@ -92,19 +92,20 @@ namespace WibuBlog.Controllers
             }
 
             await _otpService.SendOtp(registerVM);
+            TempData["OTPSent"] = MessageConstants.MEN016 + registerVM.email;
 
             return View(nameof(OTPAuthentication));
         }
 
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<ActionResult> OTPAuthentication(string OTP)
         {
             if (!ModelState.IsValid)
             {
                 return View(nameof(OTPAuthentication));
             }
-
             string savedOtp = HttpContext.Session.GetString("OTP");
             string expiryTimeStr = HttpContext.Session.GetString("OTP_Expiry");
             string registerData = HttpContext.Session.GetString("RegisterVM");
@@ -134,6 +135,7 @@ namespace WibuBlog.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword(string email)
         {
             var user = await _userService.GetUserByEmail(email);

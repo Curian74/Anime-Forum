@@ -39,6 +39,7 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpGet("{userId}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetUserById(Guid userId)
         {
             var user = await _userService.FindByIdAsync(userId);
@@ -50,6 +51,7 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetUserByEmail(string email)
         {
             var result = await _userService.GetUserByEmail(email);
@@ -61,6 +63,7 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetUserByUsername(string username)
         {
             var result = await _userService.GetUserByUsername(username);
@@ -89,7 +92,7 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpGet("{userId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Policy = "AdminPolicy")]
+        //[Authorize(AuthenticationSchemes = "Bearer", Policy = "AdminPolicy")]
         public async Task<IActionResult> GetUserRoles(Guid userId)
         {
             List<string> roles = [];

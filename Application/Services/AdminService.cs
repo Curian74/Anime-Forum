@@ -3,6 +3,7 @@ using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Hosting;
 
 namespace Application.Services
 {
@@ -12,6 +13,7 @@ namespace Application.Services
         private readonly IGenericRepository<User> _userRepository = unitOfWork.GetRepository<User>();
         private readonly IGenericRepository<Post> _postRepository = unitOfWork.GetRepository<Post>();
         private readonly IGenericRepository<Comment> _commentRepository = unitOfWork.GetRepository<Comment>();
+        private readonly IGenericRepository<Notification> _notificationRepository = unitOfWork.GetRepository<Notification>();
         private readonly IGenericRepository<Vote> _voteRepository = unitOfWork.GetRepository<Vote>();
         private readonly IGenericRepository<PostCategory> _categoryRepository = unitOfWork.GetRepository<PostCategory>();
         private readonly IGenericRepository<Ticket> _ticketRepository = unitOfWork.GetRepository<Ticket>();
@@ -118,14 +120,36 @@ namespace Application.Services
         {
             var user = await _userRepository.GetByIdAsync(userId)
                        ?? throw new KeyNotFoundException("Could not find requested user.");
+
+            if (!_userManager.IsInRoleAsync(user, "Member").Result)
+            {
+                await _userManager.AddToRoleAsync(user, "Member");
+               
+            }
             
             if (_userManager.IsInRoleAsync(user, "Moderator").Result)
             {
                 await _userManager.RemoveFromRoleAsync(user, "Moderator");
+                string notiContent = Application.Common.MessageOperations.NotificationService.GetNotification("NOTIN05");
+                Notification noti = new Notification()
+                {
+                    Content = notiContent,
+                    UserId = userId,
+                    IsDeleted = false
+                };
+                await _notificationRepository.AddAsync(noti);
             }
             else
             {
                 await _userManager.AddToRoleAsync(user, "Moderator");
+                string notiContent = Application.Common.MessageOperations.NotificationService.GetNotification("NOTIN04");
+                Notification noti = new Notification()
+                {
+                    Content = notiContent,
+                    UserId = userId,
+                    IsDeleted = false
+                };
+                await _notificationRepository.AddAsync(noti);
             }
 
             return await _unitOfWork.SaveChangesAsync();

@@ -12,7 +12,9 @@ namespace Application.Common.MessageOperations
             { "NOTI07", "Your post has been deleted due to <i>{0}</i>, please be cautious with your content.<br><small>Date: {1}</small>" },                       
             { "NOTIN01", "You've successfully updated your profile picture" },
             { "NOTIN02", "You've receive an upvote on post {0}"},
-            { "NOTIN03", "You've receive a downvote on post {0}"}
+            { "NOTIN03", "You've receive a downvote on post {0}"},
+            { "NOTIN04", "You've been promoted to Moderator"},
+            { "NOTIN05", "You've been demoted to Member"},
         };
 
         public static string GetNotification(string code, params object[] args)

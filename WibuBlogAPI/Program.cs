@@ -308,12 +308,12 @@ using (var scope = app.Services.CreateScope())
         var flairs = new List<UserFlair>
         {
             new() { Id = Guid.NewGuid(), Name = "Lính mới", ColorHex = "#FF0000", PointsRequired = 0 }, // red
-            new() { Id = Guid.NewGuid(), Name = "Công dân hạng C", ColorHex = "#FF7F00", PointsRequired = 50 }, // orange
-            new() { Id = Guid.NewGuid(), Name = "Wibu", ColorHex = "#FFFF00", PointsRequired = 150 }, // yellow
-            new() { Id = Guid.NewGuid(), Name = "Wibu kỳ cựu", ColorHex = "#00FF00", PointsRequired = 450 }, // green
-            new() { Id = Guid.NewGuid(), Name = "Tộc trưởng wibu", ColorHex = "#FF0000", PointsRequired = 1350 }, // blue
-            new() { Id = Guid.NewGuid(), Name = "Nhật nội địa", ColorHex = "#4B0082", PointsRequired = 4050 }, // indigo
-            new() { Id = Guid.NewGuid(), Name = "Wibu chúa", ColorHex = "#8B00FF", PointsRequired = 12150 }, // violet
+            new() { Id = Guid.NewGuid(), Name = "Công dân hạng C", ColorHex = "#FF7F00", PointsRequired = 2 }, // orange
+            new() { Id = Guid.NewGuid(), Name = "Wibu", ColorHex = "#FFFF00", PointsRequired = 3 }, // yellow
+            new() { Id = Guid.NewGuid(), Name = "Wibu kỳ cựu", ColorHex = "#00FF00", PointsRequired = 4 }, // green
+            new() { Id = Guid.NewGuid(), Name = "Tộc trưởng wibu", ColorHex = "#FF0000", PointsRequired = 5 }, // blue
+            new() { Id = Guid.NewGuid(), Name = "Nhật nội địa", ColorHex = "#4B0082", PointsRequired = 6 }, // indigo
+            new() { Id = Guid.NewGuid(), Name = "Wibu chúa", ColorHex = "#8B00FF", PointsRequired = 7 }, // violet
         };
 
         db.UserFlairs.AddRange(flairs);
