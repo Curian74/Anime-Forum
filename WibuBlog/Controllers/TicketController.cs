@@ -3,8 +3,9 @@ using WibuBlog.Services;
 using WibuBlog.ViewModels.Ticket;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Application.Common.Pagination;
+using WibuBlog.Helpers;
 
 namespace WibuBlog.Controllers
 {
@@ -13,9 +14,14 @@ namespace WibuBlog.Controllers
     {
         private readonly TicketService _ticketService = ticketService;
 
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        public async Task<IActionResult> Index(int page = 1)
         {
-            return View("Index");
+            var tickets = await _ticketService.GetPagedAsync(page, 10, false);
+
+            var data = new TicketsVM { Tickets = tickets };
+
+            return View(data);
         }
 
         public async Task<IActionResult> NewTickets()
@@ -29,7 +35,6 @@ namespace WibuBlog.Controllers
             var tickets = await _ticketService.GetUserTicketsAsync(userId);
             return View(tickets);
         }
-
 
         [HttpGet]
         public IActionResult Add()
@@ -100,6 +105,53 @@ namespace WibuBlog.Controllers
             return View(model);
         }
 
+        [Authorize(AuthenticationSchemes = "Bearer", Policy = "ModeratorPolicy")]
+        public async Task<IActionResult> ViewTickets([FromQuery] QueryObject queryObject)
+        {
+            var ticketList = await _ticketService.GetAllTicketsAsync();
+
+            if (!string.IsNullOrEmpty(queryObject.SearchTerm))
+            {
+                ticketList = ticketList
+                    .Where(t =>
+                        (t.User.UserName ?? "").Contains(queryObject.SearchTerm, StringComparison.OrdinalIgnoreCase) ||
+                        (t.Content ?? "").Contains(queryObject.SearchTerm, StringComparison.OrdinalIgnoreCase) ||
+                        (t.Tag ?? "").Contains(queryObject.SearchTerm, StringComparison.OrdinalIgnoreCase)
+                    )
+                    .ToList();
+            }
+
+            if (!string.IsNullOrEmpty(queryObject.FilterBy))
+            {
+                ticketList = queryObject.FilterBy.ToLower() switch
+                {
+                    "pending" => ticketList.Where(t => t.Status == Domain.ValueObjects.Enums.TicketStatusEnum.TicketStatus.Pending).ToList(),
+                    "approved" => ticketList.Where(t => t.Status == Domain.ValueObjects.Enums.TicketStatusEnum.TicketStatus.Approved).ToList(),
+                    "rejected" => ticketList.Where(t => t.Status == Domain.ValueObjects.Enums.TicketStatusEnum.TicketStatus.Rejected).ToList(),
+                    _ => ticketList
+                };
+            }
+
+            ticketList = (queryObject.OrderBy?.ToLower(), queryObject.Descending) switch
+            {
+                ("createdat", true) => ticketList.OrderByDescending(x => x.CreatedAt).ToList(),
+                ("createdat", false) => ticketList.OrderBy(x => x.CreatedAt).ToList(),
+                _ => ticketList
+            };
+
+            int totalItems = ticketList.Count();
+            int totalPages = (int)Math.Ceiling(totalItems / (double)queryObject.Size);
+            int skip = (queryObject.Page - 1) * queryObject.Size;
+            var pagedTickets =  ticketList.Skip(skip).Take(queryObject.Size);
+
+            var data = new TicketsVM
+            {
+                Tickets = new PagedResult<Ticket>(pagedTickets, totalItems, queryObject.Page, queryObject.Size),
+            };
+
+            return View("Index", data);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Update(Guid id, TicketDetailVM model)
         {
@@ -129,6 +181,7 @@ namespace WibuBlog.Controllers
                 return View("Detail", model);
             }
         }
+
         [HttpPost]
         public async Task<IActionResult> Close(Guid id)
         {
@@ -173,6 +226,23 @@ namespace WibuBlog.Controllers
         {
             await _ticketService.DeleteTicketAsync(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        [Authorize(AuthenticationSchemes = "Bearer", Policy = "AdminPolicy")]
+        public async Task<IActionResult> ApproveReport(Guid ticketId, bool approval, string? note = null)
+        {
+            try
+            {
+                var result = await _ticketService.ApproveTicketAsync(ticketId, approval, note);
+
+                return Json(new { success = true, message = Application.Common.MessageOperations.MessageConstants.ME020 });
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false });
+
+            }
         }
     }
 }

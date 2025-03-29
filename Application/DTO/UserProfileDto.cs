@@ -5,7 +5,7 @@ namespace Application.DTO
 {
     public class UserProfileDto
     {
-        public Guid userId { get; set; }
+        public Guid Id { get; set; }
         [Required(ErrorMessage = MessageConstants.ME002)]
         [StringLength(50, ErrorMessage = MessageConstants.MEN001)]
         [MinLength(5, ErrorMessage = MessageConstants.MEN002)]
