@@ -1,8 +1,10 @@
 ﻿using Application.DTO.Comment;
+using Application.Hubs;
 using Application.Services;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
+using Microsoft.AspNetCore.SignalR;
 using Moq;
 using System.Linq.Expressions;
 
@@ -15,19 +17,30 @@ namespace ServiceLayerUnitTests
 
         private Mock<IUnitOfWork> _unitOfWorkMock;
         private Mock<IGenericRepository<Comment>> _commentRepositoryMock;
+        private Mock<IGenericRepository<Post>> _postRepositoryMock;
+        private Mock<IGenericRepository<Notification>> _notificationRepositoryMock;
         private Mock<IMapper> _mapperMock;
+        private Mock<IHubContext<NotificationHub>> _hubContextMock;
 
         [SetUp]
         public void Setup()
         {
             _unitOfWorkMock = new Mock<IUnitOfWork>();
             _commentRepositoryMock = new Mock<IGenericRepository<Comment>>();
+            _postRepositoryMock = new Mock<IGenericRepository<Post>>();
+            _notificationRepositoryMock = new Mock<IGenericRepository<Notification>>();
             _mapperMock = new Mock<IMapper>();
+            _hubContextMock = new Mock<IHubContext<NotificationHub>>();
 
-            // Mock repository
             _unitOfWorkMock.Setup(uow => uow.GetRepository<Comment>()).Returns(_commentRepositoryMock.Object);
+            _unitOfWorkMock.Setup(uow => uow.GetRepository<Post>()).Returns(_postRepositoryMock.Object);
+            _unitOfWorkMock.Setup(uow => uow.GetRepository<Notification>()).Returns(_notificationRepositoryMock.Object);
 
-            _commentService = new CommentService(_unitOfWorkMock.Object, _mapperMock.Object);
+            _commentService = new CommentService(
+                _unitOfWorkMock.Object,
+                _mapperMock.Object,
+                _hubContextMock.Object
+            );
         }
 
         [Test]
@@ -73,23 +86,49 @@ namespace ServiceLayerUnitTests
         }
 
         [Test]
-        public async Task PostCommentAsync_ShouldAddCommentAndReturnSaveResult()
+        public async Task PostCommentAsync_ShouldAddComment_AndSendNotification_WhenCommentingOnOthersPost()
         {
             // Arrange
-            var dto = new PostCommentDto { PostId = Guid.NewGuid(), UserId = Guid.NewGuid(), Content = "New Comment" };
-            var comment = new Comment { Id = Guid.NewGuid(), Content = dto.Content };
+            var postId = Guid.NewGuid();
+            var commenterId = Guid.NewGuid();
+            var postOwnerId = Guid.NewGuid();
+
+            var dto = new PostCommentDto { PostId = postId, UserId = commenterId, Content = "New Comment" };
+            var comment = new Comment { Id = Guid.NewGuid(), Content = dto.Content, PostId = postId, UserId = commenterId };
+            var post = new Post { Id = postId, Title = "Post Title", UserId = postOwnerId };
+
+            var notification = new Notification
+            {
+                Content = "Sample notification",
+                UserId = postOwnerId,
+                PostId = postId,
+                IsDeleted = false
+            };
 
             _mapperMock.Setup(mapper => mapper.Map<Comment>(dto)).Returns(comment);
             _commentRepositoryMock.Setup(repo => repo.AddAsync(It.IsAny<Comment>())).Returns(Task.CompletedTask);
+            _postRepositoryMock.Setup(repo => repo.GetByIdAsync(postId)).ReturnsAsync(post);
+            _notificationRepositoryMock.Setup(repo => repo.AddAsync(It.IsAny<Notification>())).Returns(Task.CompletedTask);
             _unitOfWorkMock.Setup(uow => uow.SaveChangesAsync()).ReturnsAsync(1);
+
+            var hubClientsMock = new Mock<IHubClients>();
+            var clientProxyMock = new Mock<IClientProxy>();
+
+            _hubContextMock.Setup(hub => hub.Clients).Returns(hubClientsMock.Object);
+            hubClientsMock.Setup(clients => clients.All).Returns(clientProxyMock.Object);
+            clientProxyMock.Setup(proxy => proxy.SendCoreAsync(It.IsAny<string>(), It.IsAny<object[]>(), default))
+                           .Returns(Task.CompletedTask);
 
             // Act
             var result = await _commentService.PostCommentAsync(dto);
 
             // Assert
             Assert.That(result, Is.EqualTo(1));
+
             _commentRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<Comment>()), Times.Once);
             _unitOfWorkMock.Verify(uow => uow.SaveChangesAsync(), Times.Once);
+            _notificationRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<Notification>()), Times.Once);
+            clientProxyMock.Verify(proxy => proxy.SendCoreAsync("ReceiveNotification", It.IsAny<object[]>(), default), Times.Once);
         }
 
         [Test]

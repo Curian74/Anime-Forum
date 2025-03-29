@@ -1,4 +1,6 @@
-﻿using Application.DTO;
+﻿using Application.Common.Pagination;
+using Application.DTO;
+using Application.Interfaces.Pagination;
 using Domain.Entities;
 using WibuBlog.Common.ApiResponse;
 using WibuBlog.Interfaces.Api;
@@ -28,13 +30,43 @@ namespace WibuBlog.Services
             }
         }
 
-        public async Task<Ticket> GetTicketByIdAsync<T>(T id)
+        public async Task<List<Ticket>> GetAllTicketsAsync()
         {
             try
             {
-                var guidId = Guid.Parse(id.ToString());
-                var response = await _apiService.GetAsync<ApiResponse<Ticket>>($"Ticket/GetTicketDetail/{guidId}");
+                var response = await _apiService.GetAsync<ApiResponse<List<Ticket>>>("Ticket/GetAllTickets");
+                // Check if we got a response
+                if (response?.Value == null)
+                    return new List<Ticket>();
+
+                return response.Value;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetAllTicketsAsync: {ex.Message}");
+                return new List<Ticket>();
+            }
+        }
+
+        public async Task<Ticket> GetTicketByIdAsync(Guid id)
+        {
+            try
+            {
+                var response = await _apiService.GetAsync<ApiResponse<Ticket>>($"Ticket/GetTicketDetail/{id}");
                 return response?.Value;
+            }
+            catch (HttpRequestException)
+            {
+                return null;
+            }
+        }
+
+        public async Task<IPagedResult<Ticket>> GetPagedAsync(int page = 1, int pageSize = 10, bool descending = false)
+        {
+            try
+            {
+                var response = await _apiService.GetAsync<ApiResponse<PagedResult<Ticket>>>($"Ticket/GetPagedTickets?page={page}&size={pageSize}&descending={descending}");
+                return response.Value;
             }
             catch (HttpRequestException)
             {
@@ -71,7 +103,7 @@ namespace WibuBlog.Services
 
         public async Task<bool> CloseTicketAsync(Guid id)
         {
-            var response = await _apiService.PutAsync<ApiResponse<bool>>($"Ticket/CloseTicket/Close/{id}", null);
+            var response = await _apiService.PutAsync<ApiResponse<bool>>($"Ticket/CloseTicket/{id}", null);
             return response != null && response.Value;
         }
 
@@ -79,6 +111,19 @@ namespace WibuBlog.Services
         {
             var response = await _apiService.DeleteAsync($"Ticket/Delete/{id}");
             return response;
+        }
+
+        public async Task<bool> ApproveTicketAsync(Guid reportId, bool approval, string? note = null)
+        {
+            var response = await _apiService.PutAsync<ApiResponse<Ticket>>(
+                $"Ticket/ApproveTicket/reports/{reportId}",
+                new ApproveReportDto
+                {
+                    Approval = approval,
+                    Note = note
+                }
+            );
+            return response != null;
         }
     }
 }

@@ -15,6 +15,8 @@ namespace Domain.Entities
 
         public TicketStatus Status { get; set; } = TicketStatus.Pending;
 
+        public DateTime? ApprovedAt { get; set; }
+
         public string? Note { get; set; }
 
         // Navigation properties
