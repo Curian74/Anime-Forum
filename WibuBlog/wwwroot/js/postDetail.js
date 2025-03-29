@@ -732,7 +732,7 @@ $(document).ready(function () {
     }
     console.log(isBanned);
     // Event listeners
-    if (userId.value && !isHiddenPost && isBanned?.value === false) {
+    if (userId.value && !isHiddenPost) {
         $('.upvote-btn').click(function (e) {
             e.preventDefault();
             toggleVote(true);

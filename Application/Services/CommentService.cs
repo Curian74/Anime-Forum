@@ -49,7 +49,7 @@ namespace Application.Services
             if (post.UserId != dto.UserId)
             {
                 var targetUserIdNotification = post.UserId;
-                string notiContent = Application.Common.MessageOperations.NotificationService.GetNotification("NOTI04", "Quoc anh", post.Title);
+                string notiContent = Application.Common.MessageOperations.NotificationService.GetNotification("NOTI04", post.User.UserName, post.Title);
                 Notification noti = new Notification()
                 {
                     Content = notiContent,
