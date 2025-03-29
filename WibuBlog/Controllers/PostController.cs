@@ -179,7 +179,7 @@ namespace WibuBlog.Controllers
 
             else
             {
-                postCategories = await _postCategoryService.GetAllCategories("isRestricted", "true", false);
+                postCategories = await _postCategoryService.GetAllCategories("isRestricted", "false", false);
             }
 
             var data = new CreatePostVM

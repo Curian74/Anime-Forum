@@ -110,7 +110,7 @@ namespace Application.Services
                 await _notificationGenericRepository.AddAsync(noti);
             }
             await _inventoryService.UpdateFlairsAsync(userId);
-            await _rankService.UpdateUserRankAsync(userId);
+            await _rankService.UpdateUserRankAsync(post.UserId);
 
             return await _unitOfWork.SaveChangesAsync();
         }

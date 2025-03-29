@@ -106,7 +106,6 @@ namespace WibuBlog.Controllers
             {
                 return View(nameof(OTPAuthentication));
             }
-
             string savedOtp = HttpContext.Session.GetString("OTP");
             string expiryTimeStr = HttpContext.Session.GetString("OTP_Expiry");
             string registerData = HttpContext.Session.GetString("RegisterVM");
