@@ -29,7 +29,7 @@
                         <small class="text-muted">@DateFormatHelper.GetDateFormat(Model.Post.CreatedAt)</small>
                     </div>
                 </div>
-                @if (Model.User != null && !Model.Post.IsHidden)
+                @if (Model.User != null && !Model.Post.IsHidden && Model.User?.IsBanned == false)
                 {
                     <div class="dropdown">
                         <button class="btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -41,7 +41,7 @@
                                 {
                                     <li>
                                         <a asp-route-id="@Model.Post.Id" class="dropdown-item" asp-action="Edit"
-                                            asp-controller="Post">
+                                           asp-controller="Post">
                                             Edit
                                         </a>
                                     </li>
@@ -50,7 +50,7 @@
                                     </li>
                                     <li>
                                         <a class="dropdown-item text-danger" onclick="confirmDeletePost('@Model.Post.Id')"
-                                            style="color: red !important;">
+                                           style="color: red !important;">
                                             Delete
                                         </a>
                                     </li>
@@ -59,7 +59,7 @@
                                 {
                                     <li>
                                         <a class="dropdown-item text-danger" href="#"
-                                            onclick="showReportDialog('@Model.Post.Id', '@Model.User?.Id'); return false;">
+                                           onclick="showReportDialog('@Model.Post.Id', '@Model.User?.Id'); return false;">
                                             Report
                                         </a>
                                     </li>
@@ -85,7 +85,7 @@
                 </div>
             </div>
 
-            <input type="hidden" id="isHiddenPost" value="@Model.Post?.IsHidden"/>
+            <input type="hidden" id="isHiddenPost" value="@Model.Post?.IsHidden" />
 
             <!-- Comment Input -->
             @{
@@ -106,16 +106,25 @@
 
                 else
                 {
-                    <div class="mt-3">
-                        <button id="toggle-btn">Add your comment</button>
-                    </div>
+                    if (!Model.User.IsBanned)
+                    {
+                        <div class="mt-3">
+                            <button id="toggle-btn">Add your comment</button>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-danger" style="font-style:italic">
+                            *Your account is banned. You cannot add new comments, edit the post or vote.*
+                        </p>
+                    }
                     <div id="comment-field" class="w-100">
                         <form asp-controller="Comment" asp-action="PostComment" id="commentForm" class="mt-3">
                             <div asp-validation-summary="All"></div>
                             <input type="hidden" name="postId" id="post-id" value="@Model.Post?.Id" />
                             <input type="hidden" name="userId" id="user-id" value="@Model.User?.Id" />
                             <textarea id="content" name="content" class="form-control" rows="3"
-                                placeholder="Add a comment"></textarea>
+                                      placeholder="Add a comment"></textarea>
                             <div class="d-flex justify-content-end mt-2">
                                 <button type="button" id="cancel-btn" class="me-2">Cancel</button>
                                 <button type="button" id="submit-btn"> Comment </button>

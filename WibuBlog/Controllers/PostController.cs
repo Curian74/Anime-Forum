@@ -43,6 +43,14 @@ namespace WibuBlog.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> NewPosts([FromQuery] QueryObject queryObject, Guid? postCategoryId)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User? user = null;
+
+            if (userId != null)
+            {
+                user = await _userService.GetUserById(Guid.Parse(userId));
+            }
+
             var postList = await _postService.GetAllPostAsync("isHidden", "false", false); //Active posts
 
             var filteredPosts = postCategoryId.HasValue
@@ -62,12 +70,29 @@ namespace WibuBlog.Controllers
 
             var categoryList = await GetCategoryListAsync();
 
-            var data = new NewPostsVM
+            NewPostsVM data = null;
+
+            if (user != null)
             {
-                CategoryList = categoryList,
-                Posts = new PagedResult<Post>(pagedPosts, totalItems, queryObject.Page, queryObject.Size),
-                PostCategoryId = postCategoryId
-            };
+                data = new NewPostsVM
+                {
+                    CategoryList = categoryList,
+                    Posts = new PagedResult<Post>(pagedPosts, totalItems, queryObject.Page, queryObject.Size),
+                    PostCategoryId = postCategoryId,
+                    User = user,
+                };
+
+            }
+
+            else
+            {
+                data = new NewPostsVM
+                {
+                    CategoryList = categoryList,
+                    Posts = new PagedResult<Post>(pagedPosts, totalItems, queryObject.Page, queryObject.Size),
+                    PostCategoryId = postCategoryId,
+                };
+            }
 
             return View(data);
         }
@@ -131,15 +156,19 @@ namespace WibuBlog.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var postCategories = await _postCategoryService.GetAllCategories("isRestricted", "false", false);
-
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             User? user = null;
 
             if (userId != null)
             {
                 user = await _userService.GetUserById(Guid.Parse(userId));
+                if (user.IsBanned)
+                {
+                    return NotFound();
+                }
             }
+
+            var postCategories = await _postCategoryService.GetAllCategories("isRestricted", "false", false);
 
             var data = new CreatePostVM
             {
@@ -171,7 +200,7 @@ namespace WibuBlog.Controllers
             try
             {
                 await _postService.CreatePostAsync(createPostVM);
-                TempData["successMessage"] = "Post created successfully.";              
+                TempData["successMessage"] = "Post created successfully.";
                 return RedirectToAction(nameof(Create));
             }
 
@@ -184,7 +213,15 @@ namespace WibuBlog.Controllers
 
         public async Task<IActionResult> Edit(Guid id)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User? user = null;
             var post = await _postService.GetPostByIdAsync(id);
+            if (userId != null)
+            {
+                user = await _userService.GetUserById(Guid.Parse(userId));
+
+                if (Guid.Parse(userId) != post.UserId || user.IsBanned) return NotFound();
+            }
 
             if (post == null)
             {
@@ -193,15 +230,7 @@ namespace WibuBlog.Controllers
 
             var postCategories = await _postCategoryService.GetAllCategories("isRestricted", "false", false);
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            User? user = null;
 
-            if (userId != null)
-            {
-                user = await _userService.GetUserById(Guid.Parse(userId));
-
-                if (Guid.Parse(userId) != post.UserId) return NotFound();
-            }
 
             var data = new EditPostVM
             {

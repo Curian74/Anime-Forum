@@ -9,6 +9,7 @@ const contentField = document.getElementById('content');
 const commentForm = document.getElementById('commentForm');
 const editCmtField = document.getElementById('edit-comment-section');
 const commentSection = document.getElementById('comment-section');
+const isBanned = document.getElementById('isBanned');
 
 const isHiddenPost = document.getElementById('isHiddenPost').value;
 
@@ -500,7 +501,7 @@ async function renderComments(data, currentPage, size) {
                                     ${new Date(c.createdAt).toLocaleString()}
                                 </small>
                             </div>
-                            ${(c.userId === userId.value && !isHiddenPost) ? `
+                            ${(c.userId === userId.value && !isHiddenPost && isBanned === false) ? `
                                 <div class="dropdown">
                                     <button class="btn btn-sm" type="button" data-bs-toggle="dropdown">
                                         <i class="fa-solid fa-ellipsis"></i>
@@ -515,13 +516,12 @@ async function renderComments(data, currentPage, size) {
                         </div>
                         <div class="mb-1 comment-text" id="comment-text-${c.id}">${c.content}</div>
 
-                         ${!isHiddenPost ? `
-                            <button onclick="openReplyCmt('${c.id}')">
-                                <i style="font-size: 10px; margin-right: 5px;" class="fa-solid fa-reply"></i>
-                                Reply
-                            </button>
-                         ` : ''}
-
+                         ${(isBanned?.value === false && !isHiddenPost && userId?.value) ? `
+                           <button onclick="openReplyCmt('${c.id}')">
+                               <i style="font-size: 10px; margin-right: 5px;" class="fa-solid fa-reply"></i>
+                               Reply
+                           </button>
+                        ` : ''}
 
                         <div id="reply-comment-section-${c.id}" style="display: none;">
                             <textarea id="reply-cmt-${c.id}" class="form-control"></textarea>
@@ -576,7 +576,7 @@ function renderChildComments(childComments, parentId) {
                                 ${new Date(child.createdAt).toLocaleString()}
                             </small>
                         </div>
-                        ${(child.userId === userId.value && !isHiddenPost) ? `
+                        ${(child.userId === userId.value && !isHiddenPost && isBanned === false) ? `
                             <div class="dropdown">
                                 <button class="btn btn-sm" type="button" data-bs-toggle="dropdown">
                                     <i class="fa-solid fa-ellipsis"></i>
@@ -729,7 +729,7 @@ $(document).ready(function () {
     }
 
     // Event listeners
-    if (userId.value && !isHiddenPost) {
+    if (userId.value && !isHiddenPost && !isBanned.value) {
         $('.upvote-btn').click(function (e) {
             e.preventDefault();
             toggleVote(true);
