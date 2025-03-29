@@ -12,6 +12,7 @@ using WibuBlog.ViewModels.Users;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using Application.Common.MessageOperations;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace WibuBlog.Services
 {
@@ -32,7 +33,13 @@ namespace WibuBlog.Services
             }
             var response = await _apiService.GetAsync<ApiResponse<UserProfileDto>>($"User/GetAccountDetails/{userId}");
             return response.Value!;
-        }     
+        }
+
+		public async Task<UserProfileDto> GetMemberProfile(Guid? userId = null)
+		{
+			var response = await _apiService.GetAsync<ApiResponse<UserProfileDto>>($"User/GetAccountDetails?userId={userId}");
+            return response.Value!;
+		}
 		public async Task<User> GetUserById(Guid userId)
         {
             var response = await _apiService.GetAsync<ApiResponse<User>>($"User/GetUserById/{userId}");
@@ -119,6 +126,14 @@ namespace WibuBlog.Services
             return response.Value!;
         }
 
+
+        public async Task<UserProfileDto> GetMemberInfo(string userId)
+        {
+            var response = await _apiService.GetAsync<ApiResponse<UserProfileDto>>($"User/GetMemberProfile?userId={userId}");
+            return response.Value!;
+        }
+
+
         public async Task<bool> ToggleModeratorRoleAsync(Guid userId)
         {
             var response = await _apiService.PostAsync<ApiResponse<bool>>($"Admin/ToggleModeratorRole/", userId);
@@ -131,5 +146,6 @@ namespace WibuBlog.Services
 
             return response?.Value ?? [];
         }
+
     }
 }

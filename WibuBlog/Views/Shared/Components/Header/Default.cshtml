@@ -77,14 +77,15 @@
                         {
                                     <div class="dropdown">
                                         <button class="btn dropdown-toggle" id="notificationDropdown" data-bs-toggle="dropdown">
-                                                         <span>🔔</span>
-                                    @if (@Model.Notifications.Count > 0)
-                                    {
-                                            <span id="notificationCount" style="color: red">
-                                                @(Model.Notifications.Count < 10 ? Model.Notifications.Count.ToString() : "9+")
-                                            </span>
-                                    }
-                                   
+                                                         <span>
+                                                        🔔   @if (@Model.Notifications.Count > 0)
+                                                              {
+                                                                     <span style="color: red">
+                                                                      @(Model.Notifications.Count < 10 ? Model.Notifications.Count.ToString() : "9+")
+                                                                      </span>                                                                                                                                   
+                                                               }
+                                                                               
+                                                             </span>                                                             
                                         </button>
                                      <ul class="dropdown-menu" id="notificationList" style="width: 600px;">
                                     @if (Model.Notifications.Any())

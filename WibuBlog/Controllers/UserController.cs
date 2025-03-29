@@ -133,9 +133,22 @@ namespace WibuBlog.Controllers
         public async Task<IActionResult> UpdateProfilePhoto(IFormFile file)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var response = await _userService.UpdateProfilePhoto(file,userId);
-
+            var response = await _userService.UpdateProfilePhoto(file, userId);
             return RedirectToAction(nameof(UserProfile));
+
+        }
+
+        [HttpGet("MemberProfile/{userId}")]
+		[AllowAnonymous]
+		public async Task<IActionResult> MemberProfile(Guid? userId = null)
+        {
+            var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (currentUserId != null && userId.ToString() == currentUserId )
+            {
+                return RedirectToAction(nameof(UserProfile));
+            }
+            var response = await _userService.GetMemberProfile(userId);
+            return View(response);
         }
 
         [HttpPost]

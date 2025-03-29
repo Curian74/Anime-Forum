@@ -22,7 +22,7 @@
             <div class="post-header d-flex justify-content-between">
                 <div class="d-flex gap-2">
                     <img src="@(Model.Post.User.ProfilePhoto != null ? Model.Post.User.ProfilePhoto.Url : Url.Content("~/images/defaults/user/default_avatar.jpg"))"
-                         alt="Avatar" class="avatar">
+                         alt="Avatar" class="avatar"  onclick="window.location.href='/MemberProfile/@Model.Post.User.Id'">
                     <div>
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <h5 class="m-0">@Model.Post?.User?.UserName</h5>

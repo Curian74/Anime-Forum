@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace WibuBlogAPI.Controllers
 {
-    // [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
+    [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class UserController(UserService userService) : ControllerBase
@@ -20,6 +20,7 @@ namespace WibuBlogAPI.Controllers
         private readonly UserService _userService = userService;
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAccountDetails(Guid? userId)
         {
             if (userId == null)
@@ -167,6 +168,7 @@ namespace WibuBlogAPI.Controllers
                 return StatusCode(500, $"file/server error: {ex.Message}");
             }
         }
+
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll(

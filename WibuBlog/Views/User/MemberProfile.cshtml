@@ -1,0 +1,48 @@
+﻿@model Application.DTO.UserProfileDto
+
+<link rel="stylesheet" href="~/css/memberProfile.css">
+<script src="/js/userProfile.js"></script>
+<div class="profile-container">
+    <div class="profile-header">
+        <img src="@(Model.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" alt="User Avatar" class="avatar" />
+        <div class="profile-info">
+            <h2 class="username">@Model.UserName</h2>
+            <p class="role">@Model.Roles.FirstOrDefault()</p>
+            <p class="bio">@Model.Bio</p>
+            <p class="points">Interactive Points: @Model.Points</p>
+        </div>
+    </div>
+    <div class="posts-section">
+        <h3 class="posts-title">User Posts</h3>
+        <ul class="posts-list">
+            @if (Model.PostList != null && Model.PostList.Count > 0)
+			{
+                @foreach (var post in Model.PostList)
+                {
+                    <div class="post-card" data-url="@Url.Action("Detail", "Post", new { id = post.Id })">
+                        <div class="post-body">
+                            <div class="post-header">
+                                <img src="@(post.User.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" 
+                                     class="post-avatar">
+                                <div>
+                                    <h6 class="post-username">@post.User.UserName</h6>
+                                    <small class="post-date">@post.CreatedAt</small>
+                                </div>
+                            </div>
+                            <p class="post-title">@post.Title</p>
+                            <div class="post-actions">
+                                <button class="vote-button">👍 @post.TotalVotes</button>
+                                <button class="comment-button">💬 @post.Comments.Count</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                        <p><i>This member has not posted anything</i></p>
+            }
+            
+        </ul>
+    </div>
+</div>
