@@ -9,6 +9,7 @@ const contentField = document.getElementById('content');
 const commentForm = document.getElementById('commentForm');
 const editCmtField = document.getElementById('edit-comment-section');
 const commentSection = document.getElementById('comment-section');
+const isBanned = document.getElementById('isBanned');
 
 const isHiddenPost = document.getElementById('isHiddenPost').value;
 
@@ -494,13 +495,15 @@ async function renderComments(data, currentPage, size) {
                         alt="${c.user?.userName}'s avatar" />
                     <div class="w-100">
                         <div class="d-flex justify-content-between">
-                            <div class="d-flex flex-column mb-2">
-                                <strong>${c.user?.userName}</strong>
-                                <small class="fst-italic" style="font-size: 12px; color:#576f76;">
-                                    ${new Date(c.createdAt).toLocaleString()}
-                                </small>
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <strong class="m-0">${c.user?.userName}</strong>
+                                    <span class="badge bg-secondary">${c.user.rank?.name || "No Rank"}</span>
+                                </div>
+                                <small class="text-muted">${new Date(c.createdAt).toLocaleString()}</small>
                             </div>
-                            ${(c.userId === userId.value && !isHiddenPost) ? `
+                            
+                            ${(c.userId === userId.value && !isHiddenPost && isBanned === false) ? `
                                 <div class="dropdown">
                                     <button class="btn btn-sm" type="button" data-bs-toggle="dropdown">
                                         <i class="fa-solid fa-ellipsis"></i>
@@ -515,13 +518,12 @@ async function renderComments(data, currentPage, size) {
                         </div>
                         <div class="mb-1 comment-text" id="comment-text-${c.id}">${c.content}</div>
 
-                         ${!isHiddenPost ? `
-                            <button onclick="openReplyCmt('${c.id}')">
-                                <i style="font-size: 10px; margin-right: 5px;" class="fa-solid fa-reply"></i>
-                                Reply
-                            </button>
-                         ` : ''}
-
+                         ${(isBanned?.value === false && !isHiddenPost && userId?.value) ? `
+                           <button onclick="openReplyCmt('${c.id}')">
+                               <i style="font-size: 10px; margin-right: 5px;" class="fa-solid fa-reply"></i>
+                               Reply
+                           </button>
+                        ` : ''}
 
                         <div id="reply-comment-section-${c.id}" style="display: none;">
                             <textarea id="reply-cmt-${c.id}" class="form-control"></textarea>
@@ -570,13 +572,14 @@ function renderChildComments(childComments, parentId) {
                     alt="${child.user?.userName}'s avatar" />
                 <div class="w-100">
                     <div class="d-flex justify-content-between">
-                        <div class="d-flex flex-column mb-2">
-                            <strong>${child.user?.userName}</strong>
-                            <small class="fst-italic" style="font-size: 12px; color:#576f76;">
-                                ${new Date(child.createdAt).toLocaleString()}
-                            </small>
-                        </div>
-                        ${(child.userId === userId.value && !isHiddenPost) ? `
+                        <div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <strong class="m-0">${child.user?.userName}</strong>
+                                    <span class="badge bg-secondary">${child.user.rank?.name || "No Rank"}</span>
+                                </div>
+                                <small class="text-muted">${new Date(child.createdAt).toLocaleString()}</small>
+                            </div>
+                        ${(child.userId === userId.value && !isHiddenPost && isBanned === false) ? `
                             <div class="dropdown">
                                 <button class="btn btn-sm" type="button" data-bs-toggle="dropdown">
                                     <i class="fa-solid fa-ellipsis"></i>
@@ -729,7 +732,7 @@ $(document).ready(function () {
     }
 
     // Event listeners
-    if (userId.value && !isHiddenPost) {
+    if (userId.value && !isHiddenPost && !isBanned.value) {
         $('.upvote-btn').click(function (e) {
             e.preventDefault();
             toggleVote(true);

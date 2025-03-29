@@ -14,13 +14,22 @@
 <div class="d-flex flex-column">
     <div class="d-flex justify-content-between">
         <h1 class="title">New posts</h1>
+        @if (Model.User?.IsBanned == true)
+        {
+            <h4 class="text-danger text-center">Your account is banned. You cannot create new posts.</h4>
+        }
+
         @{
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity.IsAuthenticated && !Model.User.IsBanned)
             {
                 <a asp-action="Create" asp-controller="Post"
-                   class="create-post btn btn-danger mt-1">
+                class="create-post btn btn-danger mt-1">
                     <i class="fa-regular fa-pen-to-square"></i> Create post...
                 </a>
+            }
+            else
+            {
+                <div></div>
             }
         }
     </div>
@@ -31,7 +40,7 @@
             <input name="searchTerm" class="form-control mr-sm-2 w-25" style="background-color:#eaebec"
                    type="search" placeholder="Search" aria-label="Search" value="@Context.Request.Query["searchTerm"]">
             <select class="form-select" style="width:20%" asp-items="@Model.CategoryList" asp-for="@Model.PostCategoryId">
-                <option value="">--Select a category--</option>
+                <option value="">--Category--</option>
             </select>
             <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Filter</button>
         </div>

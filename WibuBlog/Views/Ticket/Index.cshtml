@@ -14,7 +14,7 @@
 		</div>
 		<div class="card-body">
 			<div class="row mb-3">
-				<div class="col-md-6">
+				<div class="col-md-4">
 					<select class="form-select" id="statusFilter" name="FilterBy">
 						<option value="">All Statuses</option>
 						<option value="pending">Pending</option>
@@ -22,7 +22,15 @@
 						<option value="rejected">Rejected</option>
 					</select>
 				</div>
-				<div class="col-md-6">
+				<div class="col-md-4">
+					<select class="form-select" id="tagFilter" name="TagFilter">
+						<option value="">All Tags</option>
+						<option value="#BannedAccount">#BannedAccount</option>
+						<option value="#HelpCreatePost">#HelpCreatePost</option>
+						<option value="#TechnicalIssue">#TechnicalIssue</option>
+					</select>
+				</div>
+				<div class="col-md-4">
 					<select class="form-select" id="sortBy" name="OrderBy">
 						<option value="CreatedAt-false">Newest First</option>
 						<option value="CreatedAt-true">Oldest First</option>
@@ -59,7 +67,16 @@
 									<td>@ticket.User.UserName</td>
 									<td>@ticket.Email</td>
 									<td>@ticket.Tag</td>
-									<td>@ticket.Content</td>
+									<td>
+										@if (ticket.Content != null && ticket.Content.Length > 50)
+										{
+											@(ticket.Content.Substring(0, 30) + "...")
+										}
+										else
+										{
+											@ticket.Content
+										}
+									</td>
 									<td>@ticket.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
 									<td>
 										@switch (ticket.Status)
@@ -129,6 +146,7 @@
 									<a class="page-link"
 									   asp-action="ViewTickets"
 									   asp-route-FilterBy="@Context.Request.Query["FilterBy"]"
+									   asp-route-TagFilter="@Context.Request.Query["TagFilter"]"
 									   asp-route-OrderBy="@Context.Request.Query["OrderBy"]"
 									   asp-route-Descending="@Context.Request.Query["Descending"]"
 									   asp-route-Page="@(Model.Tickets.PageNumber - 1)"
@@ -202,15 +220,17 @@
 			let currentTicketId = null;
 			let currentAction = null;
 
-			function preserveFilterSelection() {
-				const urlParams = new URLSearchParams(window.location.search);
-				const filterBy = urlParams.get('FilterBy') || "";
-				const orderBy = urlParams.get('OrderBy') || "CreatedAt";
-				const descending = urlParams.get('Descending') === "true";
+					function preserveFilterSelection() {
+			const urlParams = new URLSearchParams(window.location.search);
+			const filterBy = urlParams.get('FilterBy') || "";
+			const tagFilter = urlParams.get('TagFilter') || "";
+			const orderBy = urlParams.get('OrderBy') || "CreatedAt";
+			const descending = urlParams.get('Descending') === "true";
 
-				$('#statusFilter').val(filterBy);
-				$('#sortBy').val(`${orderBy}-${descending}`);
-			}
+			$('#statusFilter').val(filterBy);
+			$('#tagFilter').val(tagFilter);
+			$('#sortBy').val(`${orderBy}-${descending}`);
+		}
 
 			preserveFilterSelection();
 
@@ -290,51 +310,59 @@
 				};
 			}
 
-			const submitFilterForm = debounce(function () {
-				const selectedStatus = $('#statusFilter').val();
-				const sortValue = $('#sortBy').val().split('-');
-				const descendingValue = sortValue[1];
+		const submitFilterForm = debounce(function () {
+			const selectedStatus = $('#statusFilter').val();
+			const selectedTag = $('#tagFilter').val();
+			const sortValue = $('#sortBy').val().split('-');
+			const descendingValue = sortValue[1];
 
-				const form = $('<form>')
-					.attr('method', 'get')
-					.attr('action', '/Ticket/ViewTickets');
+			const form = $('<form>')
+				.attr('method', 'get')
+				.attr('action', '/Ticket/ViewTickets');
 
-				$('<input>')
-					.attr('type', 'hidden')
-					.attr('name', 'PostCategoryId')
-					.val($('select[name="PostCategoryId"]').val())
-					.appendTo(form);
+			$('<input>')
+				.attr('type', 'hidden')
+				.attr('name', 'PostCategoryId')
+				.val($('select[name="PostCategoryId"]').val())
+				.appendTo(form);
 
-				$('<input>')
-					.attr('type', 'hidden')
-					.attr('name', 'SearchTerm')
-					.val($('#searchInput').val())
-					.appendTo(form);
+			$('<input>')
+				.attr('type', 'hidden')
+				.attr('name', 'SearchTerm')
+				.val($('#searchInput').val())
+				.appendTo(form);
 
-				$('<input>')
-					.attr('type', 'hidden')
-					.attr('name', 'FilterBy')
-					.val(selectedStatus)
-					.appendTo(form);
+			$('<input>')
+				.attr('type', 'hidden')
+				.attr('name', 'FilterBy')
+				.val(selectedStatus)
+				.appendTo(form);
 
-				$('<input>')
-					.attr('type', 'hidden')
-					.attr('name', 'OrderBy')
-					.val(sortValue[0])
-					.appendTo(form);
+			$('<input>')
+				.attr('type', 'hidden')
+				.attr('name', 'TagFilter')
+				.val(selectedTag)
+				.appendTo(form);
 
-				$('<input>')
-					.attr('type', 'hidden')
-					.attr('name', 'Descending')
-					.val(descendingValue)
-					.appendTo(form);
+			$('<input>')
+				.attr('type', 'hidden')
+				.attr('name', 'OrderBy')
+				.val(sortValue[0])
+				.appendTo(form);
 
-				form.appendTo('body').submit();
-			}, 300);
+			$('<input>')
+				.attr('type', 'hidden')
+				.attr('name', 'Descending')
+				.val(descendingValue)
+				.appendTo(form);
 
-			$('#searchInput').on('input', submitFilterForm);
-			$('#statusFilter').on('change', submitFilterForm);
-			$('#sortBy').on('change', submitFilterForm);
+			form.appendTo('body').submit();
+		}, 300);
+
+		$('#searchInput').on('input', submitFilterForm);
+		$('#statusFilter').on('change', submitFilterForm);
+		$('#tagFilter').on('change', submitFilterForm);
+		$('#sortBy').on('change', submitFilterForm);
 
 			$(document).on('click', '.page-link', function (e) {
 				e.preventDefault();
