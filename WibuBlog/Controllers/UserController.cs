@@ -40,24 +40,24 @@ namespace WibuBlog.Controllers
         }
 
         [HttpPost]
-		public async Task<IActionResult> UpdateUser(UpdateUserVM updateUserVM)
+        public async Task<IActionResult> UpdateUser(UpdateUserVM updateUserVM)
         {
-			if (!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return RedirectToAction(nameof(UserProfile));
             }
-			
-			var user = await _userService.UpdateUserAsync(updateUserVM);
+
+            var user = await _userService.UpdateUserAsync(updateUserVM);
             return RedirectToAction(nameof(UserProfile));
         }
 
-		[HttpPost]
-		public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordVM model)
-		{
+        [HttpPost]
+        public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordVM model)
+        {
             if (model.NewPassword != model.ConfirmPassword)
-			{
-				return BadRequest(MessageConstants.ME006);
-			}
+            {
+                return BadRequest(MessageConstants.ME006);
+            }
             var response = await _userService.UpdatePassword(model);
             if (response.Succeeded)
             {
@@ -70,9 +70,18 @@ namespace WibuBlog.Controllers
         public async Task<IActionResult> UpdateProfilePhoto(IFormFile file)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var response = await _userService.UpdateProfilePhoto(file,userId);
+            var response = await _userService.UpdateProfilePhoto(file, userId);
             return RedirectToAction(nameof(UserProfile));
-                        
+
         }
+
+        [HttpGet("/{userId}")]
+        public async Task<IActionResult> MemberProfile(string userId)
+        {
+            Guid user = Guid.Parse(userId);
+            var response = await _userService.GetUserProfile(user);
+            return View();
+        }
+
     }
 }

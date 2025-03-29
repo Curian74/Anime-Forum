@@ -13,6 +13,7 @@ using WibuBlog.ViewModels.Users;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using Application.Common.MessageOperations;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace WibuBlog.Services
 {
@@ -108,5 +109,12 @@ namespace WibuBlog.Services
             var response = await _apiService.GetAsync<ApiResponse<User>>($"User/GetUserByEmail?email={email}");
             return response.Value!;
         }
-	}
+
+        public async Task<UserProfileDto> GetMemberInfo(string userId)
+        {
+            var response = await _apiService.GetAsync<ApiResponse<UserProfileDto>>($"User/GetMemberProfile?userId={userId}");
+            return response.Value!;
+        }
+
+    }
 }

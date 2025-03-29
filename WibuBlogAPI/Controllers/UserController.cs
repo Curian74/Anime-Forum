@@ -75,11 +75,11 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateUser([FromBody]UpdateUserDto updateUserDTO)
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDto updateUserDTO)
         {
             try
             {
-                var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);       
+                var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (currentUserId == updateUserDTO.Id.ToString()) await _userService.UpdateUserAsync(updateUserDTO);
             }
             catch (KeyNotFoundException ex)
@@ -91,50 +91,50 @@ namespace WibuBlogAPI.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdatePassword([FromBody]UpdatePasswordDTO updatePasswordDTO)
+        public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordDTO updatePasswordDTO)
         {
-			try
-			{
-				var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-				if (currentUserId == updatePasswordDTO.UserId.ToString())
-                return new JsonResult(await _userService.UpdatePasswordAsync(updatePasswordDTO));
-			}
-			catch (KeyNotFoundException ex)
-			{
-				return new JsonResult(NotFound($"{ex.GetType().Name}: {ex.Message}"));
-			}
+            try
+            {
+                var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (currentUserId == updatePasswordDTO.UserId.ToString())
+                    return new JsonResult(await _userService.UpdatePasswordAsync(updatePasswordDTO));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new JsonResult(NotFound($"{ex.GetType().Name}: {ex.Message}"));
+            }
             return new JsonResult(BadRequest());
-		}
+        }
 
         [HttpPut]
         public async Task<IActionResult> UpdateProfilePhoto([FromBody] Media media)
         {
-			try
+            try
             {
-				var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                return new JsonResult(await _userService.UpdateProfilePhotoAsync(media, currentUserId));  
+                return new JsonResult(await _userService.UpdateProfilePhotoAsync(media, currentUserId));
 
             }
-			catch (Exception ex)
-			{
-				return StatusCode(500, $"file/server error: {ex.Message}");
-			}
-		}
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"file/server error: {ex.Message}");
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetUserNotifications()
         {
-			try
-			{
-				var currentUserId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            try
+            {
+                var currentUserId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
                 var result = await _userService.GetUserNotification(currentUserId);
-				return new JsonResult(Ok(result));
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, $"file/server error: {ex.Message}");
-			}
-		}
-	}
+                return new JsonResult(Ok(result));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"file/server error: {ex.Message}");
+            }
+        }
+    }
 }
