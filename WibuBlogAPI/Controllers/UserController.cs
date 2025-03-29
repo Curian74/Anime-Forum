@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace WibuBlogAPI.Controllers
 {
-    // [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
+    [Authorize(AuthenticationSchemes = "Bearer", Policy = "MemberPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class UserController(UserService userService) : ControllerBase
@@ -19,6 +19,7 @@ namespace WibuBlogAPI.Controllers
         private readonly UserService _userService = userService;
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAccountDetails(Guid? userId)
         {
             if (userId == null)

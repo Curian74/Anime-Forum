@@ -50,7 +50,7 @@
 				@Model.Bio
 			</p>
 			<p style="color: #555; font-size: 18px; font-style: italic; border-left: 4px solid #007bff; padding-left: 10px; margin: 10px 0;">
-				Role: <b>@Model.Roles.FirstOrDefault()</b> 
+				Role: <b>@Model.Roles.FirstOrDefault()</b>  - <span style="color: blue"><b>@Model.Points</b> Interactive Points</span>
 			</p>
 		</div>
 		<div class="tabs d-flex border-bottom mt-3">
@@ -62,27 +62,38 @@
 
 		<!--posts-->
 		<div id="posts" class="tab-content mt-3">
-			@foreach (var post in Model.PostList)
+			@if (Model.PostList.Count > 0)
 			{
-			<div class="card post-card mb-3" data-url="@Url.Action("Detail", "Post", new { id = post.Id })">
-				<div class="card-body">
-					<div class="d-flex">
-						<img src="@(post.User.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" 
-							 class="rounded-circle" width="40" height="40" style="margin-right: 10px;">
-						<div>
-							<h6 class="mb-0">@post.User.UserName</h6>
-							<small class="text-muted">@post.CreatedAt</small>
+				foreach (var post in Model.PostList)
+				{
+					<div class="card post-card mb-3" data-url="@Url.Action("Detail", "Post", new { id = post.Id })">
+						<div class="card-body">
+							<div class="d-flex">
+								<img src="@(post.User.ProfilePhoto?.Url ?? Url.Content("~/images/defaults/user/default_avatar.jpg"))" 
+									 class="rounded-circle" width="40" height="40" style="margin-right: 10px;">
+								<div>
+									<h6 class="mb-0">@post.User.UserName</h6>
+									<small class="text-muted">@post.CreatedAt</small>
+								</div>
+							</div>
+							<p class="mt-2">@post.Title</p>
+							<div class="text-end">
+								<button class="btn btn-outline-primary btn-sm">@post.TotalVotes</button>
+								<button class="btn btn-outline-secondary btn-sm">💬 @post.Comments.Count</button>
+							</div>
 						</div>
 					</div>
-					<p class="mt-2">@post.Title</p>
-					<div class="text-end">
-						<button class="btn btn-outline-primary btn-sm">@post.TotalVotes</button>
-						<button class="btn btn-outline-secondary btn-sm">💬 @post.Comments.Count</button>
-					</div>
-				</div>
-			</div>
+				}
 			}
-</div>
+			else{		
+				<p>You haven't created any post yet</p>
+                <a asp-action="Create" asp-controller="Post"
+                   class="create-post btn btn-danger mt-1">
+                    <i class="fa-regular fa-pen-to-square"></i> Create post...
+                </a>
+			}
+			
+		</div>
 
 
 		<div id="info" class="tab-content mt-3 d-none small-form">

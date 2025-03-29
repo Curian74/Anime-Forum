@@ -120,12 +120,17 @@ namespace WibuBlog.Controllers
 
         }
 
-        [HttpGet("/{userId}")]
-        public async Task<IActionResult> MemberProfile(string userId)
+        [HttpGet("MemberProfile/{userId}")]
+		[AllowAnonymous]
+		public async Task<IActionResult> MemberProfile(Guid? userId = null)
         {
-            Guid user = Guid.Parse(userId);
-            var response = await _userService.GetUserProfile(user);
-            return View();
+            var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (currentUserId != null && userId.ToString() == currentUserId )
+            {
+                return RedirectToAction(nameof(UserProfile));
+            }
+            var response = await _userService.GetMemberProfile(userId);
+            return View(response);
         }
 
     }
