@@ -55,7 +55,12 @@ namespace WibuBlog.Controllers
                 .Contains(query.SearchTerm.Trim())).ToList();
             }
 
-            if (query.SelectedRankId.HasValue)
+            if (!string.IsNullOrEmpty(query.SortBy))
+            {
+                filteredUsers = filteredUsers.OrderByDescending(x => x.Points);
+            }
+
+                if (query.SelectedRankId.HasValue)
             {
                 filteredUsers = filteredUsers.Where(x => x.RankId == query.SelectedRankId).ToList();
             }
