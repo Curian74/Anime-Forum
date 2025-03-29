@@ -8,5 +8,6 @@
         public Guid? SelectedRankId { get; set; }
         public bool IsInactive { get; set; } = true;
         public bool? IsBanned { get; set; } = false;
+        public string? SortBy { get; set; } = string.Empty;
     }
 }

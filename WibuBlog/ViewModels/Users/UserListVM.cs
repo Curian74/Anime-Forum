@@ -9,6 +9,6 @@ namespace WibuBlog.ViewModels.Users
         public PagedResult<User>? UsersList { get; set; }
         public List<SelectListItem>? RanksList { get; set; }
         public Guid? SelectedRankId { get; set; }
-        public Dictionary<Guid, List<string>>? UserRoles { get; set; }
+        public Dictionary<Guid, List<string>> UserRoles { get; set; } = new Dictionary<Guid, List<string>>();
     }
 }

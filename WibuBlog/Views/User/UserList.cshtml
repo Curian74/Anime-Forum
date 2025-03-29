@@ -12,7 +12,8 @@
 
             <form asp-action="UserList" method="get">
                 <div class="col-md-4">
-                    <input value="@Context.Request.Query["searchTerm"]" name="searchTerm" type="text" placeholder="Search by username..." class="form-control" />
+                    <input value="@Context.Request.Query["searchTerm"]" name="searchTerm" type="text"
+                    placeholder="Search by username or email..." class="form-control" />
                 </div>
 
                 <div class="mt-3 mb-3 d-flex align-items-center gap-3">
@@ -35,7 +36,12 @@
                     <button type="submit" class="btn btn-outline-primary">Filter</button>
 
                 </div>
-                <a href="/User/UserList" class="btn btn-danger">Reset</a>
+
+                <div class="mb-3">
+                    <small>Sort by (Descending):</small>
+                    <input checked="@(!string.IsNullOrEmpty(Context.Request.Query["sortBy"]))" name="sortBy" value="points" type="radio" /> Points
+                </div>
+                <a href="/User/UserList" class="btn btn-danger">Reset Filter</a>
             </form>
 
             <div class="table-responsive mt-3">
@@ -47,7 +53,9 @@
                             <th>Username</th>
                             <th>Role</th>
                             <th>Email</th>
+                            <th>Points</th>
                             <th>Rank</th>
+                            <th>Role</th>
                             <th>Created At</th>
                             <th>Is Banned</th>
                             @* <th>Is Active</th> *@
@@ -89,7 +97,9 @@
                                         }
                                     </td>
                                     <td>@u.Email</td>
+                                    <td>@u.Points</td>
                                     <td>@u.Rank?.Name</td>
+                                    <td>@Model.UserRoles.Values.FirstOrDefault()?.FirstOrDefault()</td>
                                     <td>@DateFormatHelper.GetDateFormat((DateTime)u.CreatedAt)</td>
                                     <td class="text-@(u.IsBanned ? "danger" : "success") fw-bold">@u.IsBanned</td>
                                     <td>

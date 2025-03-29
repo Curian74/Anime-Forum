@@ -60,6 +60,7 @@ builder.Services.AddScoped<FileService>();
 builder.Services.AddScoped<ReportService>();
 builder.Services.AddScoped<InventoryService>();
 builder.Services.AddScoped<RankService>();
+builder.Services.AddScoped<RoleService>();
 builder.Services.AddScoped<Application.Services.NotificationService>();
 
 // AutoMapper service
