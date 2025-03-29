@@ -28,7 +28,7 @@ namespace WibuBlogAPI.Controllers
 
             if (result == false)
             {
-                return new JsonResult(Ok("Invalid credentials"));
+                return new JsonResult(BadRequest("Invalid credentials"));
             }
 
             var user = await _userService.FindByLoginAsync(dto);
@@ -78,7 +78,6 @@ namespace WibuBlogAPI.Controllers
 
         }
 
-        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPost]
         public async Task<IActionResult> Logout()
         {

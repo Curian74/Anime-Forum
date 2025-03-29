@@ -1,7 +1,10 @@
-﻿using Application.DTO;
+﻿using Application.Common.Pagination;
+using Application.DTO;
+using Application.Interfaces.Pagination;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
+using System.Linq.Expressions;
 using static Domain.ValueObjects.Enums.TicketStatusEnum;
 
 namespace Application.Services
@@ -66,6 +69,7 @@ namespace Application.Services
             {
                 ticket.Status = approval ? TicketStatus.Approved : TicketStatus.Rejected;
                 ticket.Note = note;
+                ticket.ApprovedAt = DateTime.UtcNow;
                 await _ticketRepository.UpdateAsync(ticket);
             }
 
@@ -86,6 +90,20 @@ namespace Application.Services
         public async Task<(IEnumerable<Ticket>, int)> GetAllTicketsAsync()
         {
             return await _ticketRepository.GetAllAsync();
+        }
+
+        public async Task<IPagedResult<Ticket>> GetPagedAsync(
+            int page = 1,
+            int size = 10,
+            Expression<Func<Ticket, bool>>? filter = null,
+            Func<IQueryable<Ticket>, IOrderedQueryable<Ticket>>? orderBy = null)
+        {
+            if (filter == null)
+            {
+                orderBy = t => t.OrderByDescending(t => t.CreatedAt);
+            }
+            var (items, totalCount) = await _ticketRepository.GetPagedAsync(page, size, filter, orderBy);
+            return new PagedResult<Ticket>(items, totalCount, page, size);
         }
     }
 }
