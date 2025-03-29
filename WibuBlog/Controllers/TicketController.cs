@@ -132,6 +132,11 @@ namespace WibuBlog.Controllers
                 };
             }
 
+            if (!string.IsNullOrEmpty(queryObject.TagFilter))
+            {
+                ticketList = ticketList.Where(t => t.Tag == queryObject.TagFilter).ToList();
+            }
+
             ticketList = (queryObject.OrderBy?.ToLower(), queryObject.Descending) switch
             {
                 ("createdat", true) => ticketList.OrderByDescending(x => x.CreatedAt).ToList(),
@@ -142,7 +147,7 @@ namespace WibuBlog.Controllers
             int totalItems = ticketList.Count();
             int totalPages = (int)Math.Ceiling(totalItems / (double)queryObject.Size);
             int skip = (queryObject.Page - 1) * queryObject.Size;
-            var pagedTickets =  ticketList.Skip(skip).Take(queryObject.Size);
+            var pagedTickets = ticketList.Skip(skip).Take(queryObject.Size);
 
             var data = new TicketsVM
             {
